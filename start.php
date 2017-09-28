@@ -69,7 +69,7 @@ function agora_init() {
     // load maps api libraries if it's enabled. If not, it will not be working
     if (elgg_is_active_plugin("amap_maps_api")){
 		elgg_load_library('elgg:amap_maps_api');  
-		elgg_load_library('elgg:amap_maps_api_geocoder'); 
+//		elgg_load_library('elgg:amap_maps_api_geocoder'); 
 	}    
                 
     // Register entity_type for search

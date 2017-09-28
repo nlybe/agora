@@ -16,7 +16,7 @@ if(!elgg_is_active_plugin("amap_maps_api")){
 
 //elgg_load_library('elgg:agora');  
 elgg_load_library('elgg:amap_maps_api');
-elgg_load_library('elgg:amap_maps_api_geocoder');
+//elgg_load_library('elgg:amap_maps_api_geocoder');
 elgg_load_library('elgg:amap_maps_api_geo'); 
 
 // get variables

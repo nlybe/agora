@@ -18,11 +18,12 @@ echo elgg_view('navigation/tabs', array(
 			'href' => '/admin/settings/agora?tab=paypal_options',
 			'selected' => ($tab == 'paypal_options'),
 		),
-		array(		
-			'text' => elgg_echo('agora:settings:tabs:payulatam_options'),
-			'href' => '/admin/settings/agora?tab=payulatam_options',
-			'selected' => ($tab == 'payulatam_options'),
-		),			
+// OBS
+//		array(		
+//			'text' => elgg_echo('agora:settings:tabs:payulatam_options'),
+//			'href' => '/admin/settings/agora?tab=payulatam_options',
+//			'selected' => ($tab == 'payulatam_options'),
+//		),			
 		array(
 			'text' => elgg_echo('agora:settings:tabs:map_options'),
 			'href' => '/admin/settings/agora?tab=map_options',

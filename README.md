@@ -1,18 +1,18 @@
-******* Agora Classifieds Plugin *******
+# Agora Classifieds Plugin
 
-Elgg plugin for posting classifieds to community members using Paypal or PayU Latam Payment Gateway.
+Elgg plugin for posting classifieds to community members using Paypal Payment Gateway.
 
 Administrator can set who can post classifieds in settings, administrators or all users.
 
-== Contents ==
+## Contents
 1. Features
 2. Installation
 
 
-== 1. Features ==
+### 1. Features
 - Members are able to create classifieds/listing posts
 - Post classifieds with several features:
-- - Option to sell online units using Paypal or PayU Latam payment gateways
+- - Option to sell online units using Paypal payment gateways
 - - Ad title and description
 - - Ad location
 - - Price and currency
@@ -48,12 +48,11 @@ Administrator can set who can post classifieds in settings, administrators or al
 - - terms of use
 - - enable/disable "Send private message" button
 - - set Paypal account options (for administrator)
-- - set PayU Latam account options (for administrator)
 - - set test mode for payment gateways
 
 
-== 2. Installation ==
-Requires: Elgg 1.8 or higher
+### 2. Installation
+Requires: Elgg 2.3.x or higher
 
 1. Upload amap_maps_api_geocoder plugin in "/mod/" elgg folder and activate it.  In "Administration/Configure/Settings/AgoraMap Maps API" you must configure basic map options
 2. Upload classifieds plugin in "/mod/" elgg folder and activate it

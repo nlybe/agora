@@ -1,6 +1,15 @@
-Agora Classifieds Plugin
+# Agora Classifieds Plugin
 
 CHANGE LOG
+
+2.3.9	(Oct 2017)
+--------------------------------
+- Upgrade plugin for Elgg 2.3.x or higher
+- PayU Latam removed from payment gateways
+
+1.12.8	(May 2016)
+--------------------------------
+- Small code improvements
 
 1.12.7	(29 Feb 2016)
 --------------------------------

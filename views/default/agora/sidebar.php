@@ -35,7 +35,7 @@ echo '</div>';
 
 if(elgg_is_active_plugin("amap_maps_api_geocoder") && is_geolocation_enabled() && $vars['selected']=='map'){
 	// load kanelgga maps api libraries
-	elgg_load_library('elgg:amap_maps_api_geocoder');  
+//	elgg_load_library('elgg:amap_maps_api_geocoder');  
 
 	$searchonmap = '';
 
