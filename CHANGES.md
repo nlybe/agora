@@ -1,6 +1,6 @@
 Agora Classifieds Plugin
 
-CHANGE LOG
+CHANGE LOG test
 
 1.12.7	(29 Feb 2016)
 --------------------------------
