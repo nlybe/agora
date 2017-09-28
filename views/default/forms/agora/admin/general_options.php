@@ -21,7 +21,7 @@ echo elgg_view_module("inline", elgg_echo('agora:settings:categories'), $categor
 // set default currency
 $default_currency = $plugin->default_currency;
 if(empty($default_currency)){
-        $defaultdateformat = 'EUR';
+        $default_currency = 'EUR';
 }        
 
 // get currency list	
