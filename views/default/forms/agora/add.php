@@ -118,9 +118,9 @@ if ($allow_digital_products) {
     });
 </script>
 
-<p><?php echo elgg_echo('agora:add:requiredfields'); ?></p>
-
 <?php
+
+echo elgg_format_element('p', [], elgg_echo('agora:add:requiredfields'));
 
 echo elgg_format_element('div', [], elgg_view_input('text', array(
     'name' => 'title',
