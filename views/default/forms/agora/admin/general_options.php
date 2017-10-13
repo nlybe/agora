@@ -85,25 +85,30 @@ $max_images_output = elgg_view('input/text', array('name' => 'params[max_images]
 $max_images_output .= "<span class='elgg-subtext'>" . elgg_echo('agora:settings:max_images:note') . "</span>";
 echo elgg_view_module("inline", elgg_echo('agora:settings:max_images'), $max_images_output);
 
-// enable reviews and ratings only for buyers
-$buyers_comrat = $plugin->buyers_comrat;
-if(empty($buyers_comrat)){
-	$buyers_comrat = AGORA_GENERAL_NO;
-}    
-$buyers_comrat_output = elgg_view('input/dropdown', array('name' => 'params[buyers_comrat]', 'value' => $buyers_comrat, 'options_values' => $potential_yes_no));
-$buyers_comrat_output .= "<span class='elgg-subtext'>" . elgg_echo('agora:settings:buyers_comrat:note') . "</span>";
-$buyers_comrat_output .= "<br />";
-$buyers_comrat_output .= "<span class=''>" . elgg_echo('agora:settings:buyers_comrat_expire') . "</span>";
-$buyers_comrat_output .= elgg_view('input/text', array('name' => 'params[buyers_comrat_expire]', 'value' => (intval($plugin->buyers_comrat_expire) > 0?intval($plugin->buyers_comrat_expire):AGORA_COMRAT_EXPIRATION_DAYS), 'style' => 'width:50px; margin: 3px 0;'));
-$buyers_comrat_output .= "<span class='elgg-subtext'>" . elgg_echo('agora:settings:buyers_comrat_expire:note') . "</span>";
-$buyers_comrat_output .= "<br />";
-$buyers_comrat_output .= "<span class=''>" . elgg_echo('agora:settings:buyers_comrat_notify') . "</span>";
-$buyers_comrat_output .= elgg_view('input/text', array('name' => 'params[buyers_comrat_notify]', 'value' => (intval($plugin->buyers_comrat_notify) > 0?intval($plugin->buyers_comrat_notify):AGORA_COMRAT_NOTIFICATION_DAYS), 'style' => 'width:50px; margin: 3px 0;'));
-$buyers_comrat_output .= "<span class='elgg-subtext'>" . elgg_echo('agora:settings:buyers_comrat_notify:note') . "</span>";
-$buyers_comrat_output .= "<br />";
-$buyers_comrat_output .= "<span class=''>" . elgg_echo('agora:settings:buyers_comrat_notify_by') . "</span>";
-$buyers_comrat_output .= elgg_view('input/text', array('name' => 'params[buyers_comrat_notify_by]', 'value' => $plugin->buyers_comrat_notify_by, 'style' => 'width:100px; margin: 3px 0;'));
-$buyers_comrat_output .= "<span class='elgg-subtext'>" . elgg_echo('agora:settings:buyers_comrat_notify_by:note') . "</span>";
+if (elgg_is_active_plugin('ratings')) {
+    // enable reviews and ratings only for buyers
+    $buyers_comrat = $plugin->buyers_comrat;
+    if(empty($buyers_comrat)){
+            $buyers_comrat = AGORA_GENERAL_NO;
+    }    
+    $buyers_comrat_output = elgg_view('input/dropdown', array('name' => 'params[buyers_comrat]', 'value' => $buyers_comrat, 'options_values' => $potential_yes_no));
+    $buyers_comrat_output .= "<span class='elgg-subtext'>" . elgg_echo('agora:settings:buyers_comrat:note') . "</span>";
+//    $buyers_comrat_output .= "<br />";
+//    $buyers_comrat_output .= "<span class=''>" . elgg_echo('agora:settings:buyers_comrat_expire') . "</span>";
+//    $buyers_comrat_output .= elgg_view('input/text', array('name' => 'params[buyers_comrat_expire]', 'value' => (intval($plugin->buyers_comrat_expire) > 0?intval($plugin->buyers_comrat_expire):AGORA_COMRAT_EXPIRATION_DAYS), 'style' => 'width:50px; margin: 3px 0;'));
+//    $buyers_comrat_output .= "<span class='elgg-subtext'>" . elgg_echo('agora:settings:buyers_comrat_expire:note') . "</span>";
+    $buyers_comrat_output .= "<br />";
+    $buyers_comrat_output .= "<span class=''>" . elgg_echo('agora:settings:buyers_comrat_notify') . "</span>";
+    $buyers_comrat_output .= elgg_view('input/text', array('name' => 'params[buyers_comrat_notify]', 'value' => (intval($plugin->buyers_comrat_notify) > 0?intval($plugin->buyers_comrat_notify):AGORA_COMRAT_NOTIFICATION_DAYS), 'style' => 'width:50px; margin: 3px 0;'));
+    $buyers_comrat_output .= "<span class='elgg-subtext'>" . elgg_echo('agora:settings:buyers_comrat_notify:note') . "</span>";
+//    $buyers_comrat_output .= "<br />";
+//    $buyers_comrat_output .= "<span class=''>" . elgg_echo('agora:settings:buyers_comrat_notify_by') . "</span>";
+//    $buyers_comrat_output .= elgg_view('input/text', array('name' => 'params[buyers_comrat_notify_by]', 'value' => $plugin->buyers_comrat_notify_by, 'style' => 'width:100px; margin: 3px 0;'));
+//    $buyers_comrat_output .= "<span class='elgg-subtext'>" . elgg_echo('agora:settings:buyers_comrat_notify_by:note') . "</span>";
+}
+else {
+    $buyers_comrat_output .= elgg_echo('agora:settings:buyers_comrat_notify_by:ratings_missing');
+}
 echo elgg_view_module("inline", elgg_echo('agora:settings:buyers_comrat'), $buyers_comrat_output);
 
 // set if members can send private message to seller

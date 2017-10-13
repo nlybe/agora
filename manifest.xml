@@ -23,6 +23,11 @@
         <type>priority</type>
         <plugin>amap_maps_api</plugin>
         <priority>after</priority>
-    </requires>  	
+    </requires>  
+    <suggests>
+        <type>plugin</type>
+        <name>ratings</name>
+        <version>2.3.1</version>
+    </suggests>    	
     <activate_on_install>false</activate_on_install>
 </plugin_manifest>

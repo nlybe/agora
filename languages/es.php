@@ -79,7 +79,6 @@ $lang = array(
     'agora:set_accepted:success' => "Usted aceptó con éxito este interés.",
     'agora:set_accepted:failed' => "Proceso de aceptación fallido.",
     'agora:set_accepted:novalidaccess' => "No es válido el acceso .",
-    'agora:save:payulatam:minimum_ammount' => "The minimum ammount allowed is COP $ 5,659.00. Please change the value entered.",  
     	
     // interest messages	
     'agora:interests' => "Usuarios interesados​​",
@@ -188,7 +187,6 @@ $lang = array(
     'agora:settings:tabs:map_options' => 'Opciones de mapa',
     'agora:settings:tabs:digital_options' => 'Digital Products Options',
     'agora:settings:tabs:transactions_log' => 'Registro de Transacciones',
-     'agora:settings:tabs:payulatam_options' => 'PayU Latam Options',
     'admin:settings:agora' => 'Agora, experiencias',
     'agora:settings:save:ok' => 'Configuración guardada correctamente",
     'agora:settings:transactions:none' => 'No se encontraron transacciones',
@@ -211,8 +209,6 @@ $lang = array(
     'agora:settings:markericon:agora_yellow' => 'Yellow',
     'agora:settings:paypal_enabled:note' => "Select <strong>Yes</strong> if you want to enable Paypal as payment gateway. ",
     'agora:settings:paypal_enabled' => "Enable Paypal Gateway",    
-    'agora:settings:payulatam_enabled:note' => "Select <strong>Yes</strong> if you want to enable PayU Latam as payment gateway. ",
-    'agora:settings:payulatam_enabled' => "Enable PayU Latam Gateway",      
     	
     // widget	
     'agora:widget' => "Experiencias",
@@ -252,22 +248,6 @@ $lang = array(
     'agora:ipn:error7' => "item_number no ajustada",
     'agora:ipn:error8' => "Item is not valid agora object",
     
-    // PayULatam settings
-    'agora:payulatam:name' => 'Name',
-    'agora:settings:payulatam_merchantId' => 'PayU Latam: Merchant ID',
-    'agora:settings:payulatam_merchantId:note' => 'Enter Merchant ID PayU Latam. This account will be used to receive payments in PayU Latam.',
-    'agora:settings:payulatam_accountId' => 'PayU Latam: Account ID',
-    'agora:settings:payulatam_accountId:note' => 'Enter Account ID PayU Latam. This account will be used to receive payments in PayU Latam.',
-    'agora:settings:payulatam_apikey' => 'PayU Latam: Api Key',
-    'agora:settings:payulatam_apikey:note' => 'Enter Api Key PayU Latam. You can find your api key according instructions at <a href="http://docs.payulatam.com/manual-integracion-web-checkout/informacion-adicional/" target="_blank">http://docs.payulatam.com/manual-integracion-web-checkout/informacion-adicional/</a>.',    
-    'agora:settings:payulatam_testmode' => 'Use PayU Latam test mode',
-    'agora:settings:payulatam_testmode:note' => 'Select <strong>Yes</strong> ONLY for testing purpose using PayU Latam test mode. For more details read at <a href="http://docs.payulatam.com/en/web-checkout-integration/how-to-test-transactions/" target="_blank">http://docs.payulatam.com/en/web-checkout-integration/how-to-test-transactions/</a>',
-    'agora:payulatam:english' => 'English', 	// en
-    'agora:payulatam:spanish' => 'Spanish',		// es
-    'agora:payulatam:portugues' => 'Portugues',	// pt
-	'agora:settings:payulatam_lang' => 'PayU Latam: Language',
-    'agora:settings:payulatam_lang:note' => 'Select default language for PayU Latam.',
-    	
     // map search 	
     'agora:search' => "Buscar anuncios por ubicación",
     'agora:search:location' => "ubicación",
@@ -289,32 +269,21 @@ $lang = array(
     'agora:search:usersfound' => "Experiencias encontradas",
     'agora:search:around' => "Experiencias cercanas no encontradas",
   
-	// user settings
-	'agora:usersettings:settings' => "Classifieds Settings",
-	'agora:usersettings:title' => "Personal Classifieds Settings",
-	'agora:usersettings:error:user' => "Error, not such user",
-	'agora:usersettings:no_settings' => "No classifieds settings available to configure",
-	'agora:usersettings:paypal_settings' => "Paypal Settings",
-	'agora:usersettings:paypal' => "Paypal account",
-	'agora:usersettings:paypal:note' => "Specify the right Merchant ID or email address for your Paypal account. This account will be used to receive payments through Paypal gateway.",
-	'agora:usersettings:payulatam_settings' => "PayU Latam Settings",
-	
-	'agora:usersettings:payulatam_merchantId' => 'PayU Latam: Merchant ID',
-    'agora:usersettings:payulatam_merchantId:note' => 'Enter Merchant ID PayU Latam. This Merchant ID will be used to receive payments through PayU Latam gateway.',
-    'agora:usersettings:payulatam_accountId' => 'PayU Latam: Account ID',
-    'agora:usersettings:payulatam_accountId:note' => 'Enter Account ID PayU Latam. This Account ID will be used to receive payments in PayU Latam gateway.',
-    'agora:usersettings:payulatam_apikey' => 'PayU Latam: Api Key',
-    'agora:usersettings:payulatam_apikey:note' => 'Enter Api Key PayU Latam. You can find your api key according instructions at <a href="http://docs.payulatam.com/manual-integracion-web-checkout/informacion-adicional/" target="_blank">http://docs.payulatam.com/manual-integracion-web-checkout/informacion-adicional/</a>.',    
-    'agora:usersettings:payulatam_lang' => 'PayU Latam: Language',
-    'agora:usersettings:payulatam_lang:note' => 'Select default language for PayU Latam.', 
-    'agora:usersettings:payulatam_testmode' => 'Use PayU Latam test mode',
+    // user settings
+    'agora:usersettings:settings' => "Classifieds Settings",
+    'agora:usersettings:title' => "Personal Classifieds Settings",
+    'agora:usersettings:error:user' => "Error, not such user",
+    'agora:usersettings:no_settings' => "No classifieds settings available to configure",
+    'agora:usersettings:paypal_settings' => "Paypal Settings",
+    'agora:usersettings:paypal' => "Paypal account",
+    'agora:usersettings:paypal:note' => "Specify the right Merchant ID or email address for your Paypal account. This account will be used to receive payments through Paypal gateway.",
      
-	'agora:usersettings:logo' => "",
-	'agora:usersettings:logo:note' => "",
-	'agora:usersettings:update:success' => "Your Classifieds Settings were successfully saved",
-	'agora:usersettings:update:error' => "Error on saving Classifieds Settings",
-	'agora:usersettings:no_fornormaluseryet' => "No settings to configure yet",  
-    
+    'agora:usersettings:logo' => "",
+    'agora:usersettings:logo:note' => "",
+    'agora:usersettings:update:success' => "Your Classifieds Settings were successfully saved",
+    'agora:usersettings:update:error' => "Error on saving Classifieds Settings",
+    'agora:usersettings:no_fornormaluseryet' => "No settings to configure yet",  
+
 );
 
 add_translation("es", $lang);

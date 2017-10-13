@@ -6,6 +6,7 @@ CHANGE LOG
 --------------------------------
 - Upgrade plugin for Elgg 2.3.x or higher
 - PayU Latam removed from payment gateways
+- Remove unnecessary code
 
 1.12.8	(May 2016)
 --------------------------------

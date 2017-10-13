@@ -5,8 +5,6 @@
  */
 
 elgg_load_library('elgg:agora');
-elgg_load_js('lightbox');
-elgg_load_css('lightbox');
 
 // check if user can post classifieds
 if (check_if_user_can_post_classifieds()) { 

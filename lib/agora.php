@@ -134,19 +134,23 @@ function get_agora_paypal_currency_list() {
     return $CurrOptions;
 }
 
-// Currencies list according PayULatam api
-function get_agora_payulatam_currency_list() {
-    $CurrOptions = array(
-        'ARS' => 'Argentenian Peso',
-        'BRL' => 'Brazilian Real',
-        'COP' => 'Colombian Peso',
-        'MXN' => 'Mexican Peso',
-        'USD' => 'U.S. Dollar',
-        'PEN' => 'Peruvian New Sol',
-    );
-
-    return $CurrOptions;
-}
+/**
+ * Currencies list according PayULatam api - OBS
+ * 
+ * @return string
+ */
+//function get_agora_payulatam_currency_list() {
+//    $CurrOptions = array(
+//        'ARS' => 'Argentenian Peso',
+//        'BRL' => 'Brazilian Real',
+//        'COP' => 'Colombian Peso',
+//        'MXN' => 'Mexican Peso',
+//        'USD' => 'U.S. Dollar',
+//        'PEN' => 'Peruvian New Sol',
+//    );
+//
+//    return $CurrOptions;
+//}
 
 function get_agora_currency_sign($currency_code) {
     switch ($currency_code) {
@@ -433,38 +437,9 @@ function agora_use_sandbox_paypal($method) {
     return '';
 }
 
-// check if use payulatam testmode
-function use_testmode_payulatam() {
-    $usesandbox = trim(elgg_get_plugin_setting('payulatam_testmode', 'agora'));
-    if ($usesandbox === 'yes') {
-        return 1;
-    }
-
-    return 0;
-}
-
-// get payulatam url, depending if it's testmode or not
-function get_payulatam_submiturl() {
-    $usesandbox = trim(elgg_get_plugin_setting('payulatam_testmode', 'agora'));
-    if ($usesandbox === 'yes') {
-        return 'https://stg.gateway.payulatam.com/ppp-web-gateway/';
-    }
-
-    return 'https://gateway.payulatam.com/ppp-web-gateway';
-}
-
-// get payulatam available langs
-function get_payulatam_langs() {
-    $potential_langs = array(
-        'en' => elgg_echo('agora:payulatam:english'),
-        'es' => elgg_echo('agora:payulatam:spanish'),
-        'pt' => elgg_echo('agora:payulatam:portugues'),
-    );
-
-    return $potential_langs;
-}
-
-// check if Paypal gateway is enabled
+/**
+ * check if Paypal gateway is enabled - OBS
+ */
 function agora_check_if_paypal_is_enabled() {
     $use_paypal = trim(elgg_get_plugin_setting('paypal_enabled', 'agora'));
 
@@ -474,21 +449,16 @@ function agora_check_if_paypal_is_enabled() {
     return false;
 }
 
-// check if PayU Latam gateway is enabled
-function agora_check_if_payulatam_is_enabled() {
-    $use_payulatam = trim(elgg_get_plugin_setting('payulatam_enabled', 'agora'));
-
-    if ($use_payulatam === AGORA_GENERAL_YES)
-        return true;
-
-    return false;
-}
-
-// get a list of all available currencies, according payment gateways
+/**
+ * Get a list of all available currencies, according payment gateways
+ * 
+ * @return type
+ */
 function get_all_currencies() {
-    $currency_paypal = get_agora_paypal_currency_list();
-    $currency_payulatam = get_agora_payulatam_currency_list();
-    $CurrOptions = array_merge($currency_paypal, $currency_payulatam);
+//    $currency_paypal = get_agora_paypal_currency_list();
+//    $currency_payulatam = get_agora_payulatam_currency_list();
+//    $CurrOptions = array_merge($currency_paypal, $currency_payulatam);
+    $CurrOptions = get_agora_paypal_currency_list();
     asort($CurrOptions); // sort list alphabetically
 
     return $CurrOptions;
@@ -520,26 +490,16 @@ function agora_get_default_timezone() {
     return $timezone;
 }
 
-// get a list of common available currencies, according payment gateways
+/**
+ * Get a list of common available currencies, according payment gateways
+ * 
+ * @return type
+ */
 function get_common_gateway_currencies() {
-    if (agora_check_if_paypal_is_enabled() && agora_check_if_payulatam_is_enabled()) {
-        $currency_paypal = get_agora_paypal_currency_list();
-        $currency_payulatam = get_agora_payulatam_currency_list();
-
-        foreach ($currency_paypal as $key_paypal => $value_paypal) {
-            foreach ($currency_payulatam as $key_payulatam => $value_payulatam) {
-                if ($key_paypal == $key_payulatam) {
-                    //print_r($key_paypal .'-'. $key_payulatam.' - '.$value.'<br />');
-                    $tmparray[$key_paypal] = $value_paypal;
-                }
-            }
-        }
-        asort($tmparray); // sort list alphabetically
-    } else if (agora_check_if_paypal_is_enabled()) {
+    if (agora_check_if_paypal_is_enabled()) {
         $tmparray = get_agora_paypal_currency_list();
-    } else if (agora_check_if_payulatam_is_enabled()) {
-        $tmparray = get_agora_payulatam_currency_list();
-    } else { // if non payment gateway is enabled, return all available currencies
+    } 
+    else { // if non payment gateway is enabled, return all available currencies
         $tmparray = get_all_currencies();
     }
 
@@ -578,57 +538,6 @@ function agora_generate_paypal_button($paypal_acount, $classifieds, $buyer) {
 				' . agora_use_sandbox_paypal(AGORA_PAYPAL_METHOD_SIMPLE) . '
 			></script>
 	';
-
-    return $buybuttton;
-}
-
-// generate payulatam button for a given classified and buyer
-function agora_generate_payulatam_button($classifieds, $buyer) {
-    $whocanpost = trim(elgg_get_plugin_setting('agora_uploaders', 'agora'));
-
-    if ($whocanpost === 'allmembers') {
-        $vowner = get_user($classifieds->owner_guid);
-        if (elgg_instanceof($vowner, 'user')) {
-            $payulatam_merchantId = trim($vowner->getPrivateSetting("agora_payulatam_merchantId"));
-            $payulatam_accountId = trim($vowner->getPrivateSetting("agora_payulatam_accountId"));
-            $payulatam_apikey = trim($vowner->getPrivateSetting("agora_payulatam_apikey"));
-            $payulatam_lang = trim($vowner->getPrivateSetting("agora_payulatam_lang"));
-        }
-    } else if ($whocanpost === 'admins') {
-        $payulatam_merchantId = trim(elgg_get_plugin_setting('payulatam_merchantId', 'agora'));
-        $payulatam_accountId = trim(elgg_get_plugin_setting('payulatam_accountId', 'agora'));
-        $payulatam_apikey = trim(elgg_get_plugin_setting('payulatam_apikey', 'agora'));
-        $payulatam_lang = trim(elgg_get_plugin_setting('payulatam_lang', 'agora'));
-    }
-
-    $buybuttton = '';
-    if ($payulatam_merchantId && $payulatam_accountId && $payulatam_apikey) {
-        $buybuttton .= '  
-			<form method="post" class="payul_form" action="' . get_payulatam_submiturl() . '">
-			  <input type="image" class="payul_button" border="0" alt="" src="http://www.payulatam.com/img_botones_herramientas/boton_pagar_mediano.png" onClick="this.form.urlOrigen.value = window.location.href;"/>
-			  <input name="merchantId" type="hidden" value="' . $payulatam_merchantId . '"/>
-			  <input name="accountId" type="hidden" value="' . $payulatam_accountId . '"/>
-			  <input name="ApiKey" type="hidden" value="' . $payulatam_apikey . '"/>
-			  <input name="description" type="hidden" value="' . $classifieds->title . '"/>
-			  <input name="referenceCode" type="hidden" value="' . $classifieds->guid . '"/>
-			  <input name="extra1" value="' . $buyer->guid . '" type="hidden"/>
-			  <input name="extra2" value="' . $classifieds->container_guid . '" type="hidden"/>
-			  <input name="amount" type="hidden" value="' . $classifieds->get_ad_price_with_shipping_cost() . '"/>
-			  <input name="tax" type="hidden" value="' . $classifieds->get_ad_tax_cost() . '"/>
-			  <input name="taxReturnBase" type="hidden" value="' . ($classifieds->get_ad_tax_cost() == 0 ? 0 : $classifieds->price) . '"/> 
-			  <input name="shipmentValue" value="' . $classifieds->get_ad_shipping_cost() . '" type="hidden"/>
-			  <input name="currency" type="hidden" value="' . $classifieds->currency . '"/>
-			  <input name="lng" type="hidden" value="' . $payulatam_lang . '"/>
-			  <input name="sourceUrl" id="urlOrigen" value="" type="hidden"/>
-			  <input name="buttonType" value="SIMPLE" type="hidden"/>
-			  <input name="buyerEmail" value="' . $buyer->email . '" type="hidden"/>
-			  <input name="responseUrl" value="' . elgg_get_site_url() . 'agora/view/' . $classifieds->guid . '" type="hidden"/>
-			  <input name="confirmationUrl" value="' . elgg_get_site_url() . 'agora/ipnpayulatam/" type="hidden"/>
-			  <input name="signature" value="' . get_MD5_hash($payulatam_apikey, $payulatam_merchantId, $classifieds->guid, $classifieds->get_ad_price_with_shipping_cost(), $classifieds->currency) . '" type="hidden"/>
-			 <input name="test" value="' . use_testmode_payulatam() . '" type="hidden"/>
-			</form>
-		';
-    }
 
     return $buybuttton;
 }
@@ -717,10 +626,14 @@ function agora_notify_users_for_transaction($classfd_owner_guid, $classfd) {
 
 // check reviews and ratings are enabled only for buyers
 function comrat_only_buyers_enabled() {
+    if (!elgg_is_active_plugin('ratings')) {
+        return false;
+    }
+    
     $buyers_comrat = trim(elgg_get_plugin_setting('buyers_comrat', 'agora'));
-
-    if ($buyers_comrat === AGORA_GENERAL_YES)
+    if ($buyers_comrat === AGORA_GENERAL_YES) {
         return true;
+    }
 
     return false;
 }
@@ -749,7 +662,6 @@ function agora_get_ad_ratings($entity) {
         return false;
     }
 
-    $ratings = array();
     $options = array(
         'guid' => $entity->getGUID(),
         'annotation_name' => AGORA_STAR_RATING_ANNOTATION,
@@ -758,6 +670,7 @@ function agora_get_ad_ratings($entity) {
 
     $stars = elgg_get_annotations($options);
 
+    $ratings = [];
     if ($stars) {
         $i = 0;
         $rate_sum = 0;

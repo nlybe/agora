@@ -4,9 +4,7 @@
  * @package Agora
  */
 
-
 $lang = array(
-
     // menu items and titles
     'agora' => "Classifieds",
     'agora:menu' => "Classifieds",
@@ -79,11 +77,12 @@ $lang = array(
     'agora:set_accepted:success' => "You successfully accepted this interest.",
     'agora:set_accepted:failed' => "Accept process failed.",  
     'agora:set_accepted:novalidaccess' => "Not valid access.",  
-    'agora:save:payulatam:minimum_ammount' => "The minimum ammount allowed is COP $ 5,659.00. Please change the value entered.",  
     
     // reviews and ratings
     'agora:comments' => "Reviews",  
     'agora:comments:post' => "Post review & rating",  
+    'agora:comments:add:rate' => "Rate this product ",
+    'agora:comments:add:comment' => "Write a review",
     'agora:comments:add:rating' => "Rate the seller: ",  
     'agora:comments:add:review' => "Write a review",  
     'agora:comments:rating:failure' => "An unexpected error occurred when adding your rating.",
@@ -228,6 +227,7 @@ $lang = array(
     'agora:settings:buyers_comrat_notify:note' => '  Enter notification time after purchase in days for review and rating. Value must be numeric. It affects ONLY IF reviews and ratings are enabled only for buyers', 
     'agora:settings:buyers_comrat_notify_by' => 'Send notification by: ',
     'agora:settings:buyers_comrat_notify_by:note' => '  Enter a username who is supposed to send the notifications. Normally it will be a site administrator.', 
+    'agora:settings:buyers_comrat_notify_by:ratings_missing' => 'Ratings plugin is missing', 
     'agora:settings:ads_geolocation' => 'Enable Ad Geolocation and Classifieds Map',
     'agora:settings:ads_geolocation:note' => 'Select Yes for enable ad geolocation and map view.', 
     'agora:settings:ads_digital' => 'Enable option for selling digital products',
@@ -245,7 +245,6 @@ $lang = array(
     'agora:settings:tabs:map_options' => 'Map Options',
     'agora:settings:tabs:digital_options' => 'Digital Products Options',
     'agora:settings:tabs:transactions_log' => 'Transactions Log',
-    'agora:settings:tabs:payulatam_options' => 'PayU Latam Options',
     'admin:settings:agora' => 'Agora Classifieds',
     'agora:settings:save:ok' => 'Settings were successfully saved',
     'agora:settings:transactions:none' => 'No transactions found',
@@ -268,8 +267,6 @@ $lang = array(
     'agora:settings:markericon:agora_yellow' => 'Yellow',
     'agora:settings:paypal_enabled:note' => "Select <strong>Yes</strong> if you want to enable Paypal as payment gateway. ",
     'agora:settings:paypal_enabled' => "Enable Paypal Gateway",    
-    'agora:settings:payulatam_enabled:note' => "Select <strong>Yes</strong> if you want to enable PayU Latam as payment gateway. ",
-    'agora:settings:payulatam_enabled' => "Enable PayU Latam Gateway",  
     'agora:settings:max_images' => "Maximum number of images",  
     'agora:settings:max_images:note' => "Set maximum number of images for ad ",    
     'agora:settings:amap_maps_api:not_enabled' => 'The maps API plugin is not enabled', 
@@ -335,22 +332,6 @@ $lang = array(
 			<li>4. the commission is numeric and between 0 and 100</li>
 		</ul> ',
 
-    // PayULatam settings
-    'agora:payulatam:name' => 'Name',
-    'agora:settings:payulatam_merchantId' => 'PayU Latam: Merchant ID',
-    'agora:settings:payulatam_merchantId:note' => 'Enter Merchant ID PayU Latam. This account will be used to receive payments in PayU Latam.',
-    'agora:settings:payulatam_accountId' => 'PayU Latam: Account ID',
-    'agora:settings:payulatam_accountId:note' => 'Enter Account ID PayU Latam. This account will be used to receive payments in PayU Latam.',
-    'agora:settings:payulatam_apikey' => 'PayU Latam: Api Key',
-    'agora:settings:payulatam_apikey:note' => 'Enter Api Key PayU Latam. You can find your api key according instructions at <a href="http://docs.payulatam.com/manual-integracion-web-checkout/informacion-adicional/" target="_blank">http://docs.payulatam.com/manual-integracion-web-checkout/informacion-adicional/</a>.',    
-    'agora:settings:payulatam_testmode' => 'Use PayU Latam test mode',
-    'agora:settings:payulatam_testmode:note' => 'Select <strong>Yes</strong> ONLY for testing purpose using PayU Latam test mode. For more details read at <a href="http://docs.payulatam.com/en/web-checkout-integration/how-to-test-transactions/" target="_blank">http://docs.payulatam.com/en/web-checkout-integration/how-to-test-transactions/</a>',
-    'agora:payulatam:english' => 'English', 	// en
-    'agora:payulatam:spanish' => 'Spanish',		// es
-    'agora:payulatam:portugues' => 'Portugues',	// pt
-	'agora:settings:payulatam_lang' => 'PayU Latam: Language',
-    'agora:settings:payulatam_lang:note' => 'Select default language for PayU Latam.',
-        
     // map search 
     'agora:search' => "Search ads by location",
     'agora:search:location' => "location",
@@ -376,31 +357,20 @@ $lang = array(
     'amap_maps_api:search:price_min' => 'min price',  
     'amap_maps_api:search:price_max' => 'max price',  
 
-	// user settings
-	'agora:usersettings:settings' => "Classifieds Settings",
-	'agora:usersettings:title' => "Personal Classifieds Settings",
-	'agora:usersettings:error:user' => "Error, not such user",
-	'agora:usersettings:no_settings' => "No classifieds settings available to configure",
-	'agora:usersettings:paypal_settings' => "Paypal Settings",
-	'agora:usersettings:paypal' => "Paypal account",
-	'agora:usersettings:paypal:note' => "Specify the right Merchant ID or email address for your Paypal account. This account will be used to receive payments through Paypal gateway.",
-	'agora:usersettings:payulatam_settings' => "PayU Latam Settings",
-	
-	'agora:usersettings:payulatam_merchantId' => 'PayU Latam: Merchant ID',
-    'agora:usersettings:payulatam_merchantId:note' => 'Enter Merchant ID PayU Latam. This Merchant ID will be used to receive payments through PayU Latam gateway.',
-    'agora:usersettings:payulatam_accountId' => 'PayU Latam: Account ID',
-    'agora:usersettings:payulatam_accountId:note' => 'Enter Account ID PayU Latam. This Account ID will be used to receive payments in PayU Latam gateway.',
-    'agora:usersettings:payulatam_apikey' => 'PayU Latam: Api Key',
-    'agora:usersettings:payulatam_apikey:note' => 'Enter Api Key PayU Latam. You can find your api key according instructions at <a href="http://docs.payulatam.com/manual-integracion-web-checkout/informacion-adicional/" target="_blank">http://docs.payulatam.com/manual-integracion-web-checkout/informacion-adicional/</a>.',    
-    'agora:usersettings:payulatam_lang' => 'PayU Latam: Language',
-    'agora:usersettings:payulatam_lang:note' => 'Select default language for PayU Latam.', 
-    'agora:usersettings:payulatam_testmode' => 'Use PayU Latam test mode',
-     
-	'agora:usersettings:logo' => "",
-	'agora:usersettings:logo:note' => "",
-	'agora:usersettings:update:success' => "Your Classifieds Settings were successfully saved",
-	'agora:usersettings:update:error' => "Error on saving Classifieds Settings",
-	'agora:usersettings:no_fornormaluseryet' => "No settings to configure yet",    
+    // user settings
+    'agora:usersettings:settings' => "Classifieds Settings",
+    'agora:usersettings:title' => "Personal Classifieds Settings",
+    'agora:usersettings:error:user' => "Error, not such user",
+    'agora:usersettings:no_settings' => "No classifieds settings available to configure",
+    'agora:usersettings:paypal_settings' => "Paypal Settings",
+    'agora:usersettings:paypal' => "Paypal account",
+    'agora:usersettings:paypal:note' => "Specify the right Merchant ID or email address for your Paypal account. This account will be used to receive payments through Paypal gateway.",
+
+    'agora:usersettings:logo' => "",
+    'agora:usersettings:logo:note' => "",
+    'agora:usersettings:update:success' => "Your Classifieds Settings were successfully saved",
+    'agora:usersettings:update:error' => "Error on saving Classifieds Settings",
+    'agora:usersettings:no_fornormaluseryet' => "No settings to configure yet",    
 );
 
 add_translation("en", $lang);

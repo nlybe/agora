@@ -5,8 +5,6 @@
  */
 
 elgg_load_library('elgg:agora');
-elgg_load_js('lightbox');
-elgg_load_css('lightbox');
 
 $classifd_guid = get_input('guid');
 $agora = get_entity($classifd_guid);

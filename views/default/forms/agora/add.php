@@ -4,8 +4,8 @@
  * @package Agora
  */
 
-elgg_load_js('agorajs');
-elgg_load_css('agora_tooltip_css');
+//elgg_load_js('agorajs');
+//elgg_load_css('agora_tooltip_css');
 
 // once elgg_view stops throwing all sorts of junk into $vars, we can use 
 $title = elgg_extract('title', $vars, '');
@@ -58,7 +58,8 @@ if (!comrat_only_buyers_enabled()) {
         'value' => elgg_extract('comments_on', $vars, ''),
         'options_values' => array('On' => elgg_echo('on'), 'Off' => elgg_echo('off'))
     ));
-} else { // if reviews/ratings for buyers is enabled, make comments on in silence
+} 
+else { // if reviews/ratings for buyers is enabled, make comments on in silence
     $comments_input = elgg_view('input/hidden', array(
         'name' => 'comments_on',
         'id' => 'agora_comments_on',
@@ -112,10 +113,6 @@ if ($allow_digital_products) {
             document.agoraForm.submit();
         }
     }
-
-    $(function () {
-        $(document).tooltip();
-    });
 </script>
 
 <?php

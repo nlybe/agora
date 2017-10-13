@@ -20,7 +20,6 @@ else {
     $listener->use_sandbox = false;
 }
 
-
 $errmsg = '';   // stores errors from fraud checks
 
 // try to process the IPN POST
@@ -33,20 +32,19 @@ try {
 }
 
 if ($verified) {
-    
     // 1. Make sure the payment status is "Completed" 
-    if ($_POST['payment_status'] != 'Completed') { 
-        // simply ignore any IPN that is not completed
-        $errmsg = elgg_echo('agora:ipn:error1');
-        //exit(0); 
-    } 
-        
+//    if ($_POST['payment_status'] != 'Completed') { 
+//        // simply ignore any IPN that is not completed
+//        $errmsg = elgg_echo('agora:ipn:error1');
+//        //exit(0); 
+//    } 
+
     if ($_POST['item_number'])  {
         $pieces = explode("-", $_POST['item_number']);
         $classfd_guid = $pieces[0];     // ad guid
         $buyer_guid = $pieces[1];        // buyer guid
         $classfd_owner_guid = $pieces[2];        // ad owner guid
-        
+
         // get buyer user settings
         $buyer_profil = get_user($buyer_guid);
         if ($buyer_profil)  {
@@ -68,24 +66,7 @@ if ($verified) {
                 $errmsg .= $_POST['mc_currency']."\n";
             }  
 
-            // Ensure the transaction is not a duplicate / this user hasn't buy this ad again
-            /* obs
-            $options = array(
-                    'type' => 'object',
-                    'subtype' => 'agorasales',
-                    'limit' => 0,
-                    'metadata_name_value_pairs' => array(
-                        array('name' => 'txn_vguid','value' => $classfd_guid, 'operand' => '='),
-                        array('name' => 'txn_buyer_guid', 'value' => $buyer_guid, 'operand' => '='),
-                    ),
-                    'metadata_name_value_pairs_operator' => 'AND',
-            );
-            $getbuyers = elgg_get_entities_from_metadata($options);
-            if ($getbuyers) { 
-                $errmsg .= elgg_echo('agora:ipn:error4');
-            }        
-			*/
-
+            
             if (!empty($errmsg)) {
                 // send message to ad owner
                 $email_body = "\n$errmsg\n\n";
@@ -107,12 +88,12 @@ if ($verified) {
                 $classfdsale->txn_method = AGORA_PURCHASE_METHOD_PAYPAL;
 
                 if ($classfdsale->save()) {
-					// reduce available inits
-					$available_units = $classfd->howmany;
-					if ($available_units && is_numeric($available_units)) {
-						$classfd->howmany = $available_units - 1;
-						$classfd->save();
-					}
+                    // reduce available inits
+                    $available_units = $classfd->howmany;
+                    if ($available_units && is_numeric($available_units)) {
+                            $classfd->howmany = $available_units - 1;
+                            $classfd->save();
+                    }
 					
                     // notify seller
                     $subject = elgg_echo('agora:paypal:sellersubject', array($buyer_profil->username));

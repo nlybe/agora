@@ -18,12 +18,6 @@ echo elgg_view('navigation/tabs', array(
 			'href' => '/admin/settings/agora?tab=paypal_options',
 			'selected' => ($tab == 'paypal_options'),
 		),
-// OBS
-//		array(		
-//			'text' => elgg_echo('agora:settings:tabs:payulatam_options'),
-//			'href' => '/admin/settings/agora?tab=payulatam_options',
-//			'selected' => ($tab == 'payulatam_options'),
-//		),			
 		array(
 			'text' => elgg_echo('agora:settings:tabs:map_options'),
 			'href' => '/admin/settings/agora?tab=map_options',
@@ -46,10 +40,6 @@ switch ($tab) {
 	case 'paypal_options':
 		echo elgg_view('admin/settings/agora/paypal_options');
 		break;
-
-	case 'payulatam_options':
-		echo elgg_view('admin/settings/agora/payulatam_options');
-		break;		
 
 	case 'map_options':
 		echo elgg_view('admin/settings/agora/map_options');

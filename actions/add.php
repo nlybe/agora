@@ -48,23 +48,17 @@ if (check_if_user_can_post_classifieds()) {
         forward(REFERER);
     }  
     
-    // PayU Latam customization for colombian currency
-    if ($currency == AGORA_PAYULATAM_CURRENCY_COP && $price && $price < AGORA_PAYULATAM_MINIMUM_AMMOUNT_COP) {
-        register_error(elgg_echo('agora:save:payulatam:minimum_ammount'));
-        forward(REFERER);
-    }  
-    
-	if ($howmany && !is_numeric($howmany)) {
+    if ($howmany && !is_numeric($howmany)) {
         register_error(elgg_echo('agora:save:howmany_not_numeric'));
         forward(REFERER);
     }  
     
-	if ($tax_cost && !is_numeric($tax_cost)) {
+    if ($tax_cost && !is_numeric($tax_cost)) {
         register_error(elgg_echo('agora:save:tax_cost_not_numeric'));
         forward(REFERER);
     }  
     
-	if ($shipping_cost && !is_numeric($shipping_cost)) {
+    if ($shipping_cost && !is_numeric($shipping_cost)) {
         register_error(elgg_echo('agora:save:shipping_cost_not_numeric'));
         forward(REFERER);
     }  
@@ -337,12 +331,12 @@ if (check_if_user_can_post_classifieds()) {
 
         //add to river only if new
         if ($new) {
-			elgg_create_river_item(array(
-				'view' => 'river/object/agora/create',
-				'action_type' => 'create',
-				'subject_guid' => elgg_get_logged_in_user_guid(),
-				'object_guid' => $entity->getGUID(),
-			));
+            elgg_create_river_item(array(
+                    'view' => 'river/object/agora/create',
+                    'action_type' => 'create',
+                    'subject_guid' => elgg_get_logged_in_user_guid(),
+                    'object_guid' => $entity->getGUID(),
+            ));
         }
 
         forward($entity->getURL());
