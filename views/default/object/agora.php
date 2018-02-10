@@ -9,7 +9,7 @@ elgg_load_library('elgg:agora');
 // if paypal adaptive payments is enabled
 if (agora_check_if_paypal_adaptive_payments_is_enabled()) {
     elgg_load_library('elgg:amap_paypal_api');
-    elgg_load_js('amap_paypal_api_js');
+    elgg_require_js("js/amap_paypal_api");
 }
 
 $full = elgg_extract('full_view', $vars, FALSE);

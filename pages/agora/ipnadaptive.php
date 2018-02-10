@@ -42,16 +42,16 @@ if ($verified) {
         $errmsg = elgg_echo('agora:ipn:error1');
         //exit(0); 
     } 
-/*
-error_log('--->'.$_POST['transaction_type'].'<---');
-error_log('--->'.$_POST['status'].'<---');
-error_log('--->'.$_POST['memo'].'<---');
-error_log('--->'.$_POST['trackingId'].'<---');
-error_log('--->'.$_POST['payment_request_date'].'<---');
-error_log('--->'.$_POST['sender_email'].'<---');
-error_log('--->'.$errmsg.'<---');
-error_log('g--->'.$_GET['trckd'].'<---');
-*/
+
+//error_log('--->'.$_POST['transaction_type'].'<---');
+////error_log('--->'.$_POST['status'].'<---');
+//error_log('--->'.$_POST['memo'].'<---');
+//error_log('--->'.$_POST['trackingId'].'<---');
+//error_log('--->'.$_POST['payment_request_date'].'<---');
+//error_log('--->'.$_POST['sender_email'].'<---');
+//error_log('--->'.$errmsg.'<---');
+//error_log('g--->'.$_GET['trckd'].'<---');
+
 
     if ($_GET['trckd'])  {
         // $pieces = explode("-", $_POST['memo']);
@@ -90,12 +90,12 @@ error_log('g--->'.$_GET['trckd'].'<---');
                 $classfdsale->txn_method = AGORA_PAYPAL_METHOD_ADAPTIVE;
 
                 if ($classfdsale->save()) {
-					// reduce available inits
-					$available_units = $classfd->howmany;
-					if ($available_units && is_numeric($available_units)) {
-						$classfd->howmany = $available_units - 1;
-						$classfd->save();
-					}
+                    // reduce available inits
+                    $available_units = $classfd->howmany;
+                    if ($available_units && is_numeric($available_units)) {
+                            $classfd->howmany = $available_units - 1;
+                            $classfd->save();
+                    }
 					
                     // notify seller
                     $subject = elgg_echo('agora:paypal:sellersubject', array($buyer_profil->username));

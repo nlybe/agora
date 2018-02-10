@@ -144,7 +144,6 @@ function agora_page_handler($page) {
     $vars['page'] = $page[0];
 
     $base = elgg_get_plugins_path() . 'agora/pages/agora';
-
     switch ($page[0]) {
         case "ipn":
             include "$base/ipn.php";
