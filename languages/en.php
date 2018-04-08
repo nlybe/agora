@@ -1,27 +1,41 @@
 <?php
 /**
  * Elgg Agora Classifieds plugin
- * @package Agora
+ * @package agora
  */
 
 $lang = array(
     // menu items and titles
     'agora' => "Classifieds",
     'agora:menu' => "Classifieds",
+    'item:object:agora' => "Classifieds",
+    'item:object:agora_sale' => 'Classifieds Sales',
+    'item:object:agora_interest' => 'Classifieds Interest',
+    'item:object:agora_img' => 'Classifieds Images',
+    'agora:buyer' => "Buyer",
+    'agora:seller' => "Seller",
+    'agora:transaction:id' => "ID",
+    'agora:transaction:date' => "Date",
+    
+    // errors / warnings
+    'agora:error:access:invalid' => "Invalid access to this page",
+    'agora:error:action:invalid' => "Invalid access for this action",
+    'agora:error:offline:failed' => "Purchace not possbile to be saved. Please contact with site administrator",
+    'agora:plugins:paypal_api:missing' => 'Paypal API plugin (paypal_api) is missing', 
+    'agora:plugins:ratings:missing' => 'Ratings (ratings) plugin is missing', 
+    'agora:plugins:amap_maps_api:missing' => 'The Maps API plugin (amap_maps_api) plugin is missing',
+    'agora:error:invalid:entity' => 'Invalid entity',
     
     // basic options
-    'agora:add' => "Post New Ad",
+    'agora:add' => "Post Ad",
     'agora:edit' => "Edit Ad",
     'agora:unknown_agora' => "Unknown ad",
-    'item:object:agora' => "Classifieds",
-    'item:object:' => "Classifieds",
     'agora:by' => "Ad by",
     'agora:ad' => "Ad",
     'agora:category' => "Category",
     'agora:price' => "Price",
     'agora:location' => "Location",
     'agora:howmany' => "No of available units",
-    'agora:notfoundtext' => "Record not found or has been deleted",
     'agora:list:list' => "List view",
     'agora:list:gallery' => "Gallery view",
     'agora:categories:all' => "All Categories",
@@ -41,7 +55,8 @@ $lang = array(
     'agora:download:downloadable_file' => "Downloadable file",
     'agora:download:type' => "Type",
     'agora:object:tax_included' => " (Taxes included)",
-    'agora:object:total_cost' => "Total Cost",
+    'agora:object:total_cost' => "Total Cost: %s",
+    'agora:object:total_cost:simple' => "Total Cost",
     'agora:object:login_to_buy' => "Login to Buy",
     
     // Status messages
@@ -69,14 +84,14 @@ $lang = array(
     'agora:set_rejected:agora_entity_missing' => "Classified entity is missing. Reject process canceled.",
     'agora:set_rejected:success' => "You successfully rejected this interest.",
     'agora:set_rejected:failed' => "Reject process failed.",
-    'agora:set_rejected:novalidaccess' => "Not valid access.",
     'agora:set_accepted:interest_guid_missing' => "Interest ID is missing. Accept process canceled.",
     'agora:set_accepted:interest_entity_missing' => "Interest entity is missing. Accept process canceled.",
     'agora:set_accepted:agora_entity_missing' => "Classified entity is missing. Accept process canceled.",
     'agora:set_accepted:user_entity_missing' => "User entity is missing. Accept process canceled.",
     'agora:set_accepted:success' => "You successfully accepted this interest.",
     'agora:set_accepted:failed' => "Accept process failed.",  
-    'agora:set_accepted:novalidaccess' => "Not valid access.",  
+    'agora:icon:delete:success' => 'Image deleted sucessfully',
+    'agora:icon:delete:failed' => 'Failure on deleting the image',
     
     // reviews and ratings
     'agora:comments' => "Reviews",  
@@ -112,7 +127,11 @@ $lang = array(
     
     // interest messages
     'agora:interests' => "Users interested",
-    'agora:interest:read_message' => "Read Message",
+    'agora:request:read_message' => "Read Message",
+    'agora:request:user' => 'User',
+    'agora:request:date' => 'Date',
+    'agora:request:status' => 'Status',
+    'agora:request:action' => 'Action',
     'agora:interest:accept' => "Accept",
     'agora:interest:reject' => "Reject",
     'agora:interest:accepted' => "accepted",
@@ -121,18 +140,19 @@ $lang = array(
     'agora:interest:send' => "Send",
     
     // add classfieds function
-    'agora:add' => "Post Ad",
     'agora:add:title' => "Title",
-    'agora:add:title:note' => "Enter ad title.",
+    'agora:add:title:note' => "Enter ad title",
+    'agora:add:tags' => "Tags",
+    'agora:add:tags:note' => "Enter some keywords which describe this ad",
     'agora:add:category' => "Category",
-    'agora:add:category:note' => "Enter ad category.",    
+    'agora:add:category:note' => "Enter ad category",
     'agora:add:category:select' => "Select category", 
     'agora:add:category:sortby' => "Sort by", 
     'agora:add:category:newest' => "Newest first", 
     'agora:add:category:s_price_min' => "Price: lower first", 
     'agora:add:category:s_price_max' => "Price: higher first", 
     'agora:add:description' => "Description",
-    'agora:add:description:note' => "Enter ad detailed description.",
+    'agora:add:description:note' => "Enter ad detailed description",
     'agora:add:tags' => "Tags",
     'agora:add:submit' => "Save",
     'agora:add:missingtitle' => "Title is missing",
@@ -141,13 +161,14 @@ $lang = array(
     'agora:add:noaccessforpost' => "No valid access for post classfieds",
     'agora:add:requiredfields' => "Fields with an asterisk (*) are required",
     'agora:add:currency' => "Currency",
+    'agora:add:currency:note' => "Select currency",
     'agora:add:price' => "Price of Ad",
     'agora:add:pricesimple' => "Price",
     'agora:add:price:note' => "Price of Ad for buying through paypal. Enter zero for free.",
     'agora:add:price:note:importantall' => "For receiving online payments, you have to enter at least one valid account for payment gateways in your <a href='%s'>settings</a>.",
     'agora:add:price:note:importantadmin' => "For receiving online payments, you have to enter at least one valid account for payment gateways in <a href='%s'>Administration</a> area.",
-    'agora:add:image' => "Upload a cover image. Leave blank for no change.",
-    'agora:add:image:note' => "File type must be JPG, GIF or PNG.",
+    'agora:add:image' => "Main Photo",
+    'agora:add:image:note' => "File type must be JPG, GIF or PNG. Leave blank for no change.",
     'agora:add:image:fileerror' => "Invalid file",
     'agora:add:image:fileerror1' => "The file you are trying to upload is too big.",
     'agora:add:image:fileerror2' => "The file you are trying to upload is too big.",
@@ -164,7 +185,7 @@ $lang = array(
     'agora:add:digital:invalidfiletype' => "Invalid file type. The allowed file types are: %s",
     'agora:add:digital:alreadyuploaded' => "The file <strong>%s</strong> has already been uploaded. To replace it, select it below:",
     'agora:add:tax_cost' => "Tax",
-    'agora:add:tax_cost:note' => "Enter percentage of tax which apply. Leave blank or zero for no taxes.",
+    'agora:add:tax_cost:note' => "Enter a numeric value as percentage of tax which apply. Leave blank or zero for no taxes.",
     'agora:add:shipping_cost' => "Cost of Shipping",
     'agora:add:shipping_cost:note' => "Enter shipping cost. Leave blank or zero if not applied.",
     'agora:add:shipping_type' => "Type of Shipping",
@@ -188,33 +209,33 @@ $lang = array(
     'agora:group:enableagora' => 'Enable classifieds',
     
     // my purchases
-    'agora:mypurchases' => 'My Purchases',
-    'agora:label:mypurchases' => 'My Purchases',
-    'agora:mypurchases:none' => 'No Purchases',
+    'agora:my_purchases' => 'My Purchases',
+    'agora:label:my_purchases' => 'My Purchases',
+    'agora:purchases:none' => 'No purchases yet',
+    'agora:my_purchases:none' => 'No Purchases',
+    'agora:requests:none' => 'No requests yet',
     
     // settings
     'agora:settings:defaultdateformat' => 'Default date format',
     'agora:settings:defaultdateformat:note' => 'Enter date format for displaying dates', 
-    'agora:settings:defaultcurrency' => 'Default currency',
-    'agora:settings:defaultcurrency:note' => 'Enter default currency',
-    'agora:settings:defaulttimezone' => 'Default timezone',
-    'agora:settings:defaulttimezone:note' => 'Enter default timezone',
-    'agora:settings:uploaders' => 'Who can post classifieds ?',
-    'agora:settings:uploaders:note' => 'Set permissions for posting classifieds',
-    'agora:settings:uploaders:allmembers' => 'All Members',
-    'agora:settings:uploaders:admins' => 'Administrators',
+    'agora:settings:default_currency' => 'Default currency',
+    'agora:settings:default_currency:note' => 'Select default currency',
+    'agora:settings:default_timezone' => 'Default timezone',
+    'agora:settings:default_timezone:note' => 'Select default timezone',
+    'agora:settings:agora_uploaders' => 'Who can post classifieds ?',
+    'agora:settings:agora_uploaders:note' => 'Set permissions for posting classifieds',
+    'agora:settings:agora_uploaders:allmembers' => 'All Members',
+    'agora:settings:agora_uploaders:admins' => 'Administrators',
     'agora:settings:no' => "No",
     'agora:settings:yes' => "Yes",
     'agora:settings:sandbox:note' => "Select <strong>Yes</strong> ONLY for testing purpose using a valid sandbox account. ",
     'agora:settings:sandbox' => "Use Sandbox (test mode)",
-    'agora:settings:paypal_account' => 'Paypal: Merchant ID or email address',
-    'agora:settings:paypal_account:note' => 'Enter the right Merchant ID or email address for your Paypal account. This account will be used to receive payments in Paypal <strong> in case that ONLY administrators can post classifieds </strong>. Otherwise if all members can post classifieds, the Paypal Account in their personal settings will be used as paypal account.',
     'agora:settings:categories' => 'Categories',
     'agora:settings:categories:note' => 'Set some predefined categories for posting to the Agora Classifieds. Seperate each category with commas like "Cars, Motocycles, Trucks etc".',
     'agora:settings:terms_of_use' => 'Terms of Use',
     'agora:settings:terms_of_use:note' => 'Determine the terms of use for members when creating/editing ad posts. If you do not determine terms of use, members will not be required to accept.',
     'agora:settings:send_message' => 'Enable offline purchases',
-    'agora:settings:send_message:note' => 'Set if members can request interest for products and make transactions offline. Seller can accept or reject interest request. If accept, transaction is logged and product units are reduced.', 
+    'agora:settings:send_message:note' => 'Set if members can request interest for products and make transactions offline. Seller can accept or reject interest request. If accept, transaction is logged and product units are reduced. Message plugin is required.', 
     'agora:settings:multiple_ad_purchase' => 'Multiple purchase of same product',
     'agora:settings:multiple_ad_purchase:note' => 'Select Yes if members can purchase the same ad more than once times.', 
     'agora:settings:html_allowed' => 'Rich text editor & HTML tags',
@@ -227,7 +248,6 @@ $lang = array(
     'agora:settings:buyers_comrat_notify:note' => '  Enter notification time after purchase in days for review and rating. Value must be numeric. It affects ONLY IF reviews and ratings are enabled only for buyers', 
     'agora:settings:buyers_comrat_notify_by' => 'Send notification by: ',
     'agora:settings:buyers_comrat_notify_by:note' => '  Enter a username who is supposed to send the notifications. Normally it will be a site administrator.', 
-    'agora:settings:buyers_comrat_notify_by:ratings_missing' => 'Ratings plugin is missing', 
     'agora:settings:ads_geolocation' => 'Enable Ad Geolocation and Classifieds Map',
     'agora:settings:ads_geolocation:note' => 'Select Yes for enable ad geolocation and map view.', 
     'agora:settings:ads_digital' => 'Enable option for selling digital products',
@@ -238,12 +258,13 @@ $lang = array(
     'agora:settings:digital:file_types:note' => 'Set the allowed file type for digital products. Seperate each type with commas like <strong>pdf, PDF, zip, ZIP</strong> etc.',   
     'agora:settings:ads_geolocation:notenabled' => "Classifieds Geolocation is not enabled",
     'agora:settings:amap_maps_api_geocoder:notenabled' => "Kanellga Maps Api is not enabled. Map of ads cannot be displayed", 
-	'agora:settings:users_to_notify' => 'Users to Notify',
+    'agora:settings:users_to_notify' => 'Users to Notify',
     'agora:settings:users_to_notify:note' => 'Set a list of users who will be notified for every transsaction. Use usernames and seperate them with comma.',
     'agora:settings:tabs:general_options' => 'General Options',
     'agora:settings:tabs:paypal_options' => 'Paypal Options',
     'agora:settings:tabs:map_options' => 'Map Options',
-    'agora:settings:tabs:digital_options' => 'Digital Products Options',
+    'agora:settings:tabs:ratings_options' => 'Ratings & Reviews',
+    'agora:settings:tabs:digital_options' => 'Digital Products',
     'agora:settings:tabs:transactions_log' => 'Transactions Log',
     'admin:settings:agora' => 'Agora Classifieds',
     'agora:settings:save:ok' => 'Settings were successfully saved',
@@ -251,6 +272,7 @@ $lang = array(
     'agora:settings:transactions:buyer' => 'Buyer',
     'agora:settings:transactions:seller' => 'Seller',
     'agora:settings:transactions:method' => 'Purchase method',
+    'agora:settings:transactions:post' => 'Ad',
     'agora:settings:transactions:date' => 'Date of transaction',
     'agora:settings:markericon:agora_blue' => 'Blue',
     'agora:settings:markericon:ad_image' => 'Ad Image',
@@ -265,7 +287,7 @@ $lang = array(
     'agora:settings:markericon:agora_red' => 'Red',
     'agora:settings:markericon:agora_violet_red' => 'Red Violet',
     'agora:settings:markericon:agora_yellow' => 'Yellow',
-    'agora:settings:paypal_enabled:note' => "Select <strong>Yes</strong> if you want to enable Paypal as payment gateway. ",
+    'agora:settings:paypal_enabled:note' => "Select <strong>Yes</strong> if you want to enable Paypal as payment gateway. The Paypal API plugin is required.",
     'agora:settings:paypal_enabled' => "Enable Paypal Gateway",    
     'agora:settings:max_images' => "Maximum number of images",  
     'agora:settings:max_images:note' => "Set maximum number of images for ad ",    
@@ -287,14 +309,20 @@ $lang = array(
     'agora:widget:viewall' => "View all",
     'agora:widget:num_display' => "Number of posts to display",
     'agora:widget:num_display_items' => "Number of items to display",
-    'agora:widget:description' => "",
-    'agora:widget:boughtandsold' => "Bought and Sold Ads",
+    'agora:widget:description' => "Latest classifieds",
+    'agora:widget:bought' => "Purchases",
+    'agora:widget:bought:description' => "Latest purchases",
     'agora:widget:items_bought' => "Recent items bought",
-    'agora:widget:items_sold' => "Recent items sold",
+//    'agora:widget:items_sold' => "Recent items sold",
     
     // paypal 
     'agora:buy' => "Buy this",
-    'agora:sales' => "Sales of this ad",
+    'agora:sales' => "Sales of %s",
+    'agora:requests' => "Requests for %s",
+    'agora:sales:short' => "Sales",
+    'agora:sales:short:note' => "Select to see sales of %s",
+    'agora:requests' => "Requests",
+    'agora:requests:note' => "Select to see requests of %s",
     'agora:transactionid' => "Transaction ID",
     'agora:messagetobuyer' => "You have already buy this unit",
     'agora:paypal:buyeremail' => "Email of buyer",
@@ -316,21 +344,32 @@ $lang = array(
     'agora:ipn:error2' => "mc_gross does not match: ",
     'agora:ipn:error3' => "mc_currency does not match: ",
     'agora:ipn:error4' => "This user has already buy this ad: ",
-    'agora:ipn:error5' => "Purchace not possbile to be saved. Please contact with site administrator",
     'agora:ipn:error6' => "This buyer is not registered user",
     'agora:ipn:error7' => "Item_number not set",
     'agora:ipn:error8' => "Item is not valid agora object",
-    'agora:paypal:adaptive_payments' => 'Enable adaptive payments',
-    'agora:paypal:adaptive_payments:note' => 'Select Yes to enable adaptive payments in PayPal. To configure settings for adaptive payments, <a href="%s">click here</a>.',
-    'agora:paypal:agora_adaptive_payments_commission' => 'Commission: ',
-    'agora:paypal:agora_adaptive_payments_commission:note' => 'Select commission in % which will be applied for every ad sale. The commission will be received by <strong>Merchant ID or email address</strong> as entered above. It must be numeric between 0 and 100.',
+    'agora:settings:agora_adaptive_payments:title' => 'Adaptive Payments',
+    'agora:settings:agora_adaptive_payments:paypal_api' => 'Paypal API plugin settings',
+    'agora:settings:agora_adaptive_payments' => 'Enable adaptive payments',
+    'agora:settings:agora_adaptive_payments:note' => 'Select Yes to enable adaptive payments in PayPal. To configure settings for adaptive payments, %s.',
+    'agora:settings:agora_adaptive_payments_commission' => 'Commission: ',
+    'agora:settings:agora_adaptive_payments_commission:note' => 'Select commission in &#37 which will be applied for every ad sale. Value must be numeric between 0 and 100.<br />The commission will be received by <strong>Merchant ID or email address</strong> as entered in %s.',
     'agora:paypal:agora_adaptive_payments_important' => '<strong>Important notice:</strong> Adaptive payment will be applied ONLY IF ALL OPTIONS below are true:
 		<ul>
-			<li>1. amap_paypal_api plugin is enabled</li>
-			<li>2. adaptive payment option is enabled on current settings</li>
-			<li>3. all fields on amap_paypal_api plugin settings are NOT EMPTY</li>
+			<li>1. paypal_api plugin is enabled</li>
+                        <li>2. all fields about adaptive payments on paypal_api plugin settings are NOT EMPTY</li>
+			<li>3. adaptive payment option is enabled on current settings</li>			
 			<li>4. the commission is numeric and between 0 and 100</li>
 		</ul> ',
+    
+    // paypal api
+    'agora:sales:title' => "Sale of %s",
+    'agora:sales:notification:here' => "here",
+    'agora:sales:success' => "Transaction was successfully completed",
+    'agora:sales:notification:buyer:subject' => "Successful purchase: %s",
+    'agora:sales:notification:buyer:body' => "You completed transaction successfully. You can check the status of subscription at %s.",
+    'agora:sales:notification:admin:subject' => "New: %s",
+    'agora:sales:notification:admin:body' => "You can check the status of subscription at %s.",
+    
 
     // map search 
     'agora:search' => "Search ads by location",
@@ -354,8 +393,10 @@ $lang = array(
     'agora:search:around' => "Classifieds nearby on ads found", 
     'agora:groups:newest' => 'Map with %s newest ads',  
     'agora:groups:nearby:search' => 'Ads near "%s"',   
-    'amap_maps_api:search:price_min' => 'min price',  
-    'amap_maps_api:search:price_max' => 'max price',  
+    'agora:search:price_min' => 'min price',  
+    'agora:search:price_max' => 'max price',  
+    'agora:search:keyword' => 'keyword',
+    'agora:search:submit' => 'Search',
 
     // user settings
     'agora:usersettings:settings' => "Classifieds Settings",
@@ -364,13 +405,17 @@ $lang = array(
     'agora:usersettings:no_settings' => "No classifieds settings available to configure",
     'agora:usersettings:paypal_settings' => "Paypal Settings",
     'agora:usersettings:paypal' => "Paypal account",
-    'agora:usersettings:paypal:note' => "Specify the right Merchant ID or email address for your Paypal account. This account will be used to receive payments through Paypal gateway.",
+    'agora:usersettings:paypal:note' => "Specify the right Merchant ID or email address for your Paypal account. This account will be used in order to receive payments through Paypal gateway for ads you post.",
 
     'agora:usersettings:logo' => "",
     'agora:usersettings:logo:note' => "",
     'agora:usersettings:update:success' => "Your Classifieds Settings were successfully saved",
     'agora:usersettings:update:error' => "Error on saving Classifieds Settings",
     'agora:usersettings:no_fornormaluseryet' => "No settings to configure yet",    
+    
+    //////////////////////////////////
+    'agora:add:error:mime_type' => '%s is not supported',
+    
 );
 
 add_translation("en", $lang);

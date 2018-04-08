@@ -42,7 +42,7 @@ $coords = amap_ma_geocode_location($s_location);
 $options = array(
     "type" => "object",
     'subtype' => 'agora',
-    "full_view" => FALSE,
+    "full_view" => false,
     'limit' => get_input('limit', 0),
     'offset' => get_input('proximity_offset', 0),
     'count' => true
@@ -124,23 +124,6 @@ if ($entities) {
         }
     }
 
-//    $content = elgg_view('amap_maps_api/map', array(
-//        'entities' => $entities,
-//        'defaultlocation' => $defaultlocation,
-//        'defaultzoom' => $mapzoom,
-//        'defaultcoords' => $defaultcoords,
-//        'clustering' => $clustering,
-//        'clustering_zoom' => $clustering_zoom,
-//        'layers' => $layers,
-//        'default_layer' => $default_layer,
-//        'osm_base_layer' => amap_ma_get_osm_base_layer(),
-//        's_location' => ($s_lat && $s_long?$s_lat.','. $s_long:''),
-//        's_radius' => $s_radius,     
-//        's_location_txt' => $search_location_txt,
-//        's_radius_txt' => $search_radius_txt,    
-//        'showradius' => $showradius,   
-//    )); 
-
     $sidebar = '';
     if (amap_ma_check_if_add_sidebar_list('agora')) {
         $box_color_flag = true;
@@ -151,7 +134,7 @@ if ($entities) {
     }        
 }    
 else {
-    $content = elgg_echo('amap_maps_api:search:personalized:empty');
+    $content = elgg_echo('agora:search:personalized:empty');
 }
 
 $result = array(

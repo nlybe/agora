@@ -1,16 +1,20 @@
 <?php
 /**
  * Elgg Agora Classifieds plugin
- * @package Agora
+ * @package agora
  */
 
-//elgg_load_js('agorajs');
-//elgg_load_css('agora_tooltip_css');
+elgg_require_js("agora/js/agora_add");
+
+$user = elgg_get_logged_in_user_entity();
+if (!$user) {
+    return;
+}
 
 // once elgg_view stops throwing all sorts of junk into $vars, we can use 
 $title = elgg_extract('title', $vars, '');
 $category = elgg_extract('category', $vars, '');
-$desc = elgg_extract('description', $vars, '');
+$description = elgg_extract('description', $vars, '');
 $price = elgg_extract('price', $vars, 0);
 $howmany = elgg_extract('howmany', $vars, 0);
 $location = elgg_extract('location', $vars, 0);
@@ -26,6 +30,9 @@ if (!$container_guid) {
     $container_guid = elgg_get_logged_in_user_guid();
 }
 $guid = elgg_extract('guid', $vars, null);
+if ($guid) {
+    $entity = get_entity($guid);
+}
 
 $answers_yesno = array('Yes', 'No');
 $answers_shipping_type = array(
@@ -37,52 +44,26 @@ if (empty($currency)) {
     $currency = trim(elgg_get_plugin_setting('default_currency', 'agora'));
 }
 
-if (!$location) {
-    $user = elgg_get_logged_in_user_entity();
-    if ($user->location)
-        $location = $user->location;
-}
-
-// get currency list
-$CurrOptions = get_common_gateway_currencies();
-
-// maximum number of images
-$max_images = trim(elgg_get_plugin_setting('max_images', 'agora'));
-
-// show option for comments only if reviews/ratings for buyers is disabled
-if (!comrat_only_buyers_enabled()) {
-    $comments_input = '<label for="agora_comments_on">' . elgg_echo('comments') . ': </label>';
-    $comments_input .= elgg_view('input/dropdown', array(
-        'name' => 'comments_on',
-        'id' => 'agora_comments_on',
-        'value' => elgg_extract('comments_on', $vars, ''),
-        'options_values' => array('On' => elgg_echo('on'), 'Off' => elgg_echo('off'))
-    ));
-} 
-else { // if reviews/ratings for buyers is enabled, make comments on in silence
-    $comments_input = elgg_view('input/hidden', array(
-        'name' => 'comments_on',
-        'id' => 'agora_comments_on',
-        'value' => 'On'
-    ));
+if (!$location && $user->location) {
+    $location = $user->location;
 }
 
 // check who can post for retrieving paypal account
 $whocanpost = trim(elgg_get_plugin_setting('agora_uploaders', 'agora'));
 if ($whocanpost === 'allmembers') {
-    $paypal_tip = '<span style="margin-right:20px;color:red;">' . elgg_echo('agora:add:price:note:importantall', array(elgg_get_site_url() . 'agora/user/' . elgg_get_logged_in_user_entity()->username)) . '</span>';
+    $paypal_tip = elgg_format_element('div', ['class' => 'paypal_tip'], elgg_echo('agora:add:price:note:importantall', [elgg_normalize_url('agora/user/'.$user->username)]));
 } else if ($whocanpost === 'admins') {
-    $paypal_tip = '<span style="margin-right:20px;">' . elgg_echo('agora:add:price:note:importantadmin', array(elgg_get_site_url() . 'admin/settings/agora/')) . '</span>';
+    $paypal_tip = elgg_format_element('div', ['class' => 'paypal_tip'], elgg_echo('agora:add:price:note:importantadmin', [elgg_normalize_url('admin/settings/agora/')]));
 }
 
-$allow_digital_products = digital_products_allowed();
+$allow_digital_products = AgoraOptions::isDigitalProductsEnabled();
 if ($allow_digital_products) {
-    if ($digital)
+    $digital_checked = false;
+    if ($digital) {
         $digital_checked = true;
-    else
-        $digital_checked = false;
+    }
 
-    if ($allow_digital_products == 'digitalplus') { //Sell both digital and non-digital products
+    if ($allow_digital_products == 'digitalplus') { // Sell both digital and non-digital products
         // enable digital file upload
         $digi_file_disabled = false;
         if (!$digital_checked) {
@@ -90,179 +71,276 @@ if ($allow_digital_products) {
         }
 
         $digi_option_disabled = false;
-        $digi_option_red = '';
+//        $digi_option_red = '';
     } else { //Sell ONLY digital products
         $digital_checked = true;
         $digi_file_disabled = false;
         $digi_option_disabled = true;
-        $digi_option_red = '<span style="color:red;">(*)</span>';
+//        $digi_option_red = '<span style="color:red;">(*)</span>';
     }
 
     $digital_file_types = trim(elgg_get_plugin_setting('digital_file_types', 'agora'));
 }
-?>
-<script type="text/javascript">
-    function acceptTerms() {
-        error = 0;
-        if (!(document.agoraForm.accept_terms.checked) && (error == 0)) {
-            alert('<?php echo elgg_echo('agora:terms:accept:error'); ?>');
-            document.agoraForm.accept_terms.focus();
-            error = 1;
-        }
-        if (error == 0) {
-            document.agoraForm.submit();
-        }
-    }
-</script>
-
-<?php
 
 echo elgg_format_element('p', [], elgg_echo('agora:add:requiredfields'));
 
-echo elgg_format_element('div', [], elgg_view_input('text', array(
-    'name' => 'title',
-    'value' => $title,
-    'label' => elgg_echo('agora:add:title'),
-    'help' => elgg_echo('agora:add:title:note'),
-    'required' => true,
-)));
+$inputs_list['title_input'] = [
+    'priority' => 10,
+    'render' => elgg_format_element('div', ['id' => 'title_input'], elgg_view_input('text', array(
+        'id' => 'title',
+        'name' => 'title',
+        'value' => $title,
+        'label' => elgg_echo('agora:add:title'),
+        'help' => elgg_echo('agora:add:title:note'),
+        'required' => true,
+    ))),
+];
 
-?>
+if ($entity && $entity->hasIcon('medium')) {
+    $icon_existed = elgg_format_element('div', ['style' => 'float:right;'], elgg_view_entity_icon($entity, 'small', []));
+    $icon_style= 'width:75%;';
+}
+$inputs_list['upload_input'] = [
+    'priority' => 20,
+    'render' => elgg_format_element('div', ['id' => 'upload_input'], 
+        $icon_existed.
+        elgg_view_input('file', [
+            'id' => 'upload',
+            'name' => 'upload',
+            'label' => elgg_echo('agora:add:image'),
+            'help' => elgg_echo('agora:add:image:note'),
+            'style' => $icon_style,
+        ]
+    )),
+];
 
-<div>
-    <label><?php echo elgg_echo('agora:add:category'); ?></label>:
-    <span class='agora_custom_fields_more_info' id='more_info_category' title='<?php echo elgg_echo('agora:add:category:note'); ?>'></span>
-<?php echo elgg_view('input/dropdown', array('name' => 'category', 'id' => 'category', 'options_values' => agora_settings('categories'), 'value' => $category, 'class' => 'doseaera')); ?>
+$max_images = AgoraOptions::getParams('max_images');
+if (is_numeric($max_images) && $max_images>0) {
+    $inputs_list['images_input'] = [
+        'priority' => 25,
+        'render' => elgg_format_element('div', ['id' => 'images_input', 'style' => 'display:block; clear:both;'], 
+            elgg_view_input('amap_images', [
+                'id' => 'amap_images',
+                'name' => 'amap_images',
+                'guid' => $guid,
+                'max_images' => $max_images,
+                'label' => elgg_echo('agora:add:images'),
+                'help' => elgg_echo('agora:add:images:note', [$max_images]),
+            ]
+        )),
+    ];
+}
 
-    <label><?php echo elgg_echo('agora:add:howmany'); ?></label>:
-    <span class='agora_custom_fields_more_info' id='more_info_howmany' title='<?php echo elgg_echo('agora:add:howmany:note'); ?>'></span>
-    <?php echo elgg_view('input/text', array('name' => 'howmany', 'value' => $howmany, 'class' => 'short')); ?>    
-</div>
+$inputs_list['category_input'] = [
+    'priority' => 30,
+    'render' => elgg_format_element('div', ['id' => 'category_input'], elgg_view_input('dropdown', array(
+        'id' => 'category',
+        'name' => 'category',
+        'value' => $category,
+        'label' => elgg_echo('agora:add:category'),
+        'help' => elgg_echo('agora:add:category:note'),
+        'options_values' => agora_settings('categories'),
+        'required' => true,
+    ))),
+];
 
-<div>
-    <label><?php echo elgg_echo('agora:add:price'); ?></label>:
-    <span class='agora_custom_fields_more_info' id='more_info_price' title='<?php echo elgg_echo('agora:add:price:note'); ?>'></span>
-<?php echo elgg_view('input/text', array('name' => 'price', 'value' => $price, 'class' => 'short doseaera')); ?>
-    <br/><?php echo $paypal_tip; ?>
-</div>
+$inputs_list['howmany_input'] = [
+    'priority' => 40,
+    'render' => elgg_format_element('div', ['id' => 'howmany_input'], elgg_view_input('text', array(
+        'id' => 'howmany',
+        'name' => 'howmany',
+        'value' => $howmany,
+        'label' => elgg_echo('agora:add:howmany'),
+        'help' => elgg_echo('agora:add:howmany:note'),
+        'class' => 'short',
+    ))),
+];
 
-<div>
-    <label><?php echo elgg_echo('agora:add:currency'); ?></label>:
-<?php echo elgg_view('input/dropdown', array('name' => 'currency', 'value' => $currency, 'class' => 'doseaera', 'options_values' => $CurrOptions)); ?> 
+$inputs_list['price_input'] = [
+    'priority' => 50,
+    'render' => elgg_format_element('div', ['id' => 'price_input'], elgg_view_input('text', array(
+        'id' => 'price',
+        'name' => 'price',
+        'value' => $price,
+        'label' => elgg_echo('agora:add:price'),
+        'help' => elgg_echo('agora:add:price:note').$paypal_tip,
+        'class' => 'short',
+    ))),
+];
 
-    <label><?php echo elgg_echo('agora:add:tax_cost'); ?></label>
-    <span class='agora_custom_fields_more_info' id='more_info_tax_cost' title='<?php echo elgg_echo('agora:add:tax_cost:note'); ?>'></span>
-    <?php echo elgg_view('input/text', array('name' => 'tax_cost', 'value' => $tax_cost, 'class' => 'short')); ?> %
-</div>
+$inputs_list['currency_input'] = [
+    'priority' => 60,
+    'render' => elgg_format_element('div', ['id' => 'currency_input'], elgg_view_input('dropdown', array(
+        'id' => 'currency',
+        'name' => 'currency',
+        'value' => $currency,
+        'label' => elgg_echo('agora:add:currency'),
+        'help' => elgg_echo('agora:add:currency:note'),
+        'options_values' => AgoraOptions::getCommonGatewayCurrencies(),
+    ))),
+];
 
-<div>
-    <label><?php echo elgg_echo('agora:add:shipping_cost'); ?></label>
-    <span class='agora_custom_fields_more_info' id='more_info_shipping_cost' title='<?php echo elgg_echo('agora:add:shipping_cost:note'); ?>'></span>
-<?php echo elgg_view('input/text', array('name' => 'shipping_cost', 'value' => $shipping_cost, 'class' => 'short doseaera')); ?>
+$inputs_list['tax_cost_input'] = [
+    'priority' => 70,
+    'render' => elgg_format_element('div', ['id' => 'tax_cost_input'], elgg_view_input('text', array(
+        'id' => 'tax_cost',
+        'name' => 'tax_cost',
+        'value' => $tax_cost,
+        'label' => elgg_echo('agora:add:tax_cost'),
+        'help' => elgg_echo('agora:add:tax_cost:note'),
+        'class' => 'short',
+        'placeholder' => '%',
+    ))),
+];
 
-    <label><?php echo elgg_echo('agora:add:shipping_type'); ?></label>:
-    <span class='agora_custom_fields_more_info' id='more_info_shipping_type' title='<?php echo elgg_echo('agora:add:shipping_type:note'); ?>'></span>
-    <span class='agora_custom_fields_more_info_text' id='text_more_info_shipping_type'>
+$inputs_list['shipping_cost_input'] = [
+    'priority' => 80,
+    'render' => elgg_format_element('div', ['id' => 'shipping_cost_input'], elgg_view_input('text', array(
+        'id' => 'shipping_cost',
+        'name' => 'shipping_cost',
+        'value' => $shipping_cost,
+        'label' => elgg_echo('agora:add:shipping_cost'),
+        'help' => elgg_echo('agora:add:shipping_cost:note'),
+        'class' => 'short',
+    ))),
+];
 
-    </span>
-<?php
-echo elgg_view('input/dropdown', array(
-    'name' => 'shipping_type',
-    'id' => 'shipping_type',
-    'value' => elgg_extract('shipping_type', $vars, ''),
-    'options_values' => $answers_shipping_type)
-);
-?>
-</div>
+$inputs_list['shipping_type_input'] = [
+    'priority' => 90,
+    'render' => elgg_format_element('div', ['id' => 'shipping_type_input'], elgg_view_input('dropdown', array(
+        'id' => 'shipping_type',
+        'name' => 'shipping_type',
+        'value' => $shipping_type,
+        'label' => elgg_echo('agora:add:shipping_type'),
+        'help' => elgg_echo('agora:add:shipping_type:note'),
+        'options_values' => $answers_shipping_type,
+        'class' => 'short',
+    ))),
+];
 
-<?php if (digital_products_allowed()) { ?>
-    <div class="digitalfile_frame">
-        <div id="digital_file_box">
-    <?php
-    if (get_digital_filename($guid))
-        echo elgg_echo('agora:add:digital:alreadyuploaded', array(get_digital_filename($guid)));
-    ?>
-            <?php echo elgg_view('input/file', array('name' => 'digital_file_box', 'disabled' => $digi_file_disabled)); ?>
-        </div>
-        <label for="digital"><?php echo elgg_echo('agora:add:digital'); ?>: </label> <?php echo $digi_option_red; ?>
-        <span class='agora_custom_fields_more_info' id='more_info_digital' title='<?php echo elgg_echo('agora:add:digital:note', array($digital_file_types)); ?>'></span>
-        <?php echo elgg_view('input/checkbox', array('name' => 'digital', 'id' => 'digital', 'checked' => $digital_checked, 'onclick' => 'digital_file_show(this.checked)', 'disabled' => $digi_option_disabled)); ?> 
-    </div>
-<?php } ?>
-
-<?php if (is_geolocation_enabled()) { ?>
-    <div class="location_frame">
-        <label><?php echo elgg_echo('agora:add:location'); ?></label>
-        <span class='agora_custom_fields_more_info' id='more_info_location' title='<?php echo elgg_echo('agora:add:location:note'); ?>'></span>
-        <br /><?php echo elgg_view('input/text', array('name' => 'location', 'value' => $location)); ?>
-    </div>
-<?php } ?>
-
-<div class="location_frame">
-    <label><?php echo elgg_echo('agora:add:description'); ?></label>
-    <span class='agora_custom_fields_more_info' id='more_info_description' title='<?php echo elgg_echo('agora:add:description:note'); ?>'></span>
-    <?php echo elgg_view('input/' . (agora_html_allowed() ? 'longtext' : 'plaintext'), array('name' => 'description', 'value' => $desc)); ?>
-</div>
-
-<div style="display:block; clear:both;">
-    <label><?php echo elgg_echo('agora:add:image'); ?></label>
-    <span class='agora_custom_fields_more_info' id='more_info_image' title='<?php echo elgg_echo('agora:add:image:note'); ?>'></span>
-    <br /><?php echo elgg_view('input/file', array('name' => 'upload', 'class' => 'medium')); ?>
-    <?php
-    if ($guid) {
-        $entity = get_entity($guid);
-        $ad_img = elgg_view('output/img', array(
-            'src' => agora_getImageUrl($entity, 'medium'),
-            'class' => "elgg-photo",
-        ));
-        echo '<div style="float:right;margin-top: 8px;">' . $ad_img . '</div>';
+if ($allow_digital_products) {
+    $digital_filename = get_digital_filename($guid);
+    if ($digital_filename) {
+        echo elgg_echo('agora:add:digital:alreadyuploaded', [$digital_filename]);
     }
-    ?>     
-</div>
-<div style="display:block; clear:both;">
-    <label><?php echo elgg_echo('agora:add:images'); ?></label>
-    <span class='agora_custom_fields_more_info' id='more_info_images' title='<?php echo elgg_echo('agora:add:images:note', array($max_images)); ?>'></span>
-    <?php echo elgg_view('input/amap_images', array('name' => 'amap_images', 'guid' => $guid)); ?>
-</div>
+    
+    $inputs_list['digital_input'] = [
+        'priority' => 100,
+        'render' => elgg_format_element('div', ['id' => 'digital_input'], 
+            elgg_view_input('checkbox', [
+                'id' => 'digital',
+                'name' => 'digital', 
+                'checked' => $digital_checked, 
+                'onclick' => 'digital_file_show(this.checked)', 
+                'disabled' => $digi_option_disabled,
+                'label' => elgg_echo('agora:add:digital'),
+            ]).
+            elgg_view_input('file', [
+                'id' => 'digital_file_box',
+                'name' => 'digital_file_box',
+                'disabled' => $digi_file_disabled,
+                'help' => elgg_echo('agora:add:digital:note', [$digital_file_types]),
+            ])
+        ),
+    ];    
+}   
 
-<div style="display:block; clear:both;">
-    <label><?php echo elgg_echo('agora:add:tags'); ?></label>
-    <?php echo elgg_view('input/tags', array('name' => 'tags', 'value' => $tags)); ?>
-</div>
 
-<div>
-    <?php echo $comments_input; ?>
-</div>
+if (elgg_is_active_plugin('amap_maps_api') && AgoraOptions::isGeolocationEnabled()) {
+    $inputs_list['location_input'] = [
+        'priority' => 110,
+        'render' => elgg_format_element('div', ['id' => 'location_input'], elgg_view('input/location_autocomplete', array(
+            'name' => 'location',
+            'value' => $location,
+            'label' => elgg_echo('agora:add:location'),
+            'help' => elgg_echo('agora:add:location:note'),
+        ))),
+    ];    
+}
 
-<div>
-    <label><?php echo elgg_echo('access'); ?></label><br />
-    <?php echo elgg_view('input/access', array('name' => 'access_id', 'value' => $access_id)); ?>
-</div>
+$inputs_list['description_input'] = [
+    'priority' => 120,
+    'render' => elgg_format_element('div', ['id' => 'description_input'], elgg_view_input((agora_html_allowed()?'longtext':'plaintext'), array(
+        'id' => 'description',
+        'name' => 'description',
+        'value' => $description,
+        'label' => elgg_echo('agora:add:description'),
+        'help' => elgg_echo('agora:add:description:note'),
+    ))),
+];
+
+$inputs_list['tags_input'] = [
+    'priority' => 130,
+    'render' => elgg_format_element('div', ['id' => 'tags_input'], elgg_view_input('tags', array(
+        'id' => 'tags',
+        'name' => 'tags',
+        'value' => $tags,
+        'label' => elgg_echo('agora:add:tags'),
+        'help' => elgg_echo('agora:add:tags:note'),
+    ))),
+];
 
 
-<?php
-if (check_if_admin_terms_classifieds()) {
-// Terms checkbox and link
+if (!AgoraOptions::allowedComRatOnlyForBuyers()) {    
+    // show option for comments only if reviews/ratings for buyers is disabled
+    $comments_input = elgg_format_element('div', ['id' => 'agora_comments_on_input'], elgg_view_input('dropdown', array(
+        'id' => 'agora_comments_on',
+        'name' => 'comments_on',
+        'value' => elgg_extract('comments_on', $vars, ''),
+        'label' => elgg_echo('comments'),
+        'options_values' => array('On' => elgg_echo('on'), 'Off' => elgg_echo('off')),
+    )));
+} 
+else {  // if reviews/ratings for buyers is enabled, make comments on in silence
+    $comments_input = elgg_format_element('div', ['id' => 'agora_comments_on_input'], elgg_view_input('hidden', array(
+        'id' => 'agora_comments_on',
+        'name' => 'comments_on',
+        'value' => 'On'
+    )));
+}
+$inputs_list['agora_comments_on_input'] = [
+    'priority' => 140,
+    'render' => $comments_input,
+];
+
+$inputs_list['access_id_input'] = [
+    'priority' => 150,
+    'render' => elgg_format_element('div', ['id' => 'access_id_input'], elgg_view_input('access', array(
+        'id' => 'access_id',
+        'name' => 'access_id',
+        'value' => $access_id,
+        'label' => elgg_echo('access'),
+    ))),
+];
+
+if (!$guid && AgoraOptions::checkTermsClassifieds()) {
     $termslink = elgg_view('output/url', array(
-        'href' => "mod/agora/terms.php",
+        'href' => elgg_normalize_url("mod/agora/terms.php"),
         'text' => elgg_echo('agora:terms:title'),
         'class' => "elgg-lightbox",
     ));
     $termsaccept = sprintf(elgg_echo("agora:terms:accept"), $termslink);
-    ?>
-    <div>
-        <input type='checkbox' name='accept_terms'><label><?php echo $termsaccept; ?></label>
-    </div>
-    <?php
+    
+    $inputs_list['accept_terms_input'] = [
+        'priority' => 160,
+        'render' => elgg_format_element('div', ['id' => 'accept_terms_input'], elgg_view_input('checkbox', [
+            'id' => 'accept_terms',
+            'name' => 'accept_terms', 
+            'label' => $termsaccept,
+            'required' => true,
+        ])),
+    ];
 }
-?>
 
-<div class="elgg-foot">
-    <?php
-    if ($guid) {
-        echo elgg_view('input/hidden', array('name' => 'agora_guid', 'value' => $guid));
-    }
-    echo elgg_view('input/hidden', array('name' => 'container_guid', 'value' => $container_guid));
-    echo elgg_view('input/submit', array('value' => elgg_echo('agora:add:submit')));
-    ?>
-</div>
+$inputs = elgg_trigger_plugin_hook('agora:inputs:config', 'agora', $vars, $inputs_list);
+foreach ($inputs as $inp) {
+    echo $inp['render'];
+}
+
+ 
+if ($guid) {
+    $footer = elgg_view('input/hidden', array('name' => 'agora_guid', 'value' => $guid));
+}
+$footer .= elgg_view('input/hidden', array('name' => 'container_guid', 'value' => $container_guid));
+$footer .= elgg_view('input/submit', array('value' => elgg_echo('agora:add:submit')));
+echo elgg_format_element('div', ['class' => 'elgg-foot'], $footer);

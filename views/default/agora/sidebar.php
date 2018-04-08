@@ -1,7 +1,7 @@
 <?php
 /**
  * Elgg Agora Classifieds plugin
- * @package Agora
+ * @package agora
  */
 
 // Categories
@@ -33,10 +33,7 @@ echo '</div>';
 echo '</div>';
 // Categories End
 
-if(elgg_is_active_plugin("amap_maps_api_geocoder") && is_geolocation_enabled() && $vars['selected']=='map'){
-	// load kanelgga maps api libraries
-//	elgg_load_library('elgg:amap_maps_api_geocoder');  
-
+if( elgg_is_active_plugin("amap_maps_api") && AgoraOptions::isGeolocationEnabled() && $vars['selected']=='map'){
 	$searchonmap = '';
 
 	$searchonmap .= '<div class="elgg-module  elgg-module-aside">';
@@ -50,17 +47,17 @@ if(elgg_is_active_plugin("amap_maps_api_geocoder") && is_geolocation_enabled() &
 	$searchonmap .= '</div>';
 
 	if ($user = elgg_get_logged_in_user_entity())   {
-		if (!empty($user->location))    {
-			$searchonmap .= '<div class="elgg-module  elgg-module-aside">';
-			$searchonmap .= '<div class="elgg-head"><h3>'.elgg_echo("agora:searchnearby").'</h3></div>';
-			$searchonmap .= '<div class="elgg-body">';
-			$searchonmap .= '<small>'.elgg_echo("agora:mylocationsis").'<i>'.$user->location.'</i></small>';
-			$searchonmap .= '<input class="elgg-input-text" id="radiusmyloc" type="text" value="" placeholder="'.get_unit_of_measurement_string().'">';
-			$searchonmap .= '<label class="mtm float-alt"><input id="showradiusloc" type="checkbox" value="show" >'.elgg_echo("agora:search:showradius").'</label>';
-			$searchonmap .= '<input type="submit" class="elgg-button elgg-button-submit" value="'.elgg_echo("agora:search:submit").'" onclick="codeAddress(\''.$user->location.'\')">';
-			$searchonmap .= '</div>';
-			$searchonmap .= '</div>';
-		}
+            if (!empty($user->location))    {
+                $searchonmap .= '<div class="elgg-module  elgg-module-aside">';
+                $searchonmap .= '<div class="elgg-head"><h3>'.elgg_echo("agora:searchnearby").'</h3></div>';
+                $searchonmap .= '<div class="elgg-body">';
+                $searchonmap .= '<small>'.elgg_echo("agora:mylocationsis").'<i>'.$user->location.'</i></small>';
+                $searchonmap .= '<input class="elgg-input-text" id="radiusmyloc" type="text" value="" placeholder="'.get_unit_of_measurement_string().'">';
+                $searchonmap .= '<label class="mtm float-alt"><input id="showradiusloc" type="checkbox" value="show" >'.elgg_echo("agora:search:showradius").'</label>';
+                $searchonmap .= '<input type="submit" class="elgg-button elgg-button-submit" value="'.elgg_echo("agora:search:submit").'" onclick="codeAddress(\''.$user->location.'\')">';
+                $searchonmap .= '</div>';
+                $searchonmap .= '</div>';
+            }
 	}
 
 	$searchonmap .= '
@@ -95,13 +92,13 @@ if(elgg_is_active_plugin("amap_maps_api_geocoder") && is_geolocation_enabled() &
 }
 
 echo elgg_view('page/elements/comments_block', array(
-	'subtypes' => 'agora',
-	'owner_guid' => elgg_get_page_owner_guid(),
+    'subtypes' => 'agora',
+    'owner_guid' => elgg_get_page_owner_guid(),
 ));
 
 echo elgg_view('page/elements/tagcloud_block', array(
-	'subtypes' => 'agora',
-	'owner_guid' => elgg_get_page_owner_guid(),
+    'subtypes' => 'agora',
+    'owner_guid' => elgg_get_page_owner_guid(),
 ));
 
 

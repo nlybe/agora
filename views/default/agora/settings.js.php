@@ -1,11 +1,11 @@
 <?php
 /**
- * Elgg AgoraMap Maps Api plugin
- * @package amap_maps_api 
+ * Elgg Agora Classifieds plugin
+ * @package agora
  */
 
 $settings = [
-    'max_images_gallery' => AGORA_MAX_IMAGES_GALLERY,
+    'max_images_gallery' => AgoraOptions::MAX_IMAGES_GALLERY,
 ];
 
 ?>

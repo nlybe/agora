@@ -2,6 +2,11 @@
 
 CHANGE LOG
 
+2.3.10	(unpublished)
+--------------------------------
+- Modernize code according Elgg 2.3.x API
+- Several code improvements
+
 2.3.9	(Oct 2017)
 --------------------------------
 - Upgrade plugin for Elgg 2.3.x or higher
@@ -12,7 +17,7 @@ CHANGE LOG
 --------------------------------
 - Small code improvements
 
-1.12.7	(29 Feb 2016)
+1.12.7	(Feb 2016)
 --------------------------------
 - Added option for multiple images per ad
 - Added compatibility with new Maps API
@@ -24,16 +29,16 @@ CHANGE LOG
 - Fixed issue on widget's view
 - Several code improvements
 
-1.12.6	(25 Oct 2015)
+1.12.6	(Oct 2015)
 --------------------------------
 - Tested and released for Elgg 1.12
 
-1.11.6	(30 May 2015)
+1.11.6	(May 2015)
 ------------------------------------------
 - Added option for reviews and star ratings only from buyers
 - Several code improvements
 
-1.8.5	(8 Oct 2014)
+1.8.5	(Oct 2014)
 ------------------------------------------
 - Added option for Adaptive Payments through Paypal
 - Added option to determine timezone in settings
@@ -41,7 +46,7 @@ CHANGE LOG
 - Added location autocomplete in search input box on classifieds map
 - Several code improvements
 
-1.8.4	(15 Sep 2014)
+1.8.4	(Sep 2014)
 ------------------------------------------
 - Added PayU Latam as payment gateway
 - Added fields for tax cost and shipping cost
@@ -51,11 +56,11 @@ CHANGE LOG
 - Widget are now compatible with Widget Manager plugin
 - Several code improvements 
 
-1.8.3	(18 Aug 2014)
+1.8.3	(Aug 2014)
 ------------------------------------------
 - Added option for selling downloads/digital products like documents, photos etc
 
-1.8.2	(29 Jun 2014)
+1.8.2	(Jun 2014)
 ------------------------------------------
 - Added option for offline transactions 
 - Added french translation (thanks to Arnaud)
@@ -63,7 +68,7 @@ CHANGE LOG
 - Fixed issue for Paypal transactions in walled-garden Elgg sites
 - Several code improvements 
 
-1.8.1	(26 Feb 2014)
+1.8.1	(Feb 2014)
 ------------------------------------------
 - Added image on river when ad is created
 - Added link in category at ad view
@@ -73,7 +78,7 @@ CHANGE LOG
 - Added option for sending notifications for each transaction to users specified 
 - Added transactions log in admin area
 
-1.8.0	(1 Sep 2013)
+1.8.0	(Sep 2013)
 ------------------------------------------
 Initial release
 

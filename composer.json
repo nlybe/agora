@@ -1,0 +1,26 @@
+{
+    "name": "nlybe/agora",
+    "description": "Post classifieds on Elgg communities",
+    "type": "elgg-plugin",
+    "keywords": [
+        "elgg", 
+        "plugin",
+        "classifieds",
+        "announcements"
+    ],
+    "homepage": "http://www.agoramap.com/",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Nikos Lyberakis",
+            "email": "nikos@lyberakis.gr",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "composer/installers": ">=1.0.8"
+    },
+    "extra": {
+        "installer-name": "agora"
+    }
+}

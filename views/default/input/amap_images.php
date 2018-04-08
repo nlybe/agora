@@ -1,31 +1,22 @@
 <?php
 /**
  * Elgg Agora Classifieds plugin
- * @package Agora
+ * @package agora
  */
 
 elgg_require_js("agora/js/amap_images");
 
-$entity = get_entity(get_input('guid'));
-
 // maximum number of images
-$max_images = trim(elgg_get_plugin_setting('max_images', 'agora'));
+$max_images = elgg_extract('$max_images', $vars, AgoraOptions::getParams('max_images'));
 
-$gallery = '';
+$entity = get_entity(elgg_extract('guid', $vars));
+
 if ($entity) {
-
-    $images = elgg_get_entities(array(
-        'type' => 'object',
-        'subtype' => 'agoraimg',
-        'owner_guid' => $entity->guid,
-        'limit' => 10,
-        'order_by' => 'e.time_created ASC'
-    ));
-
+    $images = $entity->getMoreImages();
     $imgcount = count($images);
 
     if ($imgcount) {
-        $gallery .= '<ul class="elgg-gallery agora-icons">';
+        $gallery .= '<ul id="agora-icons" class="elgg-gallery agora-icons">';
         foreach ($images as $img) {
             $thumb_img = elgg_view('output/img', array(
                 'src' => elgg_normalize_url("agora/icon/{$img->guid}/smamed/" . md5($img->time_created) . ".jpg"),
@@ -41,10 +32,6 @@ if ($entity) {
             $gallery .= '<li>';
             $gallery .= $full_img;
 
-            //$thumb_url = elgg_get_site_url() . "agora/icon/{$img->guid}/medium/" . md5($img->time_created) . '.jpg';
-            //$full_url = elgg_get_site_url() . "agora/icon/{$img->guid}/master/" . md5($img->time_created) . '.jpg';
-            //$gallery .= '<li>';
-            //$gallery .= "<a class=\"agora-icon elgg-lightbox\" href=\"$full_url\" rel=\"agora-gallery\"><img src=\"$thumb_url\" alt=\"$img->title\" title=\"$img->title\"/></a>";
             $gallery .= elgg_view('output/url', array(
                 'text' => elgg_view_icon('delete'),
                 'href' => 'action/agora/icon/delete?guid=' . $img->guid,
@@ -58,29 +45,16 @@ if ($entity) {
         $gallery .= '</ul>';
     }
 }
-?>
 
-<div>
-    <?php
-    $icon_class = 'agora-icon-input';
+$icon_class = 'agora-icon-input';
+if ($imgcount >= $max_images) {
+    $icon_class .= ' hidden';
+}
 
-    if ($imgcount >= $max_images) {
-        $icon_class .= ' hidden';
-    }
+$render = elgg_format_element('div', ['class' => $icon_class], elgg_view('input/file', array('id' => 'product_icon', 'name' => 'product_icon[]', 'multiple' => 'multiple')));
 
-    echo '<div class="' . $icon_class . '">';
-    echo '<table id="agora-icon-wrapper"><tr><td>';
-    echo elgg_view('input/file', array('name' => 'product_icon[]'));
-    echo '</td><td class="remove"></td></tr></table>';
-    echo elgg_view('output/url', array(
-        'text' => elgg_echo('agora:add:images:another'),
-        'href' => '#',
-        'class' => 'agora-icon-add-another elgg-button elgg-button-action'
-    ));
-    echo '</div>';
+if ($gallery) {
+    $render .= elgg_format_element('div', [], $gallery);
+}
 
-    if ($gallery) {
-        echo '<br>' . $gallery;
-    }
-    ?>
-</div>
+echo elgg_format_element('div', [], $render);

@@ -6,28 +6,15 @@ define(function (require) {
     var max_images_gallery = settings['max_images_gallery'];
     
     $(document).ready(function () {
-        // add another screenshot field
-        $('.agora-icon-add-another').click(function (e) {
-            e.preventDefault();
-
-            // make sure we don't give more than 8 uploads
-            var existing_screenshots = $('ul.agora-icons li').length;
-            var available_fields = $('.agora-icon-input table').length;
-            var total_screenshots = existing_screenshots + available_fields;
-
-            if (total_screenshots >= max_images_gallery) {
-                elgg.register_error(elgg.echo('agora:add:images:limit', [max_images_gallery]));
-                return;
-            }
-
-
-            $('#agora-icon-wrapper').clone(true)
-                .removeAttr('id')
-                .insertBefore($(this))
-                .find('td.remove')
-                .html('<a href="#"><span class="elgg-icon elgg-icon-delete"></span></a>');
+        $("#product_icon").on("change", function() {
+            var img_existed = $("#agora-icons li").length;
+            var img_new = $("#product_icon")[0].files.length;
+            var remaning_images = max_images_gallery - img_existed;
+            if( img_existed+img_new > max_images_gallery) {
+               $(this).val(null); 
+               alert("You can select only " + remaning_images + " images");
+            } 
         });
-
 
         // remove screenshot field
         $('td.remove a .elgg-icon-delete').on('click', function (e) {
@@ -60,15 +47,16 @@ define(function (require) {
                         if ($('ul.agora-icons li').length < 9) {
                             $('.agora-icon-input').show();
                         }
+                        elgg.system_message(elgg.echo('agora:icon:delete:success'));
                     } else {
                         // it didn't delete properly, show it again
                         container.show();
-                        elgg.register_error(elgg.echo('agora:icon:imagedelete:failed'));
+                        elgg.register_error(elgg.echo('agora:icon:delete:failed'));
                     }
                 },
                 error: function (result, response, xhr) {
                     container.show();
-                    elgg.register_error(elgg.echo('agora:icon:imagedelete:failed'));
+                    elgg.register_error(elgg.echo('agora:icon:delete:failed'));
                 }
             });
         });

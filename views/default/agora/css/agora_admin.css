@@ -1,0 +1,24 @@
+
+.list_features	{
+    width: 100%;
+    margin-bottom: 4px;
+    clear: both;
+    display: table;
+}
+
+.list_features div {
+    background-color: #f6f6f6;
+    padding: 3px 8px;
+    margin: 1px; 
+}
+
+.list_features .f_label	{
+    font-weight: bold;
+    width: 25%;
+    border-right: 2px solid #fff;
+    display: table-cell;
+}
+
+.list_features .f_text	{
+    display: table-cell;
+}

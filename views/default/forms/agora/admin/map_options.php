@@ -4,30 +4,58 @@
  * @package agora
  */
 
-elgg_load_library('elgg:agora');
+if (!elgg_is_active_plugin('amap_maps_api')) {
+    echo elgg_echo('agora:plugins:paypal_api:missing');
+    return;
+}
 
-$plugin = elgg_get_plugin_from_id('agora');
+$plugin = elgg_get_plugin_from_id(AgoraOptions::PLUGIN_ID);
+$pyn = array(
+    AgoraOptions::YES => elgg_echo('agora:settings:yes'),
+    AgoraOptions::NO => elgg_echo('agora:settings:no'),
+);
 
-$potential_yes_no = array(
-    AGORA_GENERAL_YES => elgg_echo('agora:settings:yes'),
-    AGORA_GENERAL_NO => elgg_echo('agora:settings:no'),
-); 
+echo elgg_view_input('dropdown', array(
+    'name' => 'params[ads_geolocation]',
+    'value' => $plugin->ads_geolocation?$plugin->ads_geolocation:AgoraOptions::NO,
+    'options_values' => $pyn,
+    'label' => elgg_echo('agora:settings:ads_geolocation'),
+    'help' => elgg_echo('agora:settings:ads_geolocation:note'),
+));
 
-// enable/disable ads geolocation
-$ads_geolocation = $plugin->ads_geolocation;
-if(empty($ads_geolocation)){
-        $ads_geolocation = AGORA_GENERAL_YES;
-}    
-$ads_geolocation_output = elgg_view('input/dropdown', array('name' => 'params[ads_geolocation]', 'value' => $ads_geolocation, 'options_values' => $potential_yes_no));
-$ads_geolocation_output .= "<span class='elgg-subtext'>" . elgg_echo('agora:settings:ads_geolocation:note') . "</span>";
-echo elgg_view_module("inline", elgg_echo('agora:settings:ads_geolocation'), $ads_geolocation_output);
+echo elgg_view_input('dropdown', array(
+    'name' => 'params[sidebar_list]',
+    'value' => $plugin->sidebar_list?$plugin->sidebar_list:AgoraOptions::NO,
+    'options_values' => $pyn,
+    'label' => elgg_echo('agora:settings:sidebar_list'),
+    'help' => elgg_echo('agora:settings:sidebar_list:note'),
+));
+
+echo elgg_view_input('dropdown', array(
+    'name' => 'params[markericon]',
+    'value' => $plugin->markericon?$plugin->markericon:AgoraOptions::ICON,
+    'options_values' => [
+        "ad_image" => elgg_echo('agora:settings:markericon:ad_image'),
+        "agora_blue" => elgg_echo('agora:settings:markericon:agora_blue'),
+        "agora_royal_blue" => elgg_echo('agora:settings:markericon:agora_royal_blue'),
+        "agora_forest_green" => elgg_echo('agora:settings:markericon:agora_forest_green'),
+        "agora_grey" => elgg_echo('agora:settings:markericon:agora_grey'),
+        "agora_orange" => elgg_echo('agora:settings:markericon:agora_orange'),
+        "agora_pink" => elgg_echo('agora:settings:markericon:agora_pink'),
+        "agora_purple" => elgg_echo('agora:settings:markericon:agora_purple'),
+        "agora_red" => elgg_echo('agora:settings:markericon:agora_red'),
+        "agora_violet_red" => elgg_echo('agora:settings:markericon:agora_violet_red'),
+        "agora_yellow" => elgg_echo('agora:settings:markericon:agora_yellow'),
+    ],
+    'label' => elgg_echo('agora:settings:markericon'),
+    'help' => elgg_echo('agora:settings:markericon:note'),
+));
 
 // initial choice for loading map
-
 $initial_load = $plugin->initial_load;
-if (!$initial_load)
-	$initial_load = 'all';
-	
+if (!$initial_load) {
+    $initial_load = 'all';
+}
 $options = array();
 $options[elgg_echo('agora:settings:initial_load:all')] = 'all';
 $options[elgg_echo('agora:settings:initial_load:newest')] = 'newest';
@@ -53,39 +81,6 @@ $initial .= "<span class='elgg-subtext'>".elgg_echo('agora:settings:initial_load
 $initial .= '</div>';
 echo elgg_view_module("inline", elgg_echo('agora:settings:initial_load:title'), $initial);
 
-// show list on sidebar
-$sidebar_list = $plugin->sidebar_list;
-if(empty($sidebar_list)){
-	$sidebar_list = AGORA_GENERAL_YES;
-}    
-$sidebar_list_view = '<div class="amap_settings_box">';
-$sidebar_list_view .= elgg_view('input/dropdown', array('name' => 'params[sidebar_list]', 'value' => $sidebar_list, 'options_values' => $potential_yes_no));
-$sidebar_list_view .= "<span class='elgg-subtext'>" . elgg_echo('agora:settings:sidebar_list:note') . "</span>";
-$sidebar_list_view .= '</div>';
-echo elgg_view_module("inline", elgg_echo('agora:settings:sidebar_list'), $sidebar_list_view);
 
-
-// set default icon
-$markericon = $plugin->markericon;
-if(empty($markericon)){
-        $markericon = 'smiley';
-}    
-$potential_icon = array(
-	"ad_image" => elgg_echo('agora:settings:markericon:ad_image'),
-    "agora_blue" => elgg_echo('agora:settings:markericon:agora_blue'),
-    "agora_royal_blue" => elgg_echo('agora:settings:markericon:agora_royal_blue'),
-    "agora_forest_green" => elgg_echo('agora:settings:markericon:agora_forest_green'),
-    "agora_grey" => elgg_echo('agora:settings:markericon:agora_grey'),
-    "agora_orange" => elgg_echo('agora:settings:markericon:agora_orange'),
-    "agora_pink" => elgg_echo('agora:settings:markericon:agora_pink'),
-    "agora_purple" => elgg_echo('agora:settings:markericon:agora_purple'),
-    "agora_red" => elgg_echo('agora:settings:markericon:agora_red'),
-    "agora_violet_red" => elgg_echo('agora:settings:markericon:agora_violet_red'),
-    "agora_yellow" => elgg_echo('agora:settings:markericon:agora_yellow'),
-); 
-
-$map_icon = elgg_view('input/dropdown', array('name' => 'params[markericon]', 'value' => $markericon, 'options_values' => $potential_icon));
-$map_icon .= "<span class='elgg-subtext'>" . elgg_echo('agora:settings:markericon:note') . "</span>";
-echo elgg_view_module("inline", elgg_echo('agora:settings:markericon'), $map_icon);
 
 echo elgg_view('input/submit', array('value' => elgg_echo("save")));

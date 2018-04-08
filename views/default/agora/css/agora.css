@@ -14,37 +14,46 @@ div.gallery-view {
 }
 
 p.gallery-date	{
-	margin: 1px;
-	font-size:90%;
+    margin: 1px;
+    font-size:90%;
 }
 
 div.agorabody {
     margin-top: 10px;
 }
 
-div.agorabody div.desc {
-    border-top: 1px solid #eaeaea;
-    border-left: 0;
-    border-right: 0;
-    border-bottom: 0;
+.elgg-image-block .desc {
     width: 100%;
-    margin-bottom: 50px;
-	clear:both;
+    margin: 20px 0 30px;
+    clear:both;
+    display: block
 }
 
 div.agorabody .agora-gallery {
     width: 100%;
     margin-bottom: 10px;
-	clear:both;
+    clear:both;
 }
 
+div.bought	{
+    float: right;
+    margin: 10px 0;
+    clear: both;
+    text-align: center;
+    width: 98%;
+    position: relative;
+    border: 2px solid red;
+    padding: 2px 0;
+    border-radius: 5px;
+    font-size: 90%;
+}
 
 div.agoraprint {
-    float:right;
-    margin-bottom: 8px;
-    clear:both;
+    float: right;
+    margin-top: -100px;
+    clear: left;
     text-align: center;
-    width: 160px;
+    width: 200px;
     position: relative;
 }
 
@@ -62,11 +71,11 @@ a.agoraprint:hover {
 }
 
 input.short {
-    width: 15%;
+    width: 20%;
 }
 
 input.mediumshort {
-    width: 25%;
+    width: 30%;
 }
 
 input.medium {
@@ -74,146 +83,150 @@ input.medium {
 }
 
 .agora_custom_fields_more_info {
-        width: 16px;
-        height: 16px;
-        margin: 0 2px 0 5px;
-        display: inline-block;
-        vertical-align: top;
-        background: transparent url(<?php echo elgg_get_site_url(); ?>_graphics/elgg_sprites.png) 0 -486px;
-        cursor: pointer;
+    width: 16px;
+    height: 16px;
+    margin: 0 2px 0 5px;
+    display: inline-block;
+    vertical-align: top;
+    /*background: transparent url(<?php echo elgg_get_site_url(); ?>_graphics/elgg_sprites.png) 0 -486px;*/
+    cursor: pointer;
 }
 .agora_custom_fields_more_info:hover {
-        background-position: 0 -468px;
+    background-position: 0 -468px;
 }
 
 .custom_fields_more_info_text {
-        display:none;
+    display:none;
 }
 
 #custom_fields_more_info_tooltip {
-        position:absolute;
-        border:1px solid #333333;
-        background:#e4ecf5;
-        color:#333333;
-        padding:5px;
-        display:none;
-        width: 250px;
-        line-height: 1.2em;
-        font-size: 90%;
-        z-index:20000;
+    position:absolute;
+    border:1px solid #333333;
+    background:#e4ecf5;
+    color:#333333;
+    padding:5px;
+    display:none;
+    width: 250px;
+    line-height: 1.2em;
+    font-size: 90%;
+    z-index:20000;
 }
 
-div.bought	{
-	padding: 5px;
-	border: 2px solid red;
-
-	background-color:#f6f6f6;
-	position:relative;
-	margin: 0 20px 25px;
-	clear:left;
-	text-align:center;
-	border-radius: 8px;
-}	
-}
-
-img.soldout	{
-	float: right;
-	margin: 0 0 5px 0;
+img.soldout {
+    margin: 0 auto;
+    text-align: center;
 }
 
 div.pm	{
-	float:right; 
-	clear:right;
-	margin-bottom:8px;
+    float:right; 
+    clear:right;
+    margin-bottom:8px;
 }
 
 textarea.beinterested {
-	width:100%;
+    width:100%;
 }
 
 div.features	{
-	background-color:#f6f6f6;
-	float:left;
-	width:35%;
-	margin:5px 0;
-	padding: 2px;
+    background-color:#f6f6f6;
+    float:left;
+    width:35%;
+    margin:5px 0;
+    padding: 2px;
 }
 
-div.list_features	{
-	background-color:#f6f6f6;
-	float:left;
-	width:60%;
-	margin-bottom:8px;
-	padding: 5px 10px;
-	clear:left;
+.list_features	{
+    width: 100%;
+    margin-bottom: 4px;
+    clear: both;
+    display: table;
 }
 
-div.total_price	{
-	background-color:#f6f6f6;
-	position:relative;
-	margin: 0 20px 25px;
-	padding: 5px 10px;
-	clear:left;
-	text-align:center;
-	border-radius: 8px;
+.list_features div {
+    background-color: #f6f6f6;
+    padding: 3px 8px;
+    margin: 1px; 
+}
+
+.list_features .f_label	{
+    font-weight: bold;
+    width: 25%;
+    border-right: 2px solid #fff;
+    display: table-cell;
+    vertical-align: top;
+}
+
+.list_features .f_text	{
+    display: table-cell;
+}
+
+div.total_price {
+    background-color: #f6f6f6;
+    position: relative;
+    margin: 0 0 5px;
+    padding: 6px 8px;
+    clear: both;
+    text-align: center;
+    border-radius: 8px;
+    display: block;
 }
 
 a.mapicon		{
-	float:left; 
-	margin: 6px 4px 0 0;
+    float:left; 
+    margin: 6px 4px 0 0;
 }
 
 #sidebar_interest {
-	font-size:90%;
-	margin-top:20px;
+    font-size:90%;
+    margin-top:20px;
 }
 
 .interest_unit {
-	display:inline-block;
-	clear:both;
-	margin:0 0 10px; 
-	border-bottom:0px solid #fff;
+    display: block;
+    clear: both;
+    margin: 0 0 20px; 
 }
 
 .interest_forms {
-	width:100%; 
-	clear: both;
+    display: inline-block;
+    /*width:100%;*/ 
+    clear: both;
 }
 
 .interest_forms div {
-	float:left; 
-	width:48%;
+    float:left; 
+    width:20%;
 }
 
 input.doseaera {
-	margin-right: 20px;
+    margin-right: 20px;
 }
 
 div.digitalfile_frame, div.location_frame {
-	width:100%;
-	display: block;
-	clear:both;
-	margin: 30px 0;	
+    width:100%;
+    display: block;
+    clear:both;
+    margin: 30px 0;	
 }
 
 #digital_file_box  {
-	width: 70%;
-	display: inline-block;
-	float:right;
-	clear:right;
+    width: 100%;
+    display: inline-block;
+    float:right;
+    clear:right;
 }
 
 .elgg-form-agora-add input {
-	margin-top: 4px;
+    margin-top: 4px;
 }
 
 .downloadable_file {
-	margin: 0px 5px 0 0;
-	float:right;
+    margin: 0px 5px 0 0;
+    float:right;
 }
 
 .doseaera {
-        margin-right: 20px;
+    margin-right: 20px;
 }
 
 div.agoraprint #login-dropdown {
@@ -228,24 +241,24 @@ div.agoraprint #login-dropdown {
 
 
 .paypal_button {
-	background-image:url(//www.paypalobjects.com/webstatic/en_US/btn/btn_buynow_107x26.png);
-	/* background-image:url(//www.paypalobjects.com/en_US/i/btn/btn_paynow_LG.gif); */
-	width: 107px;
-	height: 26px;
-	background-position:  0px 0px;
-	background-repeat: no-repeat;
-	border: 0px;
-	background-color: none;
-	cursor: pointer;
-	outline: 0;	
+    background-image:url(//www.paypalobjects.com/webstatic/en_US/btn/btn_buynow_107x26.png);
+    /* background-image:url(//www.paypalobjects.com/en_US/i/btn/btn_paynow_LG.gif); */
+    width: 107px;
+    height: 26px;
+    background-position:  0px 0px;
+    background-repeat: no-repeat;
+    border: 0px;
+    background-color: none;
+    cursor: pointer;
+    outline: 0;	
 }
 
 .agora-photo {
-	margin: 2px;
+    margin: 2px;
 }
 
 .elgg-form-agora-sort-by {
-	display: inline-block;
+    display: inline-block;
     width: 21%;
 }
 
@@ -256,7 +269,7 @@ div.agoraprint #login-dropdown {
 }
 
 .elgg-form-agora-search {
-	display: inline-block;
+    display: inline-block;
     width: 78%;
 }
 
@@ -299,4 +312,26 @@ div.agoraprint #login-dropdown {
 
 .agora_search_form .float-alt {
     float:left!important;
+}
+
+/************************/
+
+.paypal_tip {
+    color: red;
+}
+
+.agoraprint .elgg-form-paypal-api-payment input, 
+.elgg-gallery .elgg-form-paypal-api-payment input {
+    border: 0px;
+}
+
+.elgg-gallery .elgg-item {
+    vertical-align: top;
+}
+
+.elgg-form-agora-be-interested {
+    margin-top: 40px;
+    width: 100%;
+    display: block;
+    clear: both;
 }

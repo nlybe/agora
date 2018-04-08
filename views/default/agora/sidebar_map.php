@@ -8,12 +8,7 @@ $entity = elgg_extract('entity', $vars);
 
 $box_color = elgg_extract('box_color', $vars);
 
-// If image support get the icon.
-$icon = '';
-$icon = elgg_view('output/url', array(
-    'href' => $entity->getURL(),
-    'text' => elgg_view('output/img', array( 'src' => agora_getImageUrl($entity, 'tiny'), 'class' => "elgg-photo")),
-));
+$icon = elgg_view_entity_icon($entity, 'tiny', ['img_class' => 'elgg-photo']);
 		
 $output = '<div class="map_entity_block '.$box_color.'">';
 $output .= $icon;

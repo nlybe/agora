@@ -1,19 +1,20 @@
 <?php
 /**
  * Elgg Agora Classifieds plugin
- * @package Agora
+ * @package agora
  */
 
 elgg_load_library('elgg:agora');
+elgg_require_js("agora/js/gallery");
 
-// if paypal adaptive payments is enabled
-if (agora_check_if_paypal_adaptive_payments_is_enabled()) {
-    elgg_load_library('elgg:amap_paypal_api');
-    elgg_require_js("js/amap_paypal_api");
-}
+//// if paypal adaptive payments is enabled
+//if (AgoraOptions::isPaypalAdaptivePaymentsEnabled()) {
+////    elgg_load_library('elgg:amap_paypal_api');
+////    elgg_require_js("js/amap_paypal_api");
+//}
 
-$full = elgg_extract('full_view', $vars, FALSE);
-$entity = elgg_extract('entity', $vars, FALSE);
+$full = elgg_extract('full_view', $vars, false);
+$entity = elgg_extract('entity', $vars, false);
 
 if (!$entity) {
     return;
@@ -23,115 +24,83 @@ $owner = $entity->getOwnerEntity();
 $owner_icon = elgg_view_entity_icon($owner, 'small');
 
 // set the default timezone to use
-date_default_timezone_set(agora_get_default_timezone());
+date_default_timezone_set(AgoraOptions::getDefaultTimezone());
 $tu = $entity->time_updated;
 
 // check if this user has bought this ad
-$getbuyers = check_if_user_purchased_this_ad($entity->guid, elgg_get_logged_in_user_entity()->guid);
+$isbuyer = $entity->userPurchasedAd(elgg_get_logged_in_user_entity()->guid, true);
 
-$message_to_buyer = '';
-if (!$getbuyers) {
-    $isbuyer = false;
-} else {
-    $isbuyer = true;
-    $message_to_buyer = elgg_echo('agora:messagetobuyer');
-}
-
-// set sold out icon
-$status = '';
-
-if (is_numeric($entity->howmany) && $entity->howmany == 0) {
-    $status = '<img src="' . elgg_get_site_url() . 'mod/agora/graphics/soldout.png" width="100" height="76" alt="" class="soldout" />';
-}
-
-// paypal button
 if (elgg_is_logged_in()) {
+    if ($entity->isSoldOut()) {
+        $paypal_btn = elgg_view('output/img', array(
+            'src' => elgg_normalize_url('mod/agora/graphics/soldout.png'),
+            'alt' => 'soldout',
+            'class' => 'soldout',
+        ));            
+    }
+    else if ($entity->getPriceWithShippingCost()>0 && (!$isbuyer || ($isbuyer && AgoraOptions::isMultipleAdPurchaseEnabled()))) {
+        $paypal_btn = elgg_view('object/agora/paypal_btn', [
+            'entity' => $entity,
+        ]);
+    }
+
     if ($isbuyer) {
-        $buybuttton = $status;
-        $buybuttton .= '<div class="bought">' . $message_to_buyer . '</div>';
-        $gallerybutton = '<div class="bought">' . $message_to_buyer . '</div>';
-    }
-
-    if (($entity->get_ad_price_with_shipping_cost() > 0) && empty($status) && (multiple_ad_purchase_enabled() || (!$isbuyer && !multiple_ad_purchase_enabled()))) {
-        $buybuttton .= '';
-        if (agora_check_if_paypal_is_enabled()) {
-            $paypal_acount = agora_get_paypal_account($entity->owner_guid);
-            if (!empty($paypal_acount)) {
-                if (agora_check_if_paypal_adaptive_payments_is_enabled()) { // adaptive payments
-                    // get site owner commission
-                    $site_owner_commission = agora_get_adaptive_payment_owner_commission($entity->get_ad_price_with_shipping_cost());
-                    // check if use sandbox or not
-                    $use_sandbox = (agora_use_sandbox_paypal(AGORA_PAYPAL_METHOD_ADAPTIVE) ? TRUE : FALSE);
-
-                    $buybuttton .= amap_generate_adaptive_paypal_button($paypal_acount, $entity, elgg_get_logged_in_user_entity(), 'agora', $site_owner_commission, $use_sandbox, $entity->get_ad_price_with_shipping_cost());
-                } else { // standard payments
-                    $buybuttton .= agora_generate_paypal_button($paypal_acount, $entity, elgg_get_logged_in_user_entity());
-                }
-            }
-        }
-
-        $gallerybutton .= $buybuttton;
-    } else {
-        if (!$isbuyer) // we did the some assignment before
-            $buybuttton .= $status;
-        $gallerybutton .= '&nbsp;';
-    }
-}
-else {
-    if ($full && !elgg_in_context('gallery')) {  // login to buy button, only to full view
-        $buybuttton = '<div id="login-dropdown">
-			<a class="elgg-button elgg-button-dropdown" rel="popup" href="http://' . elgg_get_site_url() . 'login#login-dropdown-box">' . elgg_echo("agora:object:login_to_buy") . '</a>
-			</div>';
-    } else
-        $buybuttton = $status;
-    $gallerybutton = '&nbsp;';
+        $paypal_btn .= elgg_format_element('div', ['class' => 'bought'], elgg_echo('agora:messagetobuyer'));
+    }    
 }
 
-$digital_icon = '';
 if ($entity->digital) {
-    $digital_icon .= '<img src="' . elgg_get_site_url() . 'mod/agora/graphics/downloadable_file_tiny.png" alt="' . elgg_echo("agora:download:downloadable_file") . '" class="downloadable_file" />';
+    $digital_icon = elgg_view('output/img', array(
+        'src' => elgg_normalize_url('mod/agora/graphics/downloadable_file_tiny.png'),
+        'alt' => elgg_echo("agora:download:downloadable_file"),
+        'class' => 'downloadable_file',
+    ));
 }
 
 $owner_link = elgg_view('output/url', array(
     'href' => "agora/owner/$owner->username",
     'text' => $owner->name,
     'is_trusted' => true,
-        ));
+));
 $author_text = elgg_echo('byline', array($owner_link));
 
 $date = elgg_view_friendly_time($entity->time_created);
 
 //only display if there are commments
+$comments_link = '';
 if ($entity->comments_on != 'Off') {
     $comments_count = $entity->countComments();
     //only display if there are commments
     if ($comments_count != 0) {
-        $text = (comrat_only_buyers_enabled() ? elgg_echo("agora:comments") : elgg_echo("comments")) . " ($comments_count)";
+        $text = (AgoraOptions::allowedComRatOnlyForBuyers() ? elgg_echo("agora:comments") : elgg_echo("comments")) . " ($comments_count)";
         $comments_link = elgg_view('output/url', array(
             'href' => $entity->getURL() . '#agora-comments',
             'text' => $text,
             'is_trusted' => true,
         ));
-    } else {
-        $comments_link = '';
-    }
-} else {
-    $comments_link = '';
-}
+    } 
+} 
 
 $metadata = elgg_view_menu('entity', array(
     'entity' => $entity,
     'handler' => 'agora',
     'sort_by' => 'priority',
     'class' => 'elgg-menu-hz',
-        ));
+));
 
-if (comrat_only_buyers_enabled()) { // get ratings if enabled for buyers
+if (AgoraOptions::allowedComRatOnlyForBuyers()) { // get ratings if enabled for buyers
     $entity_ratings = elgg_view('ratings/ratings', ['entity' => $entity]);
 }
 
 $subtitle = "$author_text $date $comments_link" . ($entity_ratings?'<br />'.$entity_ratings:'');
 
+if (elgg_is_active_plugin('amap_maps_api') && AgoraOptions::isGeolocationEnabled() && $entity->location) {
+    $clocation = elgg_view('output/url', array(
+        'href' => elgg_normalize_url("agora/map?guid={$entity->guid}"),
+        'text' => $entity->location,
+    ));
+}
+    
 if ($full && !elgg_in_context('gallery')) {
     $params = array(
         'entity' => $entity,
@@ -141,75 +110,74 @@ if ($full && !elgg_in_context('gallery')) {
     );
     $params = $params + $vars;
     $summary = elgg_view('object/elements/summary', $params);
-
-    $body = '';
-    $body .= '<div class="agorabody elgg-image-block clearfix">';
-    $body .= '<div class="elgg-image">';
-
-    $thumbnail = elgg_view('output/img', array(
-        'src' => agora_getImageUrl($entity, 'large'),
-        'class' => "elgg-photo",
-    ));
-
-    $body .= elgg_view('output/url', array(
-        'href' => agora_getImageUrl($entity, 'master'),
-        'text' => $thumbnail,
-        'class' => "elgg-lightbox market-thumbnail",
-        'rel' => 'market-gallery',
-    ));
-
-    $body .= '</div>';
-    $body .= '<div class="elgg-body">';
-    $body .= '<div class="elgg-content">';
-
+    
     // button with total price
-    if ($entity->get_ad_price_with_shipping_cost() > 0) {
-        $body .= '<div class="agoraprint">';
-        $body .= '<div class="total_price">' . elgg_echo('agora:object:total_cost') . '<br /><strong>' . get_agora_currency_sign($entity->currency) . ' ' . $entity->price_final . '</strong></div>';
-        $body .= $buybuttton;
-        $body .= '</div>';
+    if ($entity->getPriceWithShippingCost() > 0 && !$entity->isSoldOut()) {
+        $buy_btn = elgg_format_element('div', ['class' => 'total_price'], elgg_echo('agora:object:total_cost', [AgoraOptions::formatCost($entity->getPriceWithShippingCost(), $entity->currency)]));
     }
+    $content .= elgg_format_element('div', ['class' => 'agoraprint'], $buy_btn.$paypal_btn);
 
     if ($entity->price) {
-        $body .= '<div class="list_features"><strong>' . elgg_echo('agora:price') . '</strong>: ' . get_agora_currency_sign($entity->currency) . ' ' . $entity->price . '</div>';
+        $content .= elgg_view('object/agora/feature', [
+            'label' => elgg_echo('agora:price'), 
+            'text' => AgoraOptions::formatCost($entity->price, $entity->currency),
+        ]);
         if ($entity->tax_cost) {
-            $body .= '<div class="list_features"><strong>' . elgg_echo('agora:add:tax_cost') . '</strong>: ' . get_agora_currency_sign($entity->currency) . ' ' . $entity->get_ad_tax_cost() . '</div>';
+            $content .= elgg_view('object/agora/feature', [
+                'label' => elgg_echo('agora:add:tax_cost'), 
+                'text' => AgoraOptions::formatCost($entity->getTaxCost(), $entity->currency),
+            ]);
         }
     }
     if ($entity->shipping_cost) {
-        $body .= '<div class="list_features"><strong>' . elgg_echo('agora:add:shipping_cost') . '</strong>: ' . get_agora_currency_sign($entity->currency) . ' ' . $entity->get_ad_shipping_cost() . '</div>';
+        $content .= elgg_view('object/agora/feature', [
+            'label' => elgg_echo('agora:add:shipping_cost'), 
+            'text' => AgoraOptions::formatCost($entity->getShippingCost(), $entity->currency),
+        ]);
     }
 
     if ($entity->category) {
-        //$body .= '<div class="list_features"><strong>'.elgg_echo('agora:category') . '</strong>: '.agora_get_cat_name_settings($entity->category, true).'</div>';
-        $body .= '<div class="list_features"><strong>' . elgg_echo('agora:category') . '</strong>: ' . $entity->category . '</div>';
+        $content .= elgg_view('object/agora/feature', [
+            'label' => elgg_echo('agora:category'), 
+            'text' => $entity->category,
+        ]);
     }
-    if (is_geolocation_enabled() && $entity->location) {
-        $clocation = elgg_view('output/url', array(
-            'href' => elgg_get_site_url() . "agora/map?guid={$entity->guid}",
-            'text' => $entity->location,
-        ));
-        $body .= '<div class="list_features"><strong>' . elgg_echo('agora:location') . '</strong>: ' . $clocation . '</div>';
+    if ($clocation) {
+        $content .= elgg_view('object/agora/feature', [
+            'label' => elgg_echo('agora:location'), 
+            'text' => $clocation,
+        ]);
     }
     if (is_numeric($entity->howmany)) {
-        $body .= '<div class="list_features"><strong>' . elgg_echo('agora:howmany') . '</strong>: ' . $entity->howmany . '</div>';
+        $content .= elgg_view('object/agora/feature', [
+            'label' => elgg_echo('agora:howmany'), 
+            'text' => $entity->howmany,
+        ]);
     }
     if ($entity->digital) {
-        $body .= '<div class="list_features"><strong>' . elgg_echo('agora:download:type') . '</strong>: ' . elgg_echo('agora:download:downloadable_file') . '&nbsp;' . $digital_icon . '</div>';
+        $content .= elgg_view('object/agora/feature', [
+            'label' => elgg_echo('agora:download:type'), 
+            'text' => elgg_echo('agora:download:downloadable_file').'&nbsp;'.$digital_icon,
+        ]);
     }
-
-    $body .= '</div>';
-    $body .= '</div>';
 
     // be interested form
     if (
-            elgg_is_logged_in() 
-            && elgg_is_active_plugin("messages") 
-            && check_if_members_can_send_private_message() 
-            && empty($status) 
-            && !(elgg_get_logged_in_user_guid() == $entity->owner_guid)
+        elgg_is_logged_in() 
+        && elgg_is_active_plugin("messages") 
+        && AgoraOptions::canMembersSendPrivateMessage() 
+        && !$soldout
+        && !(elgg_get_logged_in_user_guid() == $entity->owner_guid)
     ) {
-
+        $pmbutton = elgg_view('output/url', array(
+            'name' => 'reply',
+            'class' => 'elgg-button elgg-button-action',
+            'rel' => 'toggle',
+            'href' => '#interested-in-form',
+            'text' => elgg_echo('agora:be_interested'),
+        ));
+        $content .= elgg_format_element('div', ['class' => 'pm'], $pmbutton);
+        
         $form_params = array(
             'id' => 'interested-in-form',
             'class' => 'hidden mtl',
@@ -219,130 +187,77 @@ if ($full && !elgg_in_context('gallery')) {
             'recipient_guid' => $entity->owner_guid,
             'subject' => elgg_echo("agora:be_interested:ad_message_subject", array($entity->title)),
         );
-        $interest_form = elgg_view_form('agora/be_interested', $form_params, $body_params);
-        // $from_user = get_user($message->fromId);  // mallon obs
-
-        $pmbutton = elgg_view('output/url', array(
-            'name' => 'reply',
-            'class' => 'elgg-button elgg-button-action',
-            'rel' => 'toggle',
-            'href' => '#interested-in-form',
-            'text' => elgg_echo('agora:be_interested'),
-        ));
-
-        $body .= '<div class="pm">' . $pmbutton . '</div>';
-        $body .= $interest_form;
+        $content .= elgg_view_form('agora/be_interested', $form_params, $body_params);
     }
 
-    $images = elgg_extract('images', $vars, FALSE);
+    $images = elgg_extract('images', $vars, false);
     if ($images) {
-        $body .= '<div class="agora-gallery">';
-        $body .= '<ul class="elgg-gallery agora-icons">';
-        foreach ($images as $img) {
-            $thumb_img = elgg_view('output/img', array(
-                'src' => elgg_normalize_url("agora/icon/{$img->guid}/smamed/" . md5($img->time_created) . ".jpg"),
-                'class' => "elgg-photo agora-photo",
-                'alt' => $img->title,
-            ));
-
-            $full_img = elgg_view('output/url', array(
-                'href' => elgg_normalize_url(elgg_get_site_url() . "agora/icon/{$img->guid}/master/" . md5($img->time_created) . '.jpg'),
-                'text' => $thumb_img,
-                'class' => "agora-icon elgg-lightbox",
-            ));
-            $body .= '<li>' . $full_img . '</li>';
-        }
-        $body .= '</ul>';
-        $body .= '</div>';
+        $content .= elgg_view('output/amap_images', $vars);
     }
 
-    $body .= '<div class="desc">' . ($entity->description ? agora_get_ad_description($entity->description) : '&nbsp;') . '</div>';
-
-    $body .= '</div>';
-
+    if ($entity->description) {
+        $content .= elgg_format_element('div', ['class' => 'desc'], agora_get_ad_description($entity->description));
+    }
+        
+    $body = elgg_format_element('div', ['class' => 'elgg-image-block clearfix'], $content);
     echo elgg_view('object/elements/full', array(
         'entity' => $entity,
-        'icon' => $owner_icon,
+        'icon' => elgg_view_entity_icon($entity, 'large', ['img_class' => 'elgg-photo']),
         'summary' => $summary,
         'body' => $body,
     ));
 } 
-elseif (elgg_in_context('gallery')) {
-
-    $thumbnail = elgg_view('output/img', array(
-        'src' => agora_getImageUrl($entity, 'medium'),
-        'class' => "elgg-photo",
-    ));
-
-    $image = elgg_view('output/url', array(
-        'href' => $entity->getURL(),
-        'text' => $thumbnail,
-        'class' => "elgg-lightbox market-thumbnail",
-        'rel' => 'market-gallery',
-    ));
-
-    $galleryhref = elgg_get_site_url() . 'agora/view/' . $entity->guid . '/' . elgg_get_friendly_title($entity->title);
-    echo '<div class="agora-gallery-item">';
-    echo '<h3>' . elgg_view('output/url', array(
+else if (elgg_in_context('gallery')) {
+    $entity_icon = elgg_view_entity_icon($entity, 'large', ['img_class' => 'elgg-photo']);
+    
+    $g_content = elgg_format_element('h3', [],elgg_view('output/url', array(
         'href' => $entity->getURL(),
         'text' => $entity->title,
-    )) . '</h3>';
-    echo $image;
-    echo '<p class="gallery-date">' . $owner_link . ' ' . $date . '</p>';
-    echo '<div class="gallery-view">';
-    if ($entity->category) {
-        echo '<strong>' . elgg_echo('agora:category') . '</strong>: ' . agora_get_cat_name_settings($entity->category, true) . '<br />';
-    }
-
-    if ($entity->get_ad_price_with_shipping_cost() > 0) {
-        echo '<strong>' . elgg_echo('agora:object:total_cost') . '</strong>: ' . get_agora_currency_sign($entity->currency) . ' ' . $entity->get_ad_price_with_shipping_cost() . '<br />';
-        echo $gallerybutton;
-    }
-
-    echo '</div>';
-    echo '</div>';
-} else {
-    // we want small thumb on group views
+    )));
+    $g_content .= $entity_icon;
+    $g_content .= elgg_format_element('p', ['class' => 'gallery-date'], "{$owner_link} {$date}");
+    $g_content .= elgg_format_element('div', ['class' => 'gallery-view'], 
+        ($entity->category?elgg_format_element('strong', [], elgg_echo('agora:category')).': '.agora_get_cat_name_settings($entity->category, true).'<br />':'').
+        ($entity->getPriceWithShippingCost() > 0 ? elgg_echo('agora:object:total_cost', [AgoraOptions::formatCost($entity->getPriceWithShippingCost(), $entity->currency)]).'<br />'.$paypal_btn:'')
+    );
+    
+    echo elgg_format_element('div', ['class' => 'agora-gallery-item'], $g_content);   
+} 
+else {
+    $icon_size = 'medium';
     $page_owner = elgg_get_page_owner_entity();
-    if (elgg_instanceof($page_owner, 'group'))
-        $thumbsize = 'small';
-    else
-        $thumbsize = 'medium';
-
-    $thumbnail = elgg_view('output/img', array(
-        'src' => agora_getImageUrl($entity, $thumbsize),
-        'class' => "elgg-photo",
-    ));
-
-    $classfd_img .= elgg_view('output/url', array(
-        'href' => $entity->getURL(),
-        'text' => $thumbnail,
-    ));
-
-    $display_text = $url;
-
-    $content = '<div class="agoraprint">' . $buybuttton . '</div>';
-    if ($entity->get_ad_price_with_shipping_cost() > 0) {
-        $content .= '<div class="list_features"><strong>' . elgg_echo('agora:object:total_cost') . '</strong>: ' . get_agora_currency_sign($entity->currency) . ' ' . $entity->get_ad_price_with_shipping_cost() . '</div>';
+    if (elgg_in_context('widgets') || elgg_instanceof($page_owner, 'group')) {
+        // we want small icon on group views and in widget view
+        $icon_size = 'small';
     }
-    /*
-      if ($entity->price) {
-      $content .= '<div class="list_features"><strong>'.elgg_echo('agora:price') . '</strong>: '.get_agora_currency_sign($entity->currency).' '.$entity->get_ad_price().($entity->tax_cost?elgg_echo('agora:object:tax_included'):'').'</div>';
-      }
-     */
+    $entity_icon = elgg_view_entity_icon($entity, $icon_size, ['img_class' => 'elgg-photo']);
+    
+//    $content = elgg_format_element('div', ['class' => 'agoraprint'], $paypal_btn);
+    if ($entity->getPriceWithShippingCost() > 0) {
+        $content .= elgg_view('object/agora/feature', [
+            'label' => elgg_echo('agora:object:total_cost:simple'), 
+            'text' => AgoraOptions::formatCost($entity->getPriceWithShippingCost(), $entity->currency),
+        ]);
+    }
+    
     if ($entity->category) {
-        $content .= '<div class="list_features"><strong>' . elgg_echo('agora:category') . '</strong>: ' . agora_get_cat_name_settings($entity->category, true) . '</div>';
+        $content .= elgg_view('object/agora/feature', [
+            'label' => elgg_echo('agora:category'), 
+            'text' => $entity->category,
+        ]);
     }
-    if (is_geolocation_enabled() && $entity->location) {
-        $clocation = elgg_view('output/url', array(
-            'href' => elgg_get_site_url() . "agora/map?guid={$entity->guid}",
-            'text' => $entity->location,
-        ));
-        $content .= '<div class="list_features"><strong>' . elgg_echo('agora:location') . '</strong>: ' . $clocation . '</div>';
+    if ($clocation) {
+        $content .= elgg_view('object/agora/feature', [
+            'label' => elgg_echo('agora:location'), 
+            'text' => $clocation,
+        ]);
     }
 
     if ($entity->digital) {
-        $content .= '<div class="list_features"><strong>' . elgg_echo('agora:download:type') . '</strong>: ' . elgg_echo('agora:download:downloadable_file') . '&nbsp;' . $digital_icon . '</div>';
+        $content .= elgg_view('object/agora/feature', [
+            'label' => elgg_echo('agora:download:type'), 
+            'text' => elgg_echo('agora:download:downloadable_file').'&nbsp;'.$digital_icon,
+        ]);
     }
 
     $params = array(
@@ -354,5 +269,5 @@ elseif (elgg_in_context('gallery')) {
     $params = $params + $vars;
     $body = elgg_view('object/elements/summary', $params);
 
-    echo elgg_view_image_block($classfd_img, $body);
+    echo elgg_view_image_block($entity_icon, $body);
 }
