@@ -52,5 +52,5 @@ Requires: Elgg 2.3.x or higher
 ## Future Tasks List
 - [ ] Enable adaptive payments with Paypal
 - [ ] Rebuild categories functionality 
-
-
+- [ ] Remove obsolete code
+- [ ] Remove language messages
