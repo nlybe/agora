@@ -15,9 +15,10 @@ if (!elgg_instanceof($entity, 'object', Agora::SUBTYPE) || !$entity->canEdit()) 
 }
 
 $page_owner = elgg_get_page_owner_entity();
-
 $title = elgg_echo('agora:edit');
+
 elgg_push_breadcrumb($entity->title, $entity->getURL());
+elgg_push_breadcrumb($title);
 
 $form_vars = array('name' => 'agoraForm', 'enctype' => 'multipart/form-data');
 

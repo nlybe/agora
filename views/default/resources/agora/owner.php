@@ -29,11 +29,11 @@ if (AgoraOptions::canUserPostClassifieds()) {
 
 $options = array(
     'type' => 'object',
-    'subtype' => 'agora',
+    'subtype' => Agora::SUBTYPE,
     'container_guid' => $page_owner->guid,
-    'limit' => 10,
     'full_view' => false,
-    'view_toggle_type' => false
+    'view_toggle_type' => false,
+    'no_results' => elgg_echo('agora:none'),
 );
 
 $crumbs_title = $page_owner->name;
@@ -59,10 +59,6 @@ else {
         elgg_push_breadcrumb($crumbs_title);
     }
     $content = elgg_list_entities($options);
-}
-
-if (!$content) {
-    $content = elgg_echo('agora:none');
 }
 
 $filter_context = '';

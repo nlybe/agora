@@ -34,7 +34,7 @@ if (!$s_category) {
 
 $options = array(
     'type' => 'object',
-    'subtype' => 'agora',
+    'subtype' => Agora::SUBTYPE,
     'limit' => 10,
     'full_view' => false,
     'view_toggle_type' => false

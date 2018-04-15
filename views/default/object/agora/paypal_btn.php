@@ -26,7 +26,7 @@ $vars['business'] = AgoraOptions::getPaypalAccount($entity->owner_guid);
 $vars['return'] = $entity->getURL();
 $vars['cancel_return'] = $entity->getURL();
 
-$vars['amount'] = $entity->getPriceWithShippingCost();
+$vars['amount'] = $entity->getFinalPrice();
 $vars['item_name'] = $entity->title;
 $vars['item_number'] = $entity->getGUID();
 

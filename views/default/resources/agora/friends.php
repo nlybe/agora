@@ -34,17 +34,13 @@ $title = elgg_echo('agora:friends');
 
 $content = elgg_list_entities_from_relationship(array(
     'type' => 'object',
-    'subtype' => 'agora',
+    'subtype' => Agora::SUBTYPE,
     'full_view' => false,
-    'limit' => 10,
     'relationship' => 'friend',
     'relationship_guid' => $page_owner->guid,
     'relationship_join_on' => 'container_guid',
-        ));
-
-if (!$content) {
-    $content = elgg_echo('agora:none');
-}
+    'no_results' => elgg_echo('agora:none'),
+));
 
 $params = array(
     'filter_context' => 'friends',

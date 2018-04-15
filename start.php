@@ -23,8 +23,9 @@ define('AGORA_PAYPAL_METHOD_ADAPTIVE', 'Paypal'); // adaptive paypal method
 function agora_init() {
     define('AGORA_SHIPPING_TYPE_TOTAL', elgg_echo('agora:add:total')); // define shipping type total
     define('AGORA_SHIPPING_TYPE_PERCENTAGE', elgg_echo('agora:add:percentage')); // define shipping type percentage	
-    // Register subtype
-    run_function_once('agora_manager_run_once_subtypes');
+    
+    // Register subtype OBS
+//    run_function_once('agora_manager_run_once_subtypes');
 
     // register a library of helper functions
     elgg_register_library('elgg:agora', elgg_get_plugins_path() . 'agora/lib/agora.php');
@@ -36,7 +37,7 @@ function agora_init() {
     }
     
     // allow to be liked
-    elgg_register_plugin_hook_handler('likes:is_likable', 'object:agora', 'Elgg\Values::getTrue');
+    elgg_register_plugin_hook_handler('likes:is_likable', 'object:'.Agora::SUBTYPE, 'Elgg\Values::getTrue');
 
     // register plugin settings view
     elgg_register_simplecache_view('agora/settings.js');    
@@ -285,7 +286,7 @@ function agora_pagesetup() {
             "name" => "agora",
             "text" => elgg_echo("agora:usersettings:settings"),
             "href" => "agora/user/" . $user->username,
-            "context" => "settings"
+            "context" => "settings",
         ));
     }
 }

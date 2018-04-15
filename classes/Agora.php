@@ -77,7 +77,7 @@ class Agora extends ElggObject {
      * 
      * @return type
      */
-    public function getPriceWithShippingCost() {
+    public function getFinalPrice() {
         $price = $this->getPrice();
 
         if ($this->shipping_cost && is_numeric($this->shipping_cost)) {

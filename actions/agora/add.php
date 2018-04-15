@@ -87,14 +87,14 @@ if ($uploaded_files) {
 // get image sizes
 $icon_sizes = elgg_get_config('agora_image_sizes');
 
-// validate images
-$existing_images = elgg_get_entities(array(
-    'type' => 'object',
-    'subtype' => 'agoraimg',
-    'owner_guid' => $guid,
-    'limit' => 0,
-    'order_by' => 'e.time_created ASC'
-));
+// validate images OBS
+//$existing_images = elgg_get_entities(array(
+//    'type' => 'object',
+//    'subtype' => AgoraImage::SUBTYPE,
+//    'owner_guid' => $guid,
+//    'limit' => 0,
+//    'order_by' => 'e.time_created ASC'
+//));
 
 $file_keys = array();
 if ($_FILES['product_icon']['tmp_name']) {
@@ -195,7 +195,7 @@ $entity->tags = $tagarray;
 $entity->comments_on = $comments_on;
 
 if ($entity->save()) {
-    $entity->price_final = $entity->getPriceWithShippingCost();
+    $entity->price_final = $entity->getFinalPrice();
     $entity->save();    // may be is not required this line
             
     if ($uploaded_file) {

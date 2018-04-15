@@ -38,7 +38,7 @@ if (elgg_is_logged_in()) {
             'class' => 'soldout',
         ));            
     }
-    else if ($entity->getPriceWithShippingCost()>0 && (!$isbuyer || ($isbuyer && AgoraOptions::isMultipleAdPurchaseEnabled()))) {
+    else if ($entity->getFinalPrice()>0 && (!$isbuyer || ($isbuyer && AgoraOptions::isMultipleAdPurchaseEnabled()))) {
         $paypal_btn = elgg_view('object/agora/paypal_btn', [
             'entity' => $entity,
         ]);
@@ -112,8 +112,8 @@ if ($full && !elgg_in_context('gallery')) {
     $summary = elgg_view('object/elements/summary', $params);
     
     // button with total price
-    if ($entity->getPriceWithShippingCost() > 0 && !$entity->isSoldOut()) {
-        $buy_btn = elgg_format_element('div', ['class' => 'total_price'], elgg_echo('agora:object:total_cost', [AgoraOptions::formatCost($entity->getPriceWithShippingCost(), $entity->currency)]));
+    if ($entity->getFinalPrice() > 0 && !$entity->isSoldOut()) {
+        $buy_btn = elgg_format_element('div', ['class' => 'total_price'], elgg_echo('agora:object:total_cost', [AgoraOptions::formatCost($entity->getFinalPrice(), $entity->currency)]));
     }
     $content .= elgg_format_element('div', ['class' => 'agoraprint'], $buy_btn.$paypal_btn);
 
@@ -218,7 +218,7 @@ else if (elgg_in_context('gallery')) {
     $g_content .= elgg_format_element('p', ['class' => 'gallery-date'], "{$owner_link} {$date}");
     $g_content .= elgg_format_element('div', ['class' => 'gallery-view'], 
         ($entity->category?elgg_format_element('strong', [], elgg_echo('agora:category')).': '.agora_get_cat_name_settings($entity->category, true).'<br />':'').
-        ($entity->getPriceWithShippingCost() > 0 ? elgg_echo('agora:object:total_cost', [AgoraOptions::formatCost($entity->getPriceWithShippingCost(), $entity->currency)]).'<br />'.$paypal_btn:'')
+        ($entity->getFinalPrice() > 0 ? elgg_echo('agora:object:total_cost', [AgoraOptions::formatCost($entity->getFinalPrice(), $entity->currency)]).'<br />'.$paypal_btn:'')
     );
     
     echo elgg_format_element('div', ['class' => 'agora-gallery-item'], $g_content);   
@@ -233,10 +233,10 @@ else {
     $entity_icon = elgg_view_entity_icon($entity, $icon_size, ['img_class' => 'elgg-photo']);
     
 //    $content = elgg_format_element('div', ['class' => 'agoraprint'], $paypal_btn);
-    if ($entity->getPriceWithShippingCost() > 0) {
+    if ($entity->getFinalPrice() > 0) {
         $content .= elgg_view('object/agora/feature', [
             'label' => elgg_echo('agora:object:total_cost:simple'), 
-            'text' => AgoraOptions::formatCost($entity->getPriceWithShippingCost(), $entity->currency),
+            'text' => AgoraOptions::formatCost($entity->getFinalPrice(), $entity->currency),
         ]);
     }
     

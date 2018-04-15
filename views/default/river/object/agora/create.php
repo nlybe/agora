@@ -4,8 +4,6 @@
  * @package agora
  */
 
-elgg_load_library('elgg:agora');
-
 $object = $vars['item']->getObjectEntity();
 $excerpt = elgg_get_excerpt($object->description);
 

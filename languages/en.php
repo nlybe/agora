@@ -60,7 +60,7 @@ $lang = array(
     'agora:object:login_to_buy' => "Login to Buy",
     
     // Status messages
-    'agora:none' => "No classifieds.",
+    'agora:none' => "No classifieds yet",
     'agora:owner' => "%s's classifieds",
     'agora:friends' => "Friends' classifieds",	
     'agora:save:success' => "Ad was successfully saved.",
