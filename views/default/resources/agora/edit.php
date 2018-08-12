@@ -10,7 +10,7 @@ $guid = elgg_extract('guid', $vars, '');
 $entity = get_entity($guid);
 
 if (!elgg_instanceof($entity, 'object', Agora::SUBTYPE) || !$entity->canEdit()) {
-    register_error(elgg_echo('agora:unknown_classifd'));
+    register_error(elgg_echo('agora:error:access:invalid'));
     forward(REFERRER);
 }
 

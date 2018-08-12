@@ -179,17 +179,19 @@ function agora_paypal_successful_payment_hook($hook, $type, $return, $params) {
         error_log(elgg_echo('paypal_api:error:invalid:entity:guid', [$item_number]));
         return $return;
     }    
-  
-    // get buyer guid from (custom string))   
-    $custom_arr = explode("_", $transactions_params['custom']);
-    $buyer_guid = $custom_arr[1];
+    
+    $custom_arr = json_decode($transactions_params['custom'], true);
+    $buyer_guid = $custom_arr['user_guid'];
+    
     $buyer = get_entity($buyer_guid);
     if (!($buyer instanceof \ElggUser)) {
         error_log(elgg_echo('paypal_api:error:invalid:user:guid'));
         return $return;
     }    
     
-    $ia = elgg_set_ignore_access(true);
+    $ia = elgg_get_ignore_access();
+    elgg_set_ignore_access(true);
+    
     $entity = new AgoraSale();
     $entity->subtype = AgoraSale::SUBTYPE;
     $entity->access_id = ACCESS_PRIVATE;
@@ -199,6 +201,8 @@ function agora_paypal_successful_payment_hook($hook, $type, $return, $params) {
     $entity->description = serialize($transactions_params);
     $entity->transaction_id = $transactions_params['txn_id'];
     $entity->txn_method = AgoraOptions::PURCHASE_METHOD_PAYPAL;
+    $entity->buyer_name = $buyer->name;
+    $entity->bill_number = AgoraSale::getNewInvoiceNumber();
     $entity->save();
     
     // reduce availability

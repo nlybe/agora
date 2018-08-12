@@ -9,6 +9,7 @@ class AgoraOptions {
     const PLUGIN_ID = 'agora';                      // current plugin ID
     const YES = 'yes';                              // general purpose yes
     const NO = 'no';                                // general purpose no
+    const ON = 'on';                                // general purpose On
     const ICON = 'agora_forest_green';              // default map icon
     const PURCHASE_METHOD_PAYPAL = 'Paypal';        // paypal method of purchase
     const PURCHASE_METHOD_OFFLINE = 'Offline';      // offline method of purchase
@@ -19,7 +20,8 @@ class AgoraOptions {
     const DEFAULT_TIMEZONE = 'UTC';                 // default timezone
     const UPLOADER_ALL = 'allmembers';              // who can posts ads: all
     const UPLOADER_ADMINS = 'admins';               // who can posts ads: admins
-    const MAX_IMAGES_GALLERY = 10;                  // define mmaximum number of images in ads gallery
+    const MAX_IMAGES_GALLERY = 10;                  // define maximum number of images in ads gallery
+    const ADAPTIVE_DEFAULT_COMMISSION = 10;         // define default commission for adaptive payments
     
     /**
      * Get param value from settings
@@ -88,16 +90,22 @@ class AgoraOptions {
      * @param type $price
      * @return string
      */
-    Public Static function formatCost($price, $currency = '') {
+    Public Static function formatCost($price, $currency = '', $show_currency = true) {
         if (!$price) {
             return '';
         }
+        
+        $price = number_format((float)$price, 2, '.', '');
         
         if (!$currency) {
             $currency = self::getParams('default_currency');
         }
         
-        return self::getCurrencySign($currency).'&nbsp;'.$price;
+        if ($show_currency) {
+            return self::getCurrencySign($currency).'&nbsp;'.$price;
+        }
+        
+        return $price;
     }
     
     /**
@@ -206,24 +214,6 @@ class AgoraOptions {
         $whocanpost = self::getParams('agora_uploaders');
 
         if ($whocanpost === 'allmembers') {
-            return true;
-        }
-
-        return false;
-    }
-    
-    /**
-     * Check if Paypal gateway is enabled
-     * 
-     * @return boolean
-     */
-    Public Static function isPaypalEnabled() {
-        if (!elgg_is_active_plugin('paypal_api')) {
-            return false;
-        }
-
-        $use_paypal = self::getParams('paypal_enabled');
-        if ($use_paypal === self::YES) {
             return true;
         }
 
@@ -464,47 +454,6 @@ class AgoraOptions {
         return false;
     }  
     
-    /*
-     * Check if adaptive payments is enabled. 
-     * 
-     * Returns true if all options below are true:
-     * 1. amap_paypal_api is enabled
-     * 2. adaptive payment option is enabled on agora settings
-     * 3. all fields on amap_paypal_api settings are not empty
-     * 4. the commission is numeric and between 0 and 100
-     * 
-     */
-    Public Static function isPaypalAdaptivePaymentsEnabled() {
-        if (elgg_is_active_plugin("paypal_api")) {
-            $agora_adaptive_payments = self::getParams('agora_adaptive_payments');
-
-            if (empty($agora_adaptive_payments) || $agora_adaptive_payments == AgoraOptions::NO) {
-                return false;
-            } 
-            else {
-                $API_caller_username = self::getParams('paypal_API_caller_username');
-                $API_caller_passwd = self::getParams('paypal_API_caller_passwd');
-                $API_caller_signature = self::getParams('paypal_API_signature');
-                $API_app_id = self::getParams('paypal_API_app_id');
-                $commission = self::getParams('agora_adaptive_payments_commission');
-                
-                if (
-                        !empty($API_caller_username) 
-                        && !empty($API_caller_passwd) 
-                        && !empty($API_caller_signature) 
-                        && !empty($API_app_id) 
-                        && (is_numeric($commission) 
-                        && ($commission > 0) 
-                        && ($commission < 100) 
-                    )) {
-                        return true;
-                }
-            }
-        }
-
-        return false;
-    }
-    
     /**
      * Get ad user interest status
      * 
@@ -521,5 +470,77 @@ class AgoraOptions {
 
         return '';
     }
+    
+    /**
+     * Return a 5(n) length format string, used for invoicing
+     * 
+     * @param type $value
+     * @param type $threshold
+     * @return string
+     */
+    Public Static function addLeadingZero($value, $threshold = 5) {
+        return sprintf('%0' . $threshold . 's', $value);
+    }
+    
+    /**
+     * Check if Paypal gateway is enabled
+     * 
+     * @return boolean
+     */
+    Public Static function isPaypalEnabled() {
+        if (!elgg_is_active_plugin('paypal_api')) {
+            return false;
+        }
+
+        $use_paypal = self::getParams('agora_paypal_enabled');
+        if ($use_paypal === self::ON) {
+            return true;
+        }
+
+        return false;
+    }    
+    
+    /**
+    * Check if adaptive payments is enabled. 
+    * 
+    * Returns true if all options below are true:
+    * 1. paypal_api is enabled
+    * 2. adaptive payment option is enabled on agora settings
+    * 3. all fields on paypal_api settings are not empty
+    * 4. the commission is numeric and between 0 and 100
+    * 
+    */ 
+    Public Static function isPaypalAdaptivePaymentsEnabled() {
+        if (!self::isPaypalEnabled()) {
+            return false;
+        }
+
+        $adaptive_payments = self::getParams('agora_adaptive_payments');
+        if ($adaptive_payments !== self::ON) {
+            return false;
+        }  
+        else {
+            $API_caller_username = trim(elgg_get_plugin_setting('paypal_API_caller_username', 'paypal_api'));
+            $API_caller_passwd = trim(elgg_get_plugin_setting('paypal_API_caller_passwd', 'paypal_api'));
+            $API_caller_signature = trim(elgg_get_plugin_setting('paypal_API_signature', 'paypal_api'));
+            $API_app_id = trim(elgg_get_plugin_setting('paypal_API_app_id', 'paypal_api'));
+            $commission = self::getParams('agora_adaptive_payments_commission');
+              
+            if (
+                    !empty($API_caller_username) 
+                    && !empty($API_caller_passwd) 
+                    && !empty($API_caller_signature) 
+                    && !empty($API_app_id) 
+                    && (is_numeric($commission) 
+                    && ($commission > 0) 
+                    && ($commission < 100) 
+                )) {
+                    return true;
+            }
+        }
+
+        return false;
+   }
+   
     
 }

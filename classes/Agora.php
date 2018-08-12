@@ -129,21 +129,30 @@ class Agora extends ElggObject {
     
     /**
      * Get list of sales
+     * 
      * @param type $list
      * @return type
      */
     public function getSales($list = false) {
+        $ia = elgg_get_ignore_access();
+        elgg_set_ignore_access(true);
+        
         $options = array(
             'type' => 'object',
             'subtype' => AgoraSale::SUBTYPE,
             'container_guid' => $this->getGUID(),
         );
+        
         if ($list) {
-            $options['no_results'] =  elgg_echo('agora:requests:none');
-            return elgg_list_entities($options);
+            $options['no_results'] =  elgg_echo('agora:sales:none');
+            $result = elgg_list_entities($options);
+        }
+        else {
+            $result = elgg_get_entities($options);
         }
         
-        return elgg_get_entities($options);
+        elgg_set_ignore_access($ia);
+        return $result;
     }
     
     /**

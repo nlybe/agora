@@ -214,6 +214,7 @@ $lang = array(
     'agora:purchases:none' => 'No purchases yet',
     'agora:my_purchases:none' => 'No Purchases',
     'agora:requests:none' => 'No requests yet',
+    'agora:sales:none' => 'No sales yet',
     
     // settings
     'agora:settings:defaultdateformat' => 'Default date format',
@@ -287,8 +288,8 @@ $lang = array(
     'agora:settings:markericon:agora_red' => 'Red',
     'agora:settings:markericon:agora_violet_red' => 'Red Violet',
     'agora:settings:markericon:agora_yellow' => 'Yellow',
-    'agora:settings:paypal_enabled:note' => "Select <strong>Yes</strong> if you want to enable Paypal as payment gateway. The Paypal API plugin is required.",
-    'agora:settings:paypal_enabled' => "Enable Paypal Gateway",    
+    'agora:settings:agora_paypal_enabled:note' => "Select <strong>Yes</strong> if you want to enable Paypal as payment gateway. The Paypal API plugin is required.",
+    'agora:settings:agora_paypal_enabled' => "Enable Paypal Gateway",    
     'agora:settings:max_images' => "Maximum number of images",  
     'agora:settings:max_images:note' => "Set maximum number of images for ad ",    
     'agora:settings:amap_maps_api:not_enabled' => 'The maps API plugin is not enabled', 

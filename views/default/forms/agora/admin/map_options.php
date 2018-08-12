@@ -5,7 +5,7 @@
  */
 
 if (!elgg_is_active_plugin('amap_maps_api')) {
-    echo elgg_echo('agora:plugins:paypal_api:missing');
+    echo elgg_echo('agora:plugins:amap_maps_api:missing');
     return;
 }
 

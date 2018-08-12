@@ -18,21 +18,31 @@ if (!$user) {
     return;
 }
 
-$form_vars = [];
-$form_vars['action'] = PaypalApiOptions::getPaypalModeURL();
+if (AgoraOptions::isPaypalAdaptivePaymentsEnabled()) {
+    echo 'yes adaptive are here';
+}
+else {
+    $form_vars = [];
+    $form_vars['action'] = PaypalApiOptions::getPaypalModeURL();
 
-$vars['currency_code'] = $entity->currency;
-$vars['business'] = AgoraOptions::getPaypalAccount($entity->owner_guid);
-$vars['return'] = $entity->getURL();
-$vars['cancel_return'] = $entity->getURL();
+    $vars['currency_code'] = $entity->currency;
+    $vars['business'] = AgoraOptions::getPaypalAccount($entity->owner_guid);
+    $vars['return'] = $entity->getURL();
+    $vars['cancel_return'] = $entity->getURL();
 
-$vars['amount'] = $entity->getFinalPrice();
-$vars['item_name'] = $entity->title;
-$vars['item_number'] = $entity->getGUID();
+    $vars['amount'] = $entity->getFinalPrice();
+    $vars['item_name'] = $entity->title;
+    $vars['item_number'] = $entity->getGUID();
 
-// custom below receive a temporary value
-$incomplete_custom = '_'.$user->getGUID().'_'.time();
-$vars['custom'] = $entity->getGUID().$incomplete_custom;    
+    // custom below receive a temporary value
+    //$incomplete_custom = '_'.$user->getGUID().'_'.time();     OBS
+    //$vars['custom'] = $entity->getGUID().$incomplete_custom;  OBS
 
-echo elgg_view_form('paypal_api/payment', $form_vars, $vars);
+    $custom = [];
+    $custom['entity_guid'] = $entity->getGUID();
+    $custom['user_guid'] = $user->getGUID();
+    $custom['time'] = time();
+    $vars['custom'] = json_encode($custom);
 
+    echo elgg_view_form('paypal_api/payment', $form_vars, $vars);
+}

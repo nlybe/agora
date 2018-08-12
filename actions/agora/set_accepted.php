@@ -46,6 +46,8 @@ else if ($classfd->canEdit()) {
 //    $entity->description = serialize($transactions_params);
     $entity->transaction_id = 'Offline-' . $classfd->guid . '-' . $interest->int_buyer_guid;
     $entity->txn_method = AgoraOptions::PURCHASE_METHOD_OFFLINE;
+    $entity->buyer_name = $buyer->name;
+    $entity->bill_number = AgoraSale::getNewInvoiceNumber();
     
     if ($entity->save()) {
         $interest->int_status = AgoraOptions::INTEREST_ACCEPTED;
