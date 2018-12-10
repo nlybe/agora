@@ -15,13 +15,15 @@ Administrator can set who can post classifieds in settings, administrators or al
     - Ad location
     - Price and currency
     - No of available units
-    - Photo of ad unit
+    - Photos of ad unit
     - tax and shipping cost
     - Tags, comments, access level
 - Option to use Paypal Adaptive payments (PayPal API plugin is required)
 - Unlimited number of classifieds
 - Unlimited number of classifieds categories
 - Map of Classifieds with search options, if enabled by administrator
+- More options are provided when the map is initially loaded (show all ads, show newest ads or ads around current logged-in user's location)
+- Optionally, a list of ads, which are displayed on map, is loaded on sidebar
 - Option to sell downloads/digital products, if enabled by administrator 
 - Option for reviews and star ratings only from buyers
 - Members must accept terms of use before posting ads, if enabled by administrator
