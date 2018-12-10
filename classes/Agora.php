@@ -211,5 +211,22 @@ class Agora extends ElggObject {
             'limit' => $max_images,
             'order_by' => 'e.time_created ASC'
         ));
+    }   
+    
+    /**
+     * Reduce available items, if is set
+     * 
+     * @param type $size
+     * @return boolean
+     */
+    public function reduceItems() {
+        if (is_numeric($this->howmany) && $this->howmany>0) {
+            $this->howmany--;
+            $this->save();
+            
+            return true;
+        }
+        
+        return false;
     }     
 }

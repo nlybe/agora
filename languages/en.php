@@ -367,9 +367,9 @@ $lang = array(
     'agora:sales:notification:here' => "here",
     'agora:sales:success' => "Transaction was successfully completed",
     'agora:sales:notification:buyer:subject' => "Successful purchase: %s",
-    'agora:sales:notification:buyer:body' => "You completed transaction successfully. You can check the status of subscription at %s.",
+    'agora:sales:notification:buyer:body' => "You completed transaction successfully. You can check the status of transaction at %s.",
     'agora:sales:notification:admin:subject' => "New: %s",
-    'agora:sales:notification:admin:body' => "You can check the status of subscription at %s.",
+    'agora:sales:notification:admin:body' => "You can check the transaction at %s.",
     
 
     // map search 

@@ -164,19 +164,5 @@ function get_MD5_hash($ApiKey, $merchantId, $referenceCode, $amount, $currency) 
     return md5($txtstring);
 }
 
-/*
- * Get the owner commission amount for adaptive payments for a given price
- * 
- * Returns the commission
- */
-function agora_get_adaptive_payment_owner_commission($classifieds_price) {
-    $site_owner_commission = trim(elgg_get_plugin_setting('agora_adaptive_payments_commission', 'agora'));
 
-    $commission = 0;
-    if (is_numeric($site_owner_commission))
-        $commission = $classifieds_price * $site_owner_commission / 100;
-
-
-    return $commission;
-}
 

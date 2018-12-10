@@ -12,6 +12,7 @@ class AgoraOptions {
     const ON = 'on';                                // general purpose On
     const ICON = 'agora_forest_green';              // default map icon
     const PURCHASE_METHOD_PAYPAL = 'Paypal';        // paypal method of purchase
+    const PURCHASE_METHOD_PAYPAL_ADAPTIVE = 'Paypal Adaptive';        // paypal adaptive method of purchase
     const PURCHASE_METHOD_OFFLINE = 'Offline';      // offline method of purchase
     const INTEREST = 'INTEREST';                    // define initial interest
     const INTEREST_ACCEPTED = 'ACCEPTED';           // define interest as accepted
@@ -221,14 +222,14 @@ class AgoraOptions {
     }
     
     /**
-     * Get paypal account, depending on settings
+     * Get Paypal account, depending on settings
      * 
      * @param type $owner_guid
      * @return type
      */
     function getPaypalAccount($owner_guid) {
         $whocanpost = self::getParams('agora_uploaders');
-        
+    
         if ($whocanpost === 'allmembers') {
             $owner = get_user($owner_guid);
             if (elgg_instanceof($owner, 'user')) {
@@ -542,5 +543,79 @@ class AgoraOptions {
         return false;
    }
    
+    /*
+     * Get the owner commission amount for adaptive payments for a given price
+     * 
+     * Returns the commission
+     */
+    Public Static function getAdaptivePaymentOwnerCommission($classifieds_price) {
+        $site_owner_commission = self::getParams('agora_adaptive_payments_commission');
+        
+        if (is_numeric($site_owner_commission)) {
+            return $classifieds_price * $site_owner_commission / 100;
+        }
+
+        return 0;
+    }   
+   
+    /**
+     * Notify buyer for transaction
+     * 
+     * @param \ElggUser $buyer
+     * @param type $ad
+     * @return boolean
+     */
+    Public Static function notifyBuyer($buyer, $ad) {
+        if (!($buyer instanceof \ElggUser)) {
+            return false;
+        }
+        
+        if (!elgg_instanceof($ad, 'object', Agora::SUBTYPE)) {
+            return false;
+        }
+
+        $site = elgg_get_site_entity();
+        $subject = elgg_echo('agora:sales:notification:buyer:subject', [$ad->title]);
+        $message = elgg_echo('agora:sales:notification:buyer:body', [elgg_normalize_url("agora/my_purchases/{$ad->guid}")]);
+        
+        return notify_user($buyer->guid, $site->guid, $subject, $message);
+    } 
+    
+    /**
+     * Notify site administrators for transaction
+     * 
+     * @param \ElggUser $buyer
+     * @param type $ad
+     * @param type $entity
+     * @return boolean
+     */
+    Public Static function notifyAdministrators($buyer, $ad, $entity) {
+        if (!($buyer instanceof \ElggUser)) {
+            return false;
+        }
+        
+        if (!elgg_instanceof($ad, 'object', Agora::SUBTYPE)) {
+            return false;
+        }
+        
+        if (!elgg_instanceof($entity, 'object', AgoraSale::SUBTYPE)) {
+            return false;
+        }
+
+        $users_to_notify = AgoraOptions::getUserToNotify();
+        $subject = elgg_echo('agora:sales:notification:admin:subject', [$entity->title]);
+        $message = elgg_echo('agora:sales:notification:admin:body', [
+            elgg_view('output/url', ['href' => $entity->getURL(), 'title' => $entity->title])
+        ]);
+
+        foreach ($users_to_notify as $val) {
+            $user_to_notify = get_user_by_username(trim($val));
+            if ($user_to_notify) {
+                notify_user($user_to_notify->guid, $buyer->guid, $subject, $message);
+            }
+        }
+        
+        return true;
+    }    
     
 }

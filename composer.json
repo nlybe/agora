@@ -5,10 +5,9 @@
     "keywords": [
         "elgg", 
         "plugin",
-        "classifieds",
-        "announcements"
+        "classifieds"
     ],
-    "homepage": "http://www.agoramap.com/",
+    "homepage": "https://github.com/nlybe",
     "license": "GPL-2.0",
     "authors": [
         {
@@ -18,7 +17,9 @@
         }
     ],
     "require": {
-        "composer/installers": ">=1.0.8"
+        "composer/installers": ">=1.0.8",
+        "nlybe/amap_maps_api": "2.9.x",
+        "nlybe/ratings": "2.3.x"
     },
     "extra": {
         "installer-name": "agora"

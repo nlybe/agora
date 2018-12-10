@@ -157,7 +157,6 @@ function agora_review_reminder_cron_hook($hook, $entity_type, $returnvalue, $par
 
 /**
  * This is triggered PayPal IPN verification. 
- * If transaction is successful a CompanySubscription is created for keeping the total/active credits
  * 
  * @param type $hook
  * @param type $type
@@ -206,29 +205,81 @@ function agora_paypal_successful_payment_hook($hook, $type, $return, $params) {
     $entity->save();
     
     // reduce availability
-    if (is_numeric($ad->howmany) && $ad->howmany>0) {
-        $ad->howmany--;
-    }
+    $ad->reduceItems();
 
     // notify buyer
-    $site = elgg_get_site_entity();
-    $subject = elgg_echo('agora:sales:notification:buyer:subject', [$ad->title]);
-    $message = elgg_echo('agora:sales:notification:buyer:body', [elgg_normalize_url("agora/my_purchases/{$ad->guid}")]);
-    notify_user($buyer_guid, $site->guid, $subject, $message);
+    AgoraOptions::notifyBuyer($buyer, $ad);
     
     // notify site admins
-    $users_to_notify = AgoraOptions::getUserToNotify();
-    $subject = elgg_echo('agora:sales:notification:admin:subject', [$entity->title]);
-    $message = elgg_echo('agora:sales:notification:admin:body', [
-        elgg_view('output/url', ['href' => $entity->getURL(), 'title' => $entity->title])
-    ]);
+    AgoraOptions::notifyAdministrators($buyer, $ad, $entity);
     
-    foreach ($users_to_notify as $val) {
-        $user_to_notify = get_user_by_username(trim($val));
-        if ($user_to_notify) {
-            notify_user($user_to_notify->guid, $buyer_guid, $subject, $message);
-        }
+    elgg_set_ignore_access($ia);
+    
+    system_message(elgg_echo('agora:sales:success'));
+    
+    return $return;
+}
+
+/**
+ * This is triggered PayPal IPN Adaptive verification. 
+ * 
+ * @param type $hook
+ * @param type $type
+ * @param type $return
+ * @param type $params
+ * @return type
+ */
+function agora_paypal_adaptive_successful_payment_hook($hook, $type, $return, $params) {
+    $transactions_params = $params['txn'];
+    if (!$transactions_params) {
+        error_log(elgg_echo('paypal_api:error:empty_ipn'));
+        return $return;
     }
+    
+    $tracking_id_arr = json_decode(urldecode($transactions_params['tracking_id']), true);
+    foreach ($tracking_id_arr as $k => $v) {
+        error_log($k.': '.$v);
+    }
+    
+    // get guid (entity_guid)
+    $ad = get_entity($tracking_id_arr['entity_guid']);
+    if (!elgg_instanceof($ad, 'object', Agora::SUBTYPE)) {
+        error_log(elgg_echo('paypal_api:error:invalid:entity:guid', [$tracking_id_arr['entity_guid']]));
+        return $return;
+    }    
+    
+    $buyer_guid = $tracking_id_arr['user_guid'];
+    
+    $buyer = get_entity($buyer_guid);
+    if (!($buyer instanceof \ElggUser)) {
+        error_log(elgg_echo('paypal_api:error:invalid:user:guid'));
+        return $return;
+    }    
+    
+    $ia = elgg_get_ignore_access();
+    elgg_set_ignore_access(true);
+    
+    $entity = new AgoraSale();
+    $entity->subtype = AgoraSale::SUBTYPE;
+    $entity->access_id = ACCESS_PRIVATE;
+    $entity->owner_guid = $buyer_guid;
+    $entity->container_guid = $tracking_id_arr['entity_guid'];
+    $entity->title = elgg_echo('agora:sales:title', [$ad->title]);
+    $entity->description = serialize($transactions_params);
+    $entity->transaction_id = $transactions_params['pay_key'];
+    $entity->txn_method = AgoraOptions::PURCHASE_METHOD_PAYPAL_ADAPTIVE;
+    $entity->buyer_name = $buyer->name;
+    $entity->bill_number = AgoraSale::getNewInvoiceNumber();
+    $entity->save();
+    
+    // reduce availability
+    $ad->reduceItems();
+
+    // notify buyer
+    AgoraOptions::notifyBuyer($buyer, $ad);
+    
+    // notify site admins
+    AgoraOptions::notifyAdministrators($buyer, $ad, $entity);
     
     elgg_set_ignore_access($ia);
     

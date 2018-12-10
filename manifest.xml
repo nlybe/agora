@@ -17,7 +17,7 @@
     <suggests>
         <type>plugin</type>
         <name>amap_maps_api</name>
-        <version>2.9.5</version>
+        <version>2.9.11</version>
     </suggests>	
     <requires>
         <type>priority</type>
@@ -32,7 +32,7 @@
     <suggests>
         <type>plugin</type>
         <name>paypal_api</name>
-        <version>2.3.0</version>
+        <version>2.3.1</version>
     </suggests>  	
     <activate_on_install>false</activate_on_install>
 </plugin_manifest>

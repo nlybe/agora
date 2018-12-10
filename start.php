@@ -76,6 +76,7 @@ function agora_init() {
     
     // register paypal listener hook
     elgg_register_plugin_hook_handler('paypal_api', 'ipn_log', 'agora_paypal_successful_payment_hook');
+    elgg_register_plugin_hook_handler('paypal_api', 'ipn_log_adaptive', 'agora_paypal_adaptive_successful_payment_hook');
 
     // loads the widgets
     agora_widgets_init();
