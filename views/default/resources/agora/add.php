@@ -4,12 +4,19 @@
  * @package Agora
  */
 
-elgg_load_library('elgg:agora');
+elgg_gatekeeper();
 
 // check if user can post classifieds
 if (!AgoraOptions::canUserPostClassifieds()) { 
-    register_error(elgg_echo('agora:add:noaccessforpost'));  
-    forward(REFERER);      
+    return elgg_error_response(elgg_echo('agora:add:noaccessforpost'));
+}
+
+elgg_push_breadcrumb(elgg_echo('agora'), 'agora/all');
+$page_owner = elgg_get_page_owner_entity();
+if (elgg_instanceof($page_owner, 'group')) {
+    elgg_push_breadcrumb($page_owner->name, "agora/group/$page_owner->guid");
+} else {
+    elgg_push_breadcrumb($page_owner->name, "agora/owner/$page_owner->username");
 }
 
 $title = elgg_echo('agora:add');

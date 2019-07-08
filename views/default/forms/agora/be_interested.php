@@ -9,24 +9,32 @@ $subject = elgg_extract('subject', $vars, '');
 $body = elgg_extract('body', $vars, '');
 $classified_guid = elgg_extract('classified_guid', $vars, '');
 
-?>
+echo elgg_view_field([
+	'#type' => 'text',
+	'name' => 'body',
+	'value' => $body,
+	'class' => 'beinterested',
+	'#label' => elgg_echo("messages:message"),
+]);
 
+echo elgg_view_field([
+	'#type' => 'submit',
+	'value' => elgg_echo('agora:interest:send'),
+]);
 
-<div>
-	<label><?php echo elgg_echo("messages:message"); ?>:</label>
-	<?php echo elgg_view("input/plaintext", array(
-		'name' => 'body',
-		'value' => $body,
-		'class' => 'beinterested'
-	));
-	?>
-</div>
-<div class="elgg-foot">
-	<?php echo elgg_view('input/submit', array('value' => elgg_echo('agora:interest:send'))); ?>
-</div>
-
-<div>
-	<?php echo elgg_view('input/hidden', array('name' => 'subject','value' => $subject,));?>
-	<?php echo elgg_view('input/hidden', array('name' => 'recipient_guid','value' => $recipient_guid,));?>
-	<?php echo elgg_view('input/hidden', array('name' => 'classified_guid','value' => $classified_guid,));?>
-</div>
+echo elgg_view_field([
+	'#type' => 'hidden',
+	'name' => 'subject',
+	'value' => $subject,  
+]);
+echo elgg_view_field([
+	'#type' => 'hidden',
+	'name' => 'recipient_guid',
+	'value' => $recipient_guid,
+]);
+echo elgg_view_field([
+	'#type' => 'hidden',
+	'name' => 'classified_guid',
+	'value' => $classified_guid,
+]);
+	

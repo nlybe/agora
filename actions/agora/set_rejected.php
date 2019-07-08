@@ -25,23 +25,28 @@ if (!elgg_instanceof($entity, 'object', Agora::SUBTYPE)) { // if not agora inter
 }
 
 if ($errmsg) {
-    register_error($errmsg);
+    // restore ignore access
+    elgg_set_ignore_access($ia);
+    return elgg_error_response(elgg_echo($errmsg));
 } 
 else {
     if ($entity->canEdit()) {
         $interest->int_status = AgoraOptions::INTEREST_REJECTED;
 
         if ($interest->save()) {
-            system_message(elgg_echo("agora:set_rejected:success"));
+            // restore ignore access
+            elgg_set_ignore_access($ia);
+            return elgg_ok_response('', elgg_echo('agora:set_rejected:success'), REFERER);
         } else {
-            register_error(elgg_echo("agora:set_rejected:failed"));
+            // restore ignore access
+            elgg_set_ignore_access($ia);
+            return elgg_error_response(elgg_echo('agora:set_rejected:failed'));
         }
     } else {
-        register_error(elgg_echo("agora:error:action:invalid"));
+        // restore ignore access
+        elgg_set_ignore_access($ia);
+        return elgg_error_response(elgg_echo('agora:error:action:invalid'));
     }
 }
-
-// restore ignore access
-elgg_set_ignore_access($ia);
 
 forward(REFERER);

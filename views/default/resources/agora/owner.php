@@ -4,7 +4,7 @@
  * @package agora
  */
 
-elgg_load_library('elgg:agora');
+group_gatekeeper();
 
 $page_owner = elgg_get_page_owner_entity();
 if (!$page_owner) {
@@ -36,27 +36,27 @@ $options = array(
     'no_results' => elgg_echo('agora:none'),
 );
 
-$crumbs_title = $page_owner->name;
 $title = elgg_echo('agora:owner', array($page_owner->name));
+elgg_push_breadcrumb(elgg_echo('agora'), 'agora/all');
 if (!empty($category)) {
     if (elgg_instanceof($page_owner, 'group')) {
-        elgg_push_breadcrumb($crumbs_title, "agora/group/$page_owner->guid/all");
+        elgg_push_breadcrumb($page_owner->name, "agora/group/$page_owner->guid");
     } else {
-        elgg_push_breadcrumb($crumbs_title, "agora/owner/$page_owner->username");
+        elgg_push_breadcrumb($page_owner->name, "agora/owner/$page_owner->username");
     }
     elgg_push_breadcrumb(agora_get_cat_name_settings($category));
     $options['metadata_name'] = "category";
     $options['metadata_value'] = $selected_category;
-    $content = elgg_list_entities_from_metadata($options);
+    $content = elgg_list_entities($options);
     $title .= ': ' . agora_get_cat_name_settings($category);
     //$title = elgg_echo('agora').': '.agora_get_cat_name_settings($category);
 } 
 else {
     if (elgg_instanceof($page_owner, 'group')) {
-        elgg_push_breadcrumb($crumbs_title);
+        elgg_push_breadcrumb($page_owner->name);
     } 
     else {
-        elgg_push_breadcrumb($crumbs_title);
+        elgg_push_breadcrumb($page_owner->name);
     }
     $content = elgg_list_entities($options);
 }

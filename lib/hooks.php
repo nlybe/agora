@@ -84,7 +84,7 @@ function agora_owner_block_menu($hook, $type, $return, $params) {
         $return[] = $item;
     } else {
         if ($params['entity']->agora_enable != 'no') {
-            $url = "agora/group/{$params['entity']->guid}/all";
+            $url = "agora/group/{$params['entity']->guid}";
             $item = new ElggMenuItem('agora', elgg_echo('agora:group'), $url);
             $return[] = $item;
         }
@@ -103,8 +103,6 @@ function agora_owner_block_menu($hook, $type, $return, $params) {
  * @return boolean
  */
 function agora_review_reminder_cron_hook($hook, $entity_type, $returnvalue, $params) {
-
-    elgg_load_library('elgg:agora');
 
     if (AgoraOptions::allowedComRatOnlyForBuyers()) {
 
@@ -215,7 +213,7 @@ function agora_paypal_successful_payment_hook($hook, $type, $return, $params) {
     
     elgg_set_ignore_access($ia);
     
-    system_message(elgg_echo('agora:sales:success'));
+    elgg_ok_response('', elgg_echo('agora:sales:success'), REFERER);
     
     return $return;
 }
@@ -283,7 +281,7 @@ function agora_paypal_adaptive_successful_payment_hook($hook, $type, $return, $p
     
     elgg_set_ignore_access($ia);
     
-    system_message(elgg_echo('agora:sales:success'));
+    elgg_ok_response('', elgg_echo('agora:sales:success'), REFERER);
     
     return $return;
 }
@@ -316,6 +314,7 @@ function agora_menu_setup($hook, $type, $return, $params) {
             'title' => elgg_echo("agora:sales:short:note", [$entity->title]),
             'href' =>  elgg_normalize_url("agora/sales/{$entity->guid}"),
             'priority' => 110,
+            'icon' => 'chart-line',
         );
         $return[] = ElggMenuItem::factory($options);
         
@@ -326,6 +325,7 @@ function agora_menu_setup($hook, $type, $return, $params) {
                 'title' => elgg_echo("agora:requests:note", [$entity->title]),
                 'href' =>  elgg_normalize_url("agora/requests/{$entity->guid}"),
                 'priority' => 120,
+                'icon' => 'exchange-alt ',
             );
             $return[] = ElggMenuItem::factory($options);
         }

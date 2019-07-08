@@ -4,11 +4,13 @@
  * @package agora
  */
 
-$lang = array(
+return [
+    
     // menu items and titles
     'agora' => "Classifieds",
     'agora:menu' => "Classifieds",
     'item:object:agora' => "Classifieds",
+    'collection:object:agora' => "Classifieds",
     'item:object:agora_sale' => 'Classifieds Sales',
     'item:object:agora_interest' => 'Classifieds Interest',
     'item:object:agora_img' => 'Classifieds Images',
@@ -76,8 +78,7 @@ $lang = array(
     'agora:be_interested:failed' => "Send interest failed",   
     'agora:be_interested:adtitle' => "Ad: <a href='%s'>%s</a>",
     'agora:be_interested:ad_message_subject' => "New interest for %s",
-    'agora:be_interested:success' => "You successfully expressed interest for this ad",
-    'agora:be_interested:success_message' => "The owner of the ad will be notified",
+    'agora:be_interested:success' => "You successfully expressed interest for this ad. The owner of the ad will be notified",
     'agora:be_interested:error' => "Error on setting interest for this ad.",
     'agora:set_rejected:interest_guid_missing' => "Interest ID is missing. Reject process canceled.",
     'agora:set_rejected:interest_entity_missing' => "Interest entity is missing. Reject process canceled.",
@@ -92,6 +93,9 @@ $lang = array(
     'agora:set_accepted:failed' => "Accept process failed.",  
     'agora:icon:delete:success' => 'Image deleted sucessfully',
     'agora:icon:delete:failed' => 'Failure on deleting the image',
+    'agora:product_icon:error:image:sizeMB' => "The file size of an image upload was too large - please limit up to 5MB",
+    'agora:product_icon:error:image:size' => "An image upload was too large - please limit to 3264px width/height",
+    'agora:products:invalid:icon:size' => "Invalid image size",
     
     // reviews and ratings
     'agora:comments' => "Reviews",  
@@ -199,8 +203,8 @@ $lang = array(
     'agora:add:images:limit' => "You have reached the maximum number (%s) of images allowed",
     
     // river
-    'river:create:object:agora' => '%s posted new ad %s',
-    'river:comment:object:agora' => '%s commented on ad %s',
+    'river:object:agora:create' => '%s posted new ad %s',
+    'river:object:agora:comment' => '%s commented on ad %s',
     'agora:river:annotate' => 'a comment on this ad',
     'agora:river:item' => 'an item',  
     
@@ -217,6 +221,15 @@ $lang = array(
     'agora:sales:none' => 'No sales yet',
     
     // settings
+    'admin:agora' => 'Plugin Settings: Classifieds',
+    // 'admin:settings:agora' => 'Classifieds',
+    'admin:agora:basic_options' => 'Basic Options',
+    'admin:agora:paypal_options' => 'PayPal Options',
+    'admin:agora:map_options' => 'Map Options',
+    'admin:agora:ratings_options' => 'Ratings & Reviews',
+    'admin:agora:digital_options' => 'Digital Products',
+    'admin:agora:transactions_log' => 'Transactions Log',
+
     'agora:settings:defaultdateformat' => 'Default date format',
     'agora:settings:defaultdateformat:note' => 'Enter date format for displaying dates', 
     'agora:settings:default_currency' => 'Default currency',
@@ -261,13 +274,7 @@ $lang = array(
     'agora:settings:amap_maps_api_geocoder:notenabled' => "Kanellga Maps Api is not enabled. Map of ads cannot be displayed", 
     'agora:settings:users_to_notify' => 'Users to Notify',
     'agora:settings:users_to_notify:note' => 'Set a list of users who will be notified for every transsaction. Use usernames and seperate them with comma.',
-    'agora:settings:tabs:general_options' => 'General Options',
-    'agora:settings:tabs:paypal_options' => 'Paypal Options',
-    'agora:settings:tabs:map_options' => 'Map Options',
-    'agora:settings:tabs:ratings_options' => 'Ratings & Reviews',
-    'agora:settings:tabs:digital_options' => 'Digital Products',
-    'agora:settings:tabs:transactions_log' => 'Transactions Log',
-    'admin:settings:agora' => 'Agora Classifieds',
+    'agora:settings:tabs:basic_options' => 'Basic Options',
     'agora:settings:save:ok' => 'Settings were successfully saved',
     'agora:settings:transactions:none' => 'No transactions found',
     'agora:settings:transactions:buyer' => 'Buyer',
@@ -400,7 +407,7 @@ $lang = array(
     'agora:search:submit' => 'Search',
 
     // user settings
-    'agora:usersettings:settings' => "Classifieds Settings",
+    'agora:usersettings:settings' => "Classifieds settings",
     'agora:usersettings:title' => "Personal Classifieds Settings",
     'agora:usersettings:error:user' => "Error, not such user",
     'agora:usersettings:no_settings' => "No classifieds settings available to configure",
@@ -417,6 +424,4 @@ $lang = array(
     //////////////////////////////////
     'agora:add:error:mime_type' => '%s is not supported',
     
-);
-
-add_translation("en", $lang);
+];

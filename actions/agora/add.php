@@ -4,15 +4,13 @@
  * @package agora
  */
 
-elgg_load_library('elgg:agora');
 if (elgg_is_active_plugin("amap_maps_api")){
     elgg_load_library('elgg:amap_maps_api'); 
 } 
 
 // check if user can post classifieds
 if (!AgoraOptions::canUserPostClassifieds()) { 
-    register_error(elgg_echo('agora:add:noaccessforpost'));  
-    forward(REFERER);     
+    return elgg_error_response(elgg_echo('agora:add:noaccessforpost'));
 }
     
 // Get variables
@@ -36,50 +34,44 @@ $comments_on = get_input("comments_on");
 elgg_make_sticky_form('agora');
 
 if (!$title) {
-    register_error(elgg_echo('agora:save:missing_title'));
-    forward(REFERER);
+    return elgg_error_response(elgg_echo('agora:save:missing_title'));
 }
 /*    
 if (!$category) {
-    register_error(elgg_echo('agora:save:missing_category'));
-    forward(REFERER);
+    return elgg_error_response(elgg_echo('agora:save:missing_category'));
 }    
 */
 if ($price && !is_numeric($price)) {
-    register_error(elgg_echo('agora:save:price_not_numeric'));
-    forward(REFERER);
+    return elgg_error_response(elgg_echo('agora:save:price_not_numeric'));
 }  
 
 if ($howmany && !is_numeric($howmany)) {
-    register_error(elgg_echo('agora:save:howmany_not_numeric'));
-    forward(REFERER);
+    return elgg_error_response(elgg_echo('agora:save:howmany_not_numeric'));
 }  
 
 if ($tax_cost && !is_numeric($tax_cost)) {
-    register_error(elgg_echo('agora:save:tax_cost_not_numeric'));
-    forward(REFERER);
+    return elgg_error_response(elgg_echo('agora:save:tax_cost_not_numeric'));
 }  
 
 if ($shipping_cost && !is_numeric($shipping_cost)) {
-    register_error(elgg_echo('agora:save:shipping_cost_not_numeric'));
-    forward(REFERER);
+    return elgg_error_response(elgg_echo('agora:save:shipping_cost_not_numeric'));
 }  
 
 // upload uploaded
 $uploaded_files = elgg_get_uploaded_files('upload');
 if ($uploaded_files) {
     $uploaded_file = array_shift($uploaded_files);
-    if (!$uploaded_file->isValid()) {
+    if ($uploaded_file && !$uploaded_file->isValid()) {
         $error = elgg_get_friendly_upload_error($uploaded_file->getError());
-        register_error($error);
-        forward(REFERER);
+        return elgg_error_response(elgg_echo($error));
     }
 
-    $allowed_mime_types = AgoraOptions::getAllowedImageFiles();
-    $mime_type = ElggFile::detectMimeType($uploaded_file->getPathname(), $uploaded_file->getClientMimeType());
-    if (!in_array($mime_type, $allowed_mime_types)) {
-        register_error(elgg_echo('agora:add:error:mime_type', [$mime_type]));
-        forward(REFERER);
+    if ($uploaded_file) {
+        $allowed_mime_types = AgoraOptions::getAllowedImageFiles();
+        $mime_type = ElggFile::detectMimeType($uploaded_file->getPathname(), $uploaded_file->getClientMimeType());
+        if (!in_array($mime_type, $allowed_mime_types)) {
+            return elgg_error_response(elgg_echo('agora:add:error:mime_type', [$mime_type]));
+        }
     }
 }
 
@@ -112,13 +104,13 @@ if ($_FILES['product_icon']['tmp_name']) {
         } 
         elseif (filesize($_FILES['product_icon']['tmp_name'][$key]) > 5120000) { // file size exceed 5MB
             unset($file_keys[$key]);
-            system_message(elgg_echo('product_icon:error:image:sizeMB'));
+            return elgg_error_response(elgg_echo('agora:product_icon:error:image:sizeMB'));
 
-        } 
-        elseif (!$size || $size[0] > 3264 || $size[1] > 3264) {   // obs } elseif (!$size || $size[0] > 2048 || $size[1] > 1536) {
+        } //
+        elseif (!$size || $size[0] > 3264 || $size[1] > 3264) {   
             if (($k = array_search($key, $file_keys)) !== false) {
                 unset($file_keys[$key]);
-                system_message(elgg_echo('product_icon:error:image:size'));
+                return elgg_error_response(elgg_echo('agora:product_icon:error:image:size'));
             }
         }
     }
@@ -140,8 +132,7 @@ if ($guid == 0) {
 } else {
     $entity = get_entity($guid);
     if (!$entity->canEdit()) {
-        system_message(elgg_echo('agora:save:failed'));
-        forward(REFERRER);
+        return elgg_error_response(elgg_echo('agora:save:failed'));
     }
     if (!$title) {
         // user blanked title, but we need one
@@ -157,8 +148,7 @@ if ($allow_digital_products) { // check for file uploaded only if digital produc
 
     if ($digital) {	// if sell ONLY digital products, file is required
         if (!get_digital_filename($guid) && $_FILES["digital_file_box"]["error"] == 4) {
-            register_error(elgg_echo('agora:add:digital:fileismissing'));  
-            forward(REFERER); 
+            return elgg_error_response(elgg_echo('agora:add:digital:fileismissing'));
         } 
         else if ($_FILES["digital_file_box"]["error"] != 4) {
             $digital_file_types = trim(elgg_get_plugin_setting('digital_file_types', 'agora'));
@@ -171,8 +161,7 @@ if ($allow_digital_products) { // check for file uploaded only if digital produc
             }
             else
             {
-                register_error(elgg_echo('agora:add:digital:invalidfiletype', array($digital_file_types)));  
-                forward(REFERER); 
+                return elgg_error_response(elgg_echo('agora:add:digital:invalidfiletype', array($digital_file_types)));
             } 
         }
     }
@@ -286,7 +275,7 @@ if ($entity->save()) {
             $filehandler->file_prefix = $prefix;
 
             if ($invalid) {
-                system_message(elgg_echo('products:invalid:icon:size', array($invalid)));
+                return elgg_error_response(elgg_echo('agora:products:invalid:icon:size'));
             }
         }
 
@@ -305,9 +294,7 @@ if ($entity->save()) {
         ]);
     }
 
-    system_message(elgg_echo('agora:save:success'));
-    forward($entity->getURL());
+    return elgg_ok_response('', elgg_echo('agora:save:success'), $entity->getURL());
 } else {
-    register_error(elgg_echo('agora:save:failed'));
-    forward("agora");
+    return elgg_error_response(elgg_echo('agora:save:failed'));
 }

@@ -4,8 +4,6 @@
  * @package Agora
  */
 
-elgg_load_library('elgg:agora');
-
 //get entity
 $guid = elgg_extract('guid', $vars, '');
 elgg_entity_gatekeeper($guid, 'object', Agora::SUBTYPE);
@@ -15,12 +13,12 @@ $entity = get_entity($guid);
 // check if print preview
 $print = get_input('view');
 
+elgg_push_breadcrumb(elgg_echo('agora'), 'agora/all');
 $page_owner = elgg_get_page_owner_entity();
-$crumbs_title = $page_owner->name;
 if (elgg_instanceof($page_owner, 'group')) {
-    elgg_push_breadcrumb($crumbs_title, "agora/group/$page_owner->guid/all");
+    elgg_push_breadcrumb($page_owner->name, "agora/group/$page_owner->guid");
 } else {
-    elgg_push_breadcrumb($crumbs_title, "agora/owner/$page_owner->username");
+    elgg_push_breadcrumb($page_owner->name, "agora/owner/$page_owner->username");
 }
 
 $title = $entity->title;
@@ -38,6 +36,7 @@ if (!is_array($user_purchases)) {
 $content = elgg_view_entity($entity, [
     'full_view' => true, 
     'images' => $entity->getMoreImages(),
+    'show_responses' => false, // set it to false and check it manually depending if ratings are enabled
 ]);
 
 if (AgoraOptions::allowedComRatOnlyForBuyers()) { 
@@ -54,10 +53,9 @@ if (AgoraOptions::allowedComRatOnlyForBuyers()) {
         $content .= RatingsOptions::ratings_elgg_view_comments($entity, false);	// disable review form 
     }
 } 
-else if ($entity->comments_on != 'Off') { 
-    // reviews and ratings enabled for all members
-    $content .= elgg_view_comments($entity, true, []);
-}
+else if ($entity->canComment()) {
+    $content .= elgg_view_comments($entity);
+} 
 
 // add download button if current user has purchased this item or if file is available for free
 if ($entity->digital && (elgg_instanceof($user_purchases[0], 'object', AgoraSale::SUBTYPE) || !$entity->price || elgg_is_admin_logged_in())) {

@@ -4,24 +4,22 @@
  * @package Agora
  */
 
-elgg_load_library('elgg:agora');
-
 $guid = elgg_extract('guid', $vars, '');
 
 // Get the file
 $classfd = get_entity($guid);
 if (!elgg_instanceof($classfd, 'object', Agora::SUBTYPE)) {
-    register_error(elgg_echo("agora:download:filenotexists"));
+    elgg_error_response(elgg_echo('agora:download:filenotexists'));
     forward();
 }
 
 if (!$classfd->digital) {
-    register_error(elgg_echo("agora:download:nodigitalproduct"));
+    elgg_error_response(elgg_echo('agora:download:nodigitalproduct'));
     forward(REFERRER);
 }
 
 if ($classfd->price && !$classfd->userPurchasedAd(elgg_get_logged_in_user_entity()->guid) && !elgg_is_admin_logged_in()) {
-    register_error(elgg_echo("agora:download:nopurchased"));
+    elgg_error_response(elgg_echo('agora:download:nopurchased'));
     forward(REFERRER);
 }
 
@@ -42,17 +40,17 @@ $options = array(
     'metadata_name_value_pairs_operator' => 'AND',
 );
 
-$files = elgg_get_entities_from_metadata($options);
+$files = elgg_get_entities($options);
 
 if (!$files) {
-    register_error(elgg_echo('agora:download:filenotexists'));
+    elgg_error_response(elgg_echo('agora:download:filenotexists'));
     forward(REFERER);
 }
 
 if (count($files) > 0) {
     $file = get_entity($files[0]->guid);
 } else {
-    register_error(elgg_echo('agora:download:filenotexists'));
+    elgg_error_response(elgg_echo('agora:download:filenotexists'));
     forward(REFERER);
 }
 

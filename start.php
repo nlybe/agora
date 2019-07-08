@@ -5,10 +5,8 @@
  */
 
 require_once(dirname(__FILE__) . '/lib/hooks.php');
-require_once(dirname(__FILE__) . '/lib/widgets.php');
 
 elgg_register_event_handler('init', 'system', 'agora_init');
-elgg_register_event_handler("pagesetup", "system", "agora_pagesetup");
 
 define('AGORA_CUSTOM_DEFAULT_COORDS', '49.037868,14.941406'); // set coords of Europe in case default location is not set
 define('AGORA_CUSTOM_DEFAULT_LOCATION', 'Europe'); // set default location in case default location is not set
@@ -24,12 +22,8 @@ function agora_init() {
     define('AGORA_SHIPPING_TYPE_TOTAL', elgg_echo('agora:add:total')); // define shipping type total
     define('AGORA_SHIPPING_TYPE_PERCENTAGE', elgg_echo('agora:add:percentage')); // define shipping type percentage	
     
-    // Register subtype OBS
-//    run_function_once('agora_manager_run_once_subtypes');
-
     // register a library of helper functions
-    elgg_register_library('elgg:agora', elgg_get_plugins_path() . 'agora/lib/agora.php');
-    elgg_register_library('elgg:agora:ipnlistener', elgg_get_plugins_path() . 'agora/lib/ipnlistener.php');
+    // elgg_register_library('elgg:agora:ipnlistener', elgg_get_plugins_path() . 'agora/lib/ipnlistener.php');
 
     // load maps api libraries if it's enabled. If not, it will not be working
     if (elgg_is_active_plugin("amap_maps_api")) {
@@ -49,8 +43,15 @@ function agora_init() {
     $item = new ElggMenuItem('agora', elgg_echo('agora:menu'), 'agora/all');
     elgg_register_menu_item('site', $item);
 
-    // Add admin menu item
-    elgg_register_admin_menu_item('configure', 'agora', 'settings');
+    if ($user = elgg_get_logged_in_user_entity()) {
+        elgg_register_menu_item("page", array(
+            "name" => "agora",
+            "text" => elgg_echo("agora:usersettings:settings"),
+            "href" => "agora/user/" . $user->username,
+            'section' => 'configure',
+            "context" => "settings",
+        ));
+    }
 
     // register extra css
     elgg_extend_view('elgg.css', 'agora/css/agora.css');
@@ -59,9 +60,6 @@ function agora_init() {
     // additional options to plugin entities
     elgg_register_plugin_hook_handler('register', 'menu:entity', 'agora_menu_setup'); 
     
-    // Register a page handler, so we can have nice URLs
-    elgg_register_page_handler('agora', 'agora_page_handler');
-
     // Register a URL handler for agora
     elgg_register_plugin_hook_handler('entity:url', 'object', 'agora_set_url');
 
@@ -78,32 +76,8 @@ function agora_init() {
     elgg_register_plugin_hook_handler('paypal_api', 'ipn_log', 'agora_paypal_successful_payment_hook');
     elgg_register_plugin_hook_handler('paypal_api', 'ipn_log_adaptive', 'agora_paypal_adaptive_successful_payment_hook');
 
-    // loads the widgets
-    agora_widgets_init();
-    
-    // register actions
-    $action_path = elgg_get_plugins_path() . 'agora/actions/agora';
-    elgg_register_action('agora/add', "$action_path/add.php");
-    elgg_register_action('agora/delete', "$action_path/del.php");
-    elgg_register_action('agora/be_interested', "$action_path/be_interested.php");
-    elgg_register_action('agora/set_accepted', "$action_path/set_accepted.php");
-    elgg_register_action('agora/set_rejected', "$action_path/set_rejected.php");
-    elgg_register_action("agora/usersettings", "$action_path/usersettings.php"); // save user settings
-    elgg_register_action('agora/icon/delete', "$action_path/icon_del.php");
-    elgg_register_action('agora/nearby_search', "$action_path/nearby_search.php", 'public');
-    
-    // register admin actions
-    elgg_register_action('agora/admin/general_options', "$action_path/admin/settings.php", 'admin');
-    elgg_register_action('agora/admin/paypal_options', "$action_path/admin/settings.php", 'admin');
-    elgg_register_action('agora/admin/map_options', "$action_path/admin/settings.php", 'admin');
-    elgg_register_action('agora/admin/ratings_options', "$action_path/admin/settings.php", 'admin');
-    elgg_register_action('agora/admin/digital_options', "$action_path/admin/settings.php", 'admin');
-
-    // extend group main page 
-    elgg_extend_view('groups/tool_latest', 'agora/group_module');
-
-    // add the group agora tool option
-    add_group_tool_option('agora', elgg_echo('agora:group:enableagora'), true);
+    // Add group option
+    elgg()->group_tools->register('agora');
 
     // Setup cron job to send notification to buyers for review of the the ad they bought with link and login
     elgg_register_plugin_hook_handler('cron', 'daily', 'agora_review_reminder_cron_hook');
@@ -121,132 +95,6 @@ function agora_init() {
         'super' => array('w' => 800, 'h' => 800, 'square' => false, 'upscale' => false),
         'master' => array('w' => 1200, 'h' => 1200, 'square' => false, 'upscale' => false),
     ));
-}
-
-/**
- *  Dispatches agora pages.
- *
- * @param array $page
- * @return bool
- */
-function agora_page_handler($page) {
-    elgg_push_breadcrumb(elgg_echo('agora'), 'agora/all');
-
-    if (!isset($page[0])) {
-        $page[0] = 'all';
-    }
-    
-    $resource_vars = [];
-    $resource_vars['page'] = $page[0];
-    switch ($page[0]) {
-        case "all":
-            agora_register_toggle();
-            $resource_vars['category'] = elgg_extract(1, $page);
-            echo elgg_view_resource('agora/all', $resource_vars);
-            break;
-
-        case "map":
-            $resource_vars['category'] = elgg_extract(1, $page);
-            echo elgg_view_resource('agora/nearby', $resource_vars);
-            break;
-
-        case "owner":
-            agora_register_toggle();
-            $resource_vars['category'] = elgg_extract(2, $page);
-            echo elgg_view_resource('agora/owner', $resource_vars);
-            break;
-
-        case "friends":
-            $resource_vars['category'] = elgg_extract(1, $page);
-            agora_register_toggle();
-            echo elgg_view_resource('agora/friends', $resource_vars);
-            break;
-
-        case "my_purchases":
-            agora_register_toggle();
-            echo elgg_view_resource('agora/my_purchases', $resource_vars);
-            break;
-
-        case "view":
-            $resource_vars['guid'] = elgg_extract(1, $page);
-            echo elgg_view_resource('agora/view', $resource_vars);
-            break;
-        
-        case "sales":
-            $resource_vars['guid'] = elgg_extract(1, $page);
-            echo elgg_view_resource('agora/sales', $resource_vars);
-            break;
-        
-        case "requests":
-            $resource_vars['guid'] = elgg_extract(1, $page);
-            echo elgg_view_resource('agora/requests', $resource_vars);
-            break;
-
-        case "add":
-            gatekeeper();
-            echo elgg_view_resource('agora/add');
-            break;
-
-        case "edit":
-            gatekeeper();
-            $resource_vars['guid'] = elgg_extract(1, $page);
-            echo elgg_view_resource('agora/edit', $resource_vars);
-            break;
-
-        case "download":
-            $resource_vars['guid'] = elgg_extract(1, $page);
-            echo elgg_view_resource('agora/download', $resource_vars);
-            break;
-
-        case "group":
-            group_gatekeeper();
-            agora_register_toggle();
-            $resource_vars['category'] = elgg_extract(3, $page);
-            echo elgg_view_resource('agora/owner', $resource_vars);
-            break;
-
-        case "user":
-            $resource_vars['username'] = elgg_extract(1, $page);
-            echo elgg_view_resource('agora/usersettings', $resource_vars);
-            break;
-        
-        case "transactions":
-            switch ($page[1]) {
-                case 'view':
-                    $resource_vars['guid'] = elgg_extract(2, $page);
-                    echo elgg_view_resource('agora/transactions/view', $resource_vars);
-                    break;
-            }
-            break;
-
-        case 'icon':
-            $img = new AgoraImage($page[1]);
-            $size = $page[2];
-            if (!elgg_instanceof($img, 'object', AgoraImage::SUBTYPE)) {
-                forward('','404');
-            }
-
-            $img->setFilename($img->file_prefix.($size == 'original'?'':$size).'.jpg');
-            $filename = $img->getFilenameOnFilestore();            
-            $filesize = @filesize($filename);
-            if ($filesize) {
-                header("Content-type: image/jpeg");
-                header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', strtotime("+6 months")), true);
-                header("Pragma: public");
-                header("Cache-Control: public");
-                header("Content-Length: $filesize");
-                readfile($filename);
-                exit;
-            }
-            break;  
-
-        default:
-            echo elgg_view_resource('agora/all');
-            return false;
-    }
-
-    elgg_pop_context();
-    return true;
 }
 
 /**
@@ -278,16 +126,165 @@ function agora_register_toggle() {
     ));
 }
 
-/**
- * Register menu item for agora in user settings menu
- */
-function agora_pagesetup() {
-    if ($user = elgg_get_logged_in_user_entity()) {
-        elgg_register_menu_item("page", array(
-            "name" => "agora",
-            "text" => elgg_echo("agora:usersettings:settings"),
-            "href" => "agora/user/" . $user->username,
-            "context" => "settings",
-        ));
+///////////////////////////////////////////
+// The following moved from lib/agora.php 
+
+//add classifieds form parameters
+function agora_prepare_form_vars($entity = null) {
+    // input names => defaults
+    $values = array(
+        'title' => '',
+        'description' => '',
+        'access_id' => ACCESS_DEFAULT,
+        'tags' => '',
+        'container_guid' => elgg_get_page_owner_guid(),
+        'entity' => $entity,
+        'price' => 0,
+        'price_final' => 0,
+        'currency' => '',
+        'category' => '',
+        'howmany' => '',
+        'location' => '',
+        'digital' => '',
+        'tax_cost' => '',
+        'shipping_cost' => '',
+        'shipping_type' => '',
+        'climage' => '',
+        'guid' => null,
+        'comments_on' => NULL,
+    );
+
+    if ($entity) {
+        foreach (array_keys($values) as $field) {
+            if (isset($entity->$field)) {
+                $values[$field] = $entity->$field;
+            }
+        }
     }
+
+    if (elgg_is_sticky_form('agora')) {
+        $sticky_values = elgg_get_sticky_values('agora');
+        foreach ($sticky_values as $key => $value) {
+            $values[$key] = $value;
+        }
+    }
+
+    elgg_clear_sticky_form('agora');
+
+    return $values;
+}
+
+/**
+ * General purpose trim function
+ * 
+ * @param type $value
+ */
+function agora_trim_value(&$value) {
+    $value = trim($value);
+}
+
+// Get settings parameters
+function agora_settings($name = 'categories', $null = true) {
+    $type = elgg_get_plugin_setting($name, 'agora');
+    $fields = explode(",", $type);
+    if ($null) {
+        $field_values[NULL] = elgg_echo('agora:add:category:select');
+    }
+    foreach ($fields as $val) {
+        $key = elgg_get_friendly_title($val);
+        if ($key) {
+            $field_values[$key] = $val;
+        }
+    }
+    return $field_values;
+}
+
+// Get category title
+function agora_get_cat_name_settings($catname = null, $linked = false) {
+    $type = elgg_get_plugin_setting('categories', 'agora');
+    $fields = explode(",", $type);
+    foreach ($fields as $val) {
+        $key = elgg_get_friendly_title($val);
+        if ($key == $catname) {
+            if ($linked) {
+                $page = 'agora/all/';
+                return '<a class="elgg-menu-item" href="' . elgg_get_site_url() . $page . $key . '" title="">' . $val . '</a>';
+            } else {
+                return $val;
+            }
+        }
+    }
+    return null;
+}
+
+// check if user has commented a specific ad
+function check_if_user_commented_this_ad($classfd_guid, $user_guid) {
+    $noComments = 0;
+    $options = array(
+        'type' => 'object',
+        'subtype' => 'comment',
+        'container_guid' => $classfd_guid,
+        'owner_guid' => $user_guid,
+        'count' => true,
+    );
+
+    $noComments = elgg_get_entities($options);
+
+    return $noComments;
+}
+
+// check if html tags on desctription are allowed
+function agora_html_allowed() {
+    $html_allowed = trim(elgg_get_plugin_setting('html_allowed', 'agora'));
+
+    if ($html_allowed === 'yes') {
+        return true;
+    }
+
+    return false;
+}
+
+// check if html tags on desctription are allowed
+function agora_get_ad_description($description) {
+    if (!$description)
+        return false;
+
+    if (agora_html_allowed())
+        return $description;
+    else
+        return strip_tags($description);
+}
+
+// check if user has purchased a specific ad
+function get_digital_filename($classfd_guid) {
+    $file_ext = 'agora/file-' . $classfd_guid . '.zip';
+    $options = array(
+        'type' => 'object',
+        'limit' => 0,
+        'metadata_name_value_pairs' => array(
+            array('name' => 'agora_guid', 'value' => $classfd_guid, 'operand' => '='),
+            array('name' => 'filename', 'value' => $file_ext, 'operand' => '='),
+        ),
+        'metadata_name_value_pairs_operator' => 'AND',
+    );
+
+    $files = elgg_get_entities($options);
+
+    if (!$files) {
+        return false;
+    }
+
+    if (count($files) > 0) {
+        $file = get_entity($files[0]->guid);
+        return $file->originalfilename;
+    }
+
+    return false;
+}
+
+// get MD5 hash
+function get_MD5_hash($ApiKey, $merchantId, $referenceCode, $amount, $currency) {
+    $txtstring = $ApiKey . '~' . $merchantId . '~' . $referenceCode . '~' . $amount . '~' . $currency;
+
+    return md5($txtstring);
 }

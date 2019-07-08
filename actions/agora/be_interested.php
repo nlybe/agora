@@ -16,25 +16,21 @@ $agora = get_entity($classified_guid);
 elgg_make_sticky_form('messages');
 
 if (!elgg_instanceof($agora, 'object', Agora::SUBTYPE)) {
-    register_error(elgg_echo("agora:be_interested:failed"));
-    forward(REFERER);
+    return elgg_error_response(elgg_echo('agora:be_interested:failed'));
 }
 
 if (!$recipient_guid) {
-    register_error(elgg_echo("messages:user:blank"));
-    forward("messages/compose");
+    return elgg_error_response(elgg_echo('messages:user:blank'));
 }
 
 $user = get_user($recipient_guid);
 if (!$user) {
-    register_error(elgg_echo("messages:user:nonexist"));
-    forward("messages/compose");
+    return elgg_error_response(elgg_echo('messages:user:nonexist'));
 }
 
 // Make sure the message field, send to field and title are not blank
 if (!$body || !$subject) {
-    register_error(elgg_echo("messages:blank"));
-    forward(REFERER);
+    return elgg_error_response(elgg_echo('messages:blank'));
 }
 
 // Otherwise, 'send' the message 
@@ -43,8 +39,7 @@ $result = messages_send($subject, $body, $recipient_guid, 0, $reply);
 
 // Save 'send' the message
 if (!$result) {
-    register_error(elgg_echo("messages:error"));
-    forward(REFERER);
+    return elgg_error_response(elgg_echo('messages:error'));
 } 
 else {
     elgg_clear_sticky_form('messages');
@@ -64,11 +59,9 @@ else {
     $entity->int_message_guid = $result;
 
     if ($entity->save()) {
-        system_message(elgg_echo("agora:be_interested:success"));
-        system_message(elgg_echo("agora:be_interested:success_message"));
+        return elgg_ok_response('', elgg_echo('agora:be_interested:success'), REFERER);
     } else {
-        register_error(elgg_echo("agora:be_interested:error"));
-        forward(REFERER);
+        return elgg_error_response(elgg_echo('agora:be_interested:error'));
     }
 }
 

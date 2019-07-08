@@ -6,8 +6,8 @@
 
 $tabs = array(
     'all' => array(
-        'title' => elgg_echo('agora:label:all'),
-        'url' => 'agora/all',
+        'text' => elgg_echo('agora:label:all'),
+        'href' => 'agora/all',
         'selected' => $vars['selected'] == 'all',
     ),
 );
@@ -21,13 +21,13 @@ if (elgg_is_logged_in()) {
     }
 
     $tabs['owner'] = array(
-        'title' => elgg_echo('agora:label:owner'),
-        'url' => 'agora/owner/' . $user->username,
+        'text' => elgg_echo('agora:label:owner'),
+        'href' => 'agora/owner/' . $user->username,
         'selected' => $selected,
     );
     $tabs['friends'] = array(
-        'title' => elgg_echo('agora:label:friends'),
-        'url' => 'agora/friends/' . $user->username,
+        'text' => elgg_echo('agora:label:friends'),
+        'href' => 'agora/friends/' . $user->username,
         'selected' => $vars['selected'] == 'friends',
     );
 }
@@ -35,16 +35,16 @@ if (elgg_is_logged_in()) {
 if (elgg_is_active_plugin('amap_maps_api') && AgoraOptions::isGeolocationEnabled()) {
     $user = elgg_get_logged_in_user_entity(); // get current user
     $tabs['map'] = array(
-        'title' => elgg_echo('agora:label:map'),
-        'url' => 'agora/map',
+        'text' => elgg_echo('agora:label:map'),
+        'href' => 'agora/map',
         'selected' => $vars['selected'] == 'map',
     );
 }
 
 if (elgg_is_logged_in()) {
     $tabs['my_purchases'] = array(
-        'title' => elgg_echo('agora:label:my_purchases'),
-        'url' => 'agora/my_purchases/' . $user->username,
+        'text' => elgg_echo('agora:label:my_purchases'),
+        'href' => 'agora/my_purchases/' . $user->username,
         'selected' => $vars['selected'] == 'my_purchases',
     );
 }

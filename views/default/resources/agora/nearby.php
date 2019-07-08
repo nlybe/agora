@@ -5,7 +5,7 @@
  */
 
 if (!elgg_is_active_plugin("amap_maps_api")) {
-    register_error(elgg_echo("agora:settings:amap_maps_api:notenabled"));
+    elgg_error_response(elgg_echo('agora:settings:amap_maps_api:notenabled'));
     forward(REFERER);
 }
 
@@ -105,7 +105,7 @@ $options['metadata_name_value_pairs'][] = array('name' => 'location', 'value' =>
 $options['metadata_name_value_pairs'][] = array('name' => 'country', 'value' => '', 'operand' => '!=');
 $options['metadata_name_value_pairs_operator'] = 'OR';
 
-$entities = elgg_get_entities_from_metadata($options);
+$entities = elgg_get_entities($options);
 if ($entities) {
     foreach ($entities as $entity) {
         $entity = amap_ma_set_entity_additional_info($entity, 'title', 'description');

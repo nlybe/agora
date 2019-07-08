@@ -8,12 +8,12 @@ $guid = elgg_extract('guid', $vars, '');
 $entity = get_entity($guid);
 
 if (!elgg_instanceof($entity, 'object', Agora::SUBTYPE)) {
-    register_error(elgg_echo('agora:error:invalid:entity'));
+    elgg_error_response(elgg_echo('agora:error:invalid:entity'));
     forward(REFERRER);
 }
 
 if (!$entity->canEdit()) {
-    register_error(elgg_echo('Invalid access to this page'));
+    elgg_error_response(elgg_echo('Invalid access to this page'));
     forward(REFERRER);
 }
 

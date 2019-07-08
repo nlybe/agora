@@ -173,10 +173,10 @@ class Agora extends ElggObject {
         if ($list) {
             $options['no_results'] =  elgg_echo('agora:requests:none');
             $options['full_view'] =  true;
-            return elgg_list_entities_from_metadata($options);
+            return elgg_list_entities($options);
         }
         
-        return elgg_get_entities_from_metadata($options);
+        return elgg_get_entities($options);
     }
     
     /**
@@ -209,7 +209,11 @@ class Agora extends ElggObject {
             'subtype' => AgoraImage::SUBTYPE,
             'container_guid' => $this->guid,
             'limit' => $max_images,
-            'order_by' => 'e.time_created ASC'
+            $options['order_by_metadata'] = [
+                'name' => 'time_created',
+                'direction' => 'ASC',
+            ]
+            // 'order_by' => 'e.time_created ASC'
         ));
     }   
     
@@ -228,5 +232,23 @@ class Agora extends ElggObject {
         }
         
         return false;
+    }     
+
+    /**
+     * Can a user comment on this company post?
+     *
+     * @see ElggObject::canComment()
+     *
+     * @param int  $user_guid User guid (default is logged in user)
+     * @param bool $default   Default permission
+     *
+     * @return bool
+     */
+    public function canComment($user_guid = 0, $default = null) {        
+        if ($this->comments_on === 'Off') {
+            return false;
+        }
+
+        return true;
     }     
 }

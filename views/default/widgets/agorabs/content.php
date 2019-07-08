@@ -4,8 +4,6 @@
  * @package agora
  */
 
-elgg_load_library('elgg:agora');
-
 //the page owner
 $owner = get_user($vars['entity']->owner_guid);
 

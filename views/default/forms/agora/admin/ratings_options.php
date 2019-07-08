@@ -15,21 +15,26 @@ $pyn = array(
     AgoraOptions::NO => elgg_echo('agora:settings:no'),
 );
 
-echo elgg_view_input('dropdown', array(
+echo elgg_view_field([
+    '#type' => 'dropdown',
     'name' => 'params[buyers_comrat]',
     'value' => $plugin->buyers_comrat?$plugin->buyers_comrat:AgoraOptions::NO,
     'options_values' => $pyn,
-    'label' => elgg_echo('agora:settings:buyers_comrat'),
-    'help' => elgg_echo('agora:settings:buyers_comrat:note'),
-));
+    '#label' => elgg_echo('agora:settings:buyers_comrat'),
+    '#help' => elgg_echo('agora:settings:buyers_comrat:note'),
+]);
 
 // set users to notify for each transaction
-echo elgg_view_input('text', array(
+echo elgg_view_field([
+    '#type' => 'text',
     'name' => 'params[buyers_comrat_notify]',
     'value' => $plugin->buyers_comrat_notify,
-    'label' => elgg_echo('agora:settings:buyers_comrat_notify'),
-    'help' => elgg_echo('agora:settings:buyers_comrat_notify:note'),
+    '#label' => elgg_echo('agora:settings:buyers_comrat_notify'),
+    '#help' => elgg_echo('agora:settings:buyers_comrat_notify:note'),
     'style' => 'width: 60px;'
-));
+]);
 
-echo elgg_view('input/submit', array('value' => elgg_echo("save")));
+echo elgg_view_field([
+    '#type' => 'submit',
+    'value' => elgg_echo('save'),
+]);

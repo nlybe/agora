@@ -31,7 +31,7 @@ $vars = array(
     'content' => $content,
     'title' => $title,
     'sidebar' => elgg_view('agora/sidebar'),
-    'filter_override' => elgg_view('agora/nav', array('selected' => $vars['page'])),
+    'filter_override' => elgg_view('agora/nav', array('selected' => 'my_purchases')),
 );
 
 $body = elgg_view_layout('content', $vars);

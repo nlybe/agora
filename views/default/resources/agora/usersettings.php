@@ -4,7 +4,7 @@
  * @package agora
  */
 
-gatekeeper();
+elgg_gatekeeper();
 
 $username = elgg_extract('username', $vars, '');
 
@@ -16,7 +16,7 @@ else {
 }
 
 if (empty($user) || !$user->canEdit()) {
-    register_error(elgg_echo("agora:usersettings:error:user"));
+    elgg_error_response(elgg_echo('agora:usersettings:error:user'));
     forward();
 }
 

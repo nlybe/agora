@@ -57,7 +57,7 @@ class AgoraSale extends ElggObject {
             ),
             'limit' => 1,
         ];
-        $entities = elgg_get_entities_from_metadata($options);
+        $entities = elgg_get_entities($options);
         
         if ($entities) {
             $last_invoice_no = (int) substr($entities[0]->bill_number, -5);

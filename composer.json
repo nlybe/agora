@@ -5,7 +5,8 @@
     "keywords": [
         "elgg", 
         "plugin",
-        "classifieds"
+        "classifieds",
+        "paypal"
     ],
     "homepage": "https://github.com/nlybe",
     "license": "GPL-2.0",
@@ -13,13 +14,13 @@
         {
             "name": "Nikos Lyberakis",
             "email": "nikos@lyberakis.gr",
-            "role": "Developer"
+            "role": "Web Developer"
         }
     ],
     "require": {
         "composer/installers": ">=1.0.8",
-        "nlybe/amap_maps_api": "2.9.x",
-        "nlybe/ratings": "2.3.x"
+        "nlybe/geomaps_api": "3.x",
+        "nlybe/ratings": "3.x"
     },
     "extra": {
         "installer-name": "agora"

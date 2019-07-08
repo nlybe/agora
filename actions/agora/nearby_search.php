@@ -5,16 +5,13 @@
  */
   
 if (!elgg_is_xhr()) {
-    register_error('Sorry, Ajax only!');
-    forward(REFERRER);
+    return elgg_error_response(elgg_echo('Sorry, Ajax only'));
 }
 
 if (!elgg_is_active_plugin("amap_maps_api")){
-    register_error(elgg_echo("agora:settings:amap_maps_api:notenabled"));
-    forward(REFERER);
+    return elgg_error_response(elgg_echo('agora:settings:amap_maps_api:notenabled'));
 }
 
-//elgg_load_library('elgg:agora');  
 elgg_load_library('elgg:amap_maps_api');
 elgg_load_library('elgg:amap_maps_api_geo'); 
 
@@ -92,10 +89,10 @@ if ($coords) {
     $title = elgg_echo('agora:groups:nearby:search', array($search_location_txt));
 }
 
-$count = elgg_get_entities_from_metadata($options);
+$count = elgg_get_entities($options);
 if ($count) {
     $options['count'] = false;
-    $entities = elgg_get_entities_from_metadata($options);
+    $entities = elgg_get_entities($options);
 }  
 
 $map_objects = array();

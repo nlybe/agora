@@ -15,23 +15,26 @@ $pyn = array(
     AgoraOptions::NO => elgg_echo('agora:settings:no'),
 );
 
-echo elgg_view_input('dropdown', array(
+echo elgg_view_field([
+    '#type' => 'dropdown',
     'name' => 'params[ads_geolocation]',
     'value' => $plugin->ads_geolocation?$plugin->ads_geolocation:AgoraOptions::NO,
     'options_values' => $pyn,
-    'label' => elgg_echo('agora:settings:ads_geolocation'),
-    'help' => elgg_echo('agora:settings:ads_geolocation:note'),
-));
+    '#label' => elgg_echo('agora:settings:ads_geolocation'),
+    '#help' => elgg_echo('agora:settings:ads_geolocation:note'),
+]);
 
-echo elgg_view_input('dropdown', array(
+echo elgg_view_field([
+    '#type' => 'dropdown',
     'name' => 'params[sidebar_list]',
     'value' => $plugin->sidebar_list?$plugin->sidebar_list:AgoraOptions::NO,
     'options_values' => $pyn,
-    'label' => elgg_echo('agora:settings:sidebar_list'),
-    'help' => elgg_echo('agora:settings:sidebar_list:note'),
-));
+    '#label' => elgg_echo('agora:settings:sidebar_list'),
+    '#help' => elgg_echo('agora:settings:sidebar_list:note'),
+]);
 
-echo elgg_view_input('dropdown', array(
+echo elgg_view_field([
+    '#type' => 'dropdown',
     'name' => 'params[markericon]',
     'value' => $plugin->markericon?$plugin->markericon:AgoraOptions::ICON,
     'options_values' => [
@@ -47,9 +50,9 @@ echo elgg_view_input('dropdown', array(
         "agora_violet_red" => elgg_echo('agora:settings:markericon:agora_violet_red'),
         "agora_yellow" => elgg_echo('agora:settings:markericon:agora_yellow'),
     ],
-    'label' => elgg_echo('agora:settings:markericon'),
-    'help' => elgg_echo('agora:settings:markericon:note'),
-));
+    '#label' => elgg_echo('agora:settings:markericon'),
+    '#help' => elgg_echo('agora:settings:markericon:note'),
+]);
 
 // initial choice for loading map
 $initial_load = $plugin->initial_load;
@@ -63,24 +66,40 @@ $options[elgg_echo('agora:settings:initial_load:mylocation')] = 'location';
 	
 $initial = '<div class="amap_settings_box">';
 $initial .= '<div class="elgg-subtext">'.elgg_echo('agora:settings:initial_load:note').'</div>';
-$initial .= elgg_view('input/radio', array('name' => 'params[initial_load]', 'value' => $initial_load, 'options' => $options));
+$initial .= elgg_view_field([
+    '#type' => 'radio',
+    'name' => 'params[initial_load]', 
+    'value' => $initial_load, 
+    'options' => $options,
+]);
 $initial .= '</div>';
 
 // no of newest groups
 $initial .= '<div class="amap_settings_box">';
 $initial .= "<div class='txt_label'>" . elgg_echo('agora:settings:initial_load:newest_no') . ": </div>";
-$initial .= elgg_view('input/text', array('name' => 'params[newest_no]', 'value' => (is_numeric($plugin->newest_no)?$plugin->newest_no:AMAP_MA_NEWEST_NO_DEFAULT), 'class' => 'txt_small'));
+$initial .= elgg_view_field([
+    '#type' => 'text',
+    'name' => 'params[newest_no]', 
+    'value' => (is_numeric($plugin->newest_no)?$plugin->newest_no:AMAP_MA_NEWEST_NO_DEFAULT), 
+    'class' => 'txt_small',
+]);
 $initial .= "<span class='elgg-subtext'>".elgg_echo('agora:settings:initial_load:newest_no:note')."</span>";
 $initial .= '</div>';
 
 // default radius
 $initial .= '<div class="amap_settings_box">';
 $initial .= "<div class='txt_label'>" . elgg_echo('agora:settings:initial_load:mylocation_radius') . ": </div>";
-$initial .= elgg_view('input/text', array('name' => 'params[mylocation_radius]', 'value' => (is_numeric($plugin->mylocation_radius)?$plugin->mylocation_radius:AMAP_MA_RADIUS_DEFAULT), 'class' => 'txt_small'));
+$initial .= elgg_view_field([
+    '#type' => 'text',
+    'name' => 'params[mylocation_radius]', 
+    'value' => (is_numeric($plugin->mylocation_radius)?$plugin->mylocation_radius:AMAP_MA_RADIUS_DEFAULT), 
+    'class' => 'txt_small',
+]);
 $initial .= "<span class='elgg-subtext'>".elgg_echo('agora:settings:initial_load:mylocation_radius:note')."</span>";
 $initial .= '</div>';
 echo elgg_view_module("inline", elgg_echo('agora:settings:initial_load:title'), $initial);
 
-
-
-echo elgg_view('input/submit', array('value' => elgg_echo("save")));
+echo elgg_view_field([
+    '#type' => 'submit',
+    'value' => elgg_echo('save'),
+]);

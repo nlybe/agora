@@ -4,7 +4,7 @@
  * @package agora
  */
 
-elgg_require_js("agora/js/amap_images");
+elgg_require_js("agora/amap_images");
 
 // maximum number of images
 $max_images = elgg_extract('$max_images', $vars, AgoraOptions::getParams('max_images'));

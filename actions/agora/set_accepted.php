@@ -34,7 +34,9 @@ if (!($buyer instanceof \ElggUser)) { // if not user entity
 }
 
 if ($errmsg) {
-    register_error($errmsg);
+    // restore ignore access
+    elgg_set_ignore_access($ia);
+    return elgg_error_response(elgg_echo($errmsg));
 } 
 else if ($classfd->canEdit()) {
     $entity = new AgoraSale();
@@ -52,50 +54,59 @@ else if ($classfd->canEdit()) {
     if ($entity->save()) {
         $interest->int_status = AgoraOptions::INTEREST_ACCEPTED;
         if ($interest->save()) {
-            system_message(elgg_echo('agora:set_accepted:success'));
+            // reduce availability
+            if (is_numeric($classfd->howmany) && $classfd->howmany>0) {
+                $classfd->howmany--;
+            }        
+
+            // notify seller
+            $subject = elgg_echo('agora:paypal:sellersubject', array($buyer->username));
+            $message = '<p>' . elgg_echo('agora:paypal:accepteddate') . ': ' . $transaction_date . '</p>';
+            $message .= '<p>' . elgg_echo('agora:add:title') . ': <a href="' . elgg_get_site_url() . 'agora/view/' . $classfd->guid . '">' . $classfd->title . '</a></p>';
+            $message .= '<p>' . elgg_echo('agora:buyerprofil') . ': <a href="' . elgg_get_site_url() . 'profile/' . $buyer->username . '">' . $buyer->username . '</a></p>';
+            notify_user($classfd->owner_guid, $buyer->guid, $subject, $message);
+
+            // notify buyer
+            $subject = elgg_echo('agora:paypal:buyersubject', array($classfd->title));
+            $message = '<p>' . elgg_echo('agora:paypal:buyerbody') . '</p>';
+            $message .= '<p>' . elgg_echo('agora:paypal:title') . ': <a href="' . elgg_get_site_url() . 'agora/view/' . $classfd->guid . '">' . $classfd->title . '</a></p>';
+            notify_user($buyer->guid, $classfd->owner_guid, $subject, $message);
+
+            // notify admins
+            $users_to_notify = AgoraOptions::getUserToNotify();
+            $subject = elgg_echo('agora:paypal:buyersubject', array($classfd->title));
+            $message = '<p>' . elgg_echo('agora:paypal:buyerbody') . '</p>';
+            $message .= '<p>' . elgg_echo('agora:paypal:title') . ': <a href="' . elgg_get_site_url() . 'agora/view/' . $classfd->guid . '">' . $classfd->title . '</a></p>';
+            foreach ($fields as $val) {
+                $user_to_notify = get_user_by_username(trim($val));
+                if ($user_to_notify) {
+                    $res = notify_user($user_to_notify->guid, $classfd->owner_guid, $subject, $message);
+                }
+            }  
+
+            // restore ignore access
+            elgg_set_ignore_access($ia);
+    
+            return elgg_ok_response('', elgg_echo('agora:set_accepted:success'), REFERER);
         } else {
-            register_error(elgg_echo('agora:set_accepted:failed'));
-        }
-
-        // reduce availability
-        if (is_numeric($classfd->howmany) && $classfd->howmany>0) {
-            $classfd->howmany--;
+            // restore ignore access
+            elgg_set_ignore_access($ia);
+    
+            return elgg_error_response(elgg_echo('agora:set_accepted:failed'));
         }        
-
-        // notify seller
-        $subject = elgg_echo('agora:paypal:sellersubject', array($buyer->username));
-        $message = '<p>' . elgg_echo('agora:paypal:accepteddate') . ': ' . $transaction_date . '</p>';
-        $message .= '<p>' . elgg_echo('agora:add:title') . ': <a href="' . elgg_get_site_url() . 'agora/view/' . $classfd->guid . '">' . $classfd->title . '</a></p>';
-        $message .= '<p>' . elgg_echo('agora:buyerprofil') . ': <a href="' . elgg_get_site_url() . 'profile/' . $buyer->username . '">' . $buyer->username . '</a></p>';
-        notify_user($classfd->owner_guid, $buyer->guid, $subject, $message);
-
-        // notify buyer
-        $subject = elgg_echo('agora:paypal:buyersubject', array($classfd->title));
-        $message = '<p>' . elgg_echo('agora:paypal:buyerbody') . '</p>';
-        $message .= '<p>' . elgg_echo('agora:paypal:title') . ': <a href="' . elgg_get_site_url() . 'agora/view/' . $classfd->guid . '">' . $classfd->title . '</a></p>';
-        notify_user($buyer->guid, $classfd->owner_guid, $subject, $message);
-        
-        // notify admins
-        $users_to_notify = AgoraOptions::getUserToNotify();
-        $subject = elgg_echo('agora:paypal:buyersubject', array($classfd->title));
-        $message = '<p>' . elgg_echo('agora:paypal:buyerbody') . '</p>';
-        $message .= '<p>' . elgg_echo('agora:paypal:title') . ': <a href="' . elgg_get_site_url() . 'agora/view/' . $classfd->guid . '">' . $classfd->title . '</a></p>';
-        foreach ($fields as $val) {
-            $user_to_notify = get_user_by_username(trim($val));
-            if ($user_to_notify) {
-                $res = notify_user($user_to_notify->guid, $classfd->owner_guid, $subject, $message);
-            }
-        }
     } 
     else {
-        $errmsg = elgg_echo('agora:error:offline:failed');
-    }
+        // restore ignore access
+        elgg_set_ignore_access($ia);
+
+        return elgg_error_response(elgg_echo('agora:error:offline:failed'));
+    }     
 } 
 else {
-    register_error(elgg_echo("agora:error:action:invalid"));
+    // restore ignore access
+    elgg_set_ignore_access($ia);
+    
+    return elgg_error_response(elgg_echo('agora:error:action:invalid'));
 }
-
-// restore ignore access
-elgg_set_ignore_access($ia);
 
 forward(REFERER);

@@ -11,7 +11,7 @@ if ($group->agora_enable == "no") {
 }
 
 $all_link = elgg_view('output/url', array(
-	'href' => "agora/group/$group->guid/all",
+	'href' => "agora/group/$group->guid",
 	'text' => elgg_echo('link:view:all'),
 	'is_trusted' => true,
 ));

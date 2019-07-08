@@ -4,14 +4,7 @@
  * @package agora
  */
 
-elgg_load_library('elgg:agora');
-elgg_require_js("agora/js/gallery");
-
-//// if paypal adaptive payments is enabled
-//if (AgoraOptions::isPaypalAdaptivePaymentsEnabled()) {
-////    elgg_load_library('elgg:amap_paypal_api');
-////    elgg_require_js("js/amap_paypal_api");
-//}
+elgg_require_js("agora/gallery");
 
 $full = elgg_extract('full_view', $vars, false);
 $entity = elgg_extract('entity', $vars, false);
@@ -57,42 +50,12 @@ if ($entity->digital) {
     ));
 }
 
-$owner_link = elgg_view('output/url', array(
-    'href' => "agora/owner/$owner->username",
-    'text' => $owner->name,
-    'is_trusted' => true,
-));
-$author_text = elgg_echo('byline', array($owner_link));
-
-$date = elgg_view_friendly_time($entity->time_created);
-
-//only display if there are commments
-$comments_link = '';
-if ($entity->comments_on != 'Off') {
-    $comments_count = $entity->countComments();
-    //only display if there are commments
-    if ($comments_count != 0) {
-        $text = (AgoraOptions::allowedComRatOnlyForBuyers() ? elgg_echo("agora:comments") : elgg_echo("comments")) . " ($comments_count)";
-        $comments_link = elgg_view('output/url', array(
-            'href' => $entity->getURL() . '#agora-comments',
-            'text' => $text,
-            'is_trusted' => true,
-        ));
-    } 
-} 
-
-$metadata = elgg_view_menu('entity', array(
-    'entity' => $entity,
-    'handler' => 'agora',
-    'sort_by' => 'priority',
-    'class' => 'elgg-menu-hz',
-));
-
 if (AgoraOptions::allowedComRatOnlyForBuyers()) { // get ratings if enabled for buyers
     $entity_ratings = elgg_view('ratings/ratings', ['entity' => $entity]);
 }
 
-$subtitle = "$author_text $date $comments_link" . ($entity_ratings?'<br />'.$entity_ratings:'');
+// not visible at the moment on elgg3 version
+$subtitle = ($entity_ratings?'<br />'.$entity_ratings:'');
 
 if (elgg_is_active_plugin('amap_maps_api') && AgoraOptions::isGeolocationEnabled() && $entity->location) {
     $clocation = elgg_view('output/url', array(
@@ -105,15 +68,13 @@ if ($full && !elgg_in_context('gallery')) {
     $params = array(
         'entity' => $entity,
         'title' => false,
-        'metadata' => $metadata,
-        'subtitle' => $subtitle,
     );
     $params = $params + $vars;
     $summary = elgg_view('object/elements/summary', $params);
-    
+     
     // button with total price
-    if ($entity->getFinalPrice() > 0 && !$entity->isSoldOut()) {
-        $buy_btn = elgg_format_element('div', ['class' => 'total_price'], elgg_echo('agora:object:total_cost', [AgoraOptions::formatCost($entity->getFinalPrice(), $entity->currency)]));
+    if ($entity->price_final > 0 && !$entity->isSoldOut()) {
+        $buy_btn = elgg_format_element('div', ['class' => 'total_price'], elgg_echo('agora:object:total_cost', [AgoraOptions::formatCost($entity->price_final, $entity->currency)]));
     }
     $content .= elgg_format_element('div', ['class' => 'agoraprint'], $buy_btn.$paypal_btn);
 
@@ -199,15 +160,28 @@ if ($full && !elgg_in_context('gallery')) {
         $content .= elgg_format_element('div', ['class' => 'desc'], agora_get_ad_description($entity->description));
     }
         
-    $body = elgg_format_element('div', ['class' => 'elgg-image-block clearfix'], $content);
+    if ($entity->description) {
+        $body .= elgg_format_element('div', ['class' => 'elgg-image-block clearfix'], elgg_view('output/longtext', [
+            'value' => agora_get_ad_description($entity->description),
+        ]));
+    } 
+    
     echo elgg_view('object/elements/full', array(
         'entity' => $entity,
         'icon' => elgg_view_entity_icon($entity, 'large', ['img_class' => 'elgg-photo']),
+        'show_responses' => elgg_extract('show_responses', $vars, false),
         'summary' => $summary,
-        'body' => $body,
+        'body' => $content,
     ));
 } 
 else if (elgg_in_context('gallery')) {
+    $date = elgg_view_friendly_time($entity->time_created);
+    $owner_link = elgg_view('output/url', array(
+        'href' => "agora/owner/$owner->username",
+        'text' => $owner->name,
+        'is_trusted' => true,
+    ));
+     
     $entity_icon = elgg_view_entity_icon($entity, 'large', ['img_class' => 'elgg-photo']);
     
     $g_content = elgg_format_element('h3', [],elgg_view('output/url', array(
@@ -262,8 +236,6 @@ else {
 
     $params = array(
         'entity' => $entity,
-        'metadata' => $metadata,
-        'subtitle' => $subtitle,
         'content' => $content,
     );
     $params = $params + $vars;

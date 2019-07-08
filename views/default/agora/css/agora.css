@@ -135,12 +135,13 @@ div.features	{
     padding: 2px;
 }
 
-.list_features	{
+/* .list_features	{
     width: 100%;
     margin-bottom: 4px;
     clear: both;
-    display: table;
-}
+    display: flex;
+    flex-shrink: 0;
+} */
 
 .list_features div {
     background-color: #f6f6f6;
@@ -158,6 +159,7 @@ div.features	{
 
 .list_features .f_text	{
     display: table-cell;
+    width: 74%;
 }
 
 div.total_price {

@@ -4,15 +4,13 @@
  * @package Agora
  */
 
-elgg_load_library('elgg:agora');
-
 if (!elgg_is_active_plugin("amap_maps_api")) {
-    register_error(elgg_echo("agora:settings:amap_maps_api:notenabled"));
+    elgg_error_response(elgg_echo('agora:settings:amap_maps_api:notenabled'));
     forward(REFERER);
 }
 
 if (!AgoraOptions::isGeolocationEnabled()) {
-    register_error(elgg_echo("agora:settings:ads_geolocation:notenabled"));
+    elgg_error_response(elgg_echo('agora:settings:ads_geolocation:notenabled'));
     forward(REFERER);
 }
 
@@ -68,14 +66,14 @@ if (!empty($category)) {
         array('name' => 'location', 'value' => '', 'operand' => '!='),
     );
     $options['metadata_name_value_pairs_operator'] = 'AND';
-    $ads = elgg_get_entities_from_metadata($options);
+    $ads = elgg_get_entities($options);
     $title = elgg_echo('agora:label:map') . ': ' . agora_get_cat_name_settings($category);
 } 
 else {
     elgg_push_breadcrumb(elgg_echo('agora'), "agora/all");
     elgg_push_breadcrumb(elgg_echo('agora:label:map'));
     $options['metadata_name_value_pairs'] = array(array('name' => 'location', 'value' => '', 'operand' => '!='));
-    $ads = elgg_get_entities_from_metadata($options);
+    $ads = elgg_get_entities($options);
     $title = elgg_echo('agora:label:map');
 }
 
