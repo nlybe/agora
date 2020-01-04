@@ -77,12 +77,15 @@ else if ($classfd->canEdit()) {
             $subject = elgg_echo('agora:paypal:buyersubject', array($classfd->title));
             $message = '<p>' . elgg_echo('agora:paypal:buyerbody') . '</p>';
             $message .= '<p>' . elgg_echo('agora:paypal:title') . ': <a href="' . elgg_get_site_url() . 'agora/view/' . $classfd->guid . '">' . $classfd->title . '</a></p>';
+            
+            $users_to_notify_guids = [];
             foreach ($fields as $val) {
                 $user_to_notify = get_user_by_username(trim($val));
                 if ($user_to_notify) {
-                    $res = notify_user($user_to_notify->guid, $classfd->owner_guid, $subject, $message);
+                    $users_to_notify_guids[] = $user_to_notify->guid;
                 }
             }  
+            notify_user($users_to_notify_guids, $classfd->owner_guid, $subject, $message);
 
             // restore ignore access
             elgg_set_ignore_access($ia);

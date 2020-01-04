@@ -608,12 +608,14 @@ class AgoraOptions {
             elgg_view('output/url', ['href' => $entity->getURL(), 'title' => $entity->title])
         ]);
 
+        $users_to_notify_guids = [];
         foreach ($users_to_notify as $val) {
             $user_to_notify = get_user_by_username(trim($val));
             if ($user_to_notify) {
-                notify_user($user_to_notify->guid, $buyer->guid, $subject, $message);
+                $users_to_notify_guids[] = $user_to_notify->guid;
             }
         }
+        notify_user($users_to_notify_guids, $buyer->guid, $subject, $message);
         
         return true;
     }    

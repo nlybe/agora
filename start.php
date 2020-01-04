@@ -43,15 +43,15 @@ function agora_init() {
     $item = new ElggMenuItem('agora', elgg_echo('agora:menu'), 'agora/all');
     elgg_register_menu_item('site', $item);
 
-    if ($user = elgg_get_logged_in_user_entity()) {
-        elgg_register_menu_item("page", array(
-            "name" => "agora",
-            "text" => elgg_echo("agora:usersettings:settings"),
-            "href" => "agora/user/" . $user->username,
-            'section' => 'configure',
-            "context" => "settings",
-        ));
-    }
+    // if ($user = elgg_get_logged_in_user_entity()) {
+    //     elgg_register_menu_item("page", array(
+    //         "name" => "agora",
+    //         "text" => elgg_echo("agora:usersettings:settings"),
+    //         "href" => "agora/user/" . $user->username,
+    //         'section' => 'configure',
+    //         "context" => "settings",
+    //     ));
+    // }
 
     // register extra css
     elgg_extend_view('elgg.css', 'agora/css/agora.css');
@@ -75,6 +75,8 @@ function agora_init() {
     // register paypal listener hook
     elgg_register_plugin_hook_handler('paypal_api', 'ipn_log', 'agora_paypal_successful_payment_hook');
     elgg_register_plugin_hook_handler('paypal_api', 'ipn_log_adaptive', 'agora_paypal_adaptive_successful_payment_hook');
+
+    elgg_register_plugin_hook_handler('register', 'menu:page', 'agora_notifications_page_menu');
 
     // Add group option
     elgg()->group_tools->register('agora');

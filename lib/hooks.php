@@ -333,3 +333,40 @@ function agora_menu_setup($hook, $type, $return, $params) {
     
     return $return;
 }
+
+/**
+ * Register menu items in user settings
+ *
+ * @param \Elgg\Hook $hook 'register', 'menu:page'
+ *
+ * @return void|ElggMenuItem[]
+ */
+function agora_notifications_page_menu(\Elgg\Hook $hook) {
+	
+	if (!elgg_in_context('settings') || !elgg_get_logged_in_user_guid()) {
+		return;
+	}
+
+	$user = elgg_get_page_owner_entity();
+	if (!$user) {
+		$user = elgg_get_logged_in_user_entity();
+	}
+	
+	$return = $hook->getValue();
+	$return[] = \ElggMenuItem::factory([
+		// 'name' => '2_a_user_notify',
+		// 'text' => elgg_echo('notifications:subscriptions:changesettings'),
+		// 'href' => elgg_generate_url('settings:notification:personal', [
+		// 	'username' => $user->username,
+		// ]),
+        // 'section' => 'notifications',
+        
+        "name" => "agora",
+        "text" => elgg_echo("agora:usersettings:settings"),
+        "href" => elgg_normalize_url("agora/user/" . $user->username),
+        'section' => 'configure',
+        "context" => "settings",
+	]);
+		
+	return $return;
+}
