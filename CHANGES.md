@@ -2,7 +2,7 @@
 
 CHANGE LOG
 
-2.3.10	(unpublished)
+2.3.10	(Dec 2018)
 --------------------------------
 - Modernize code according Elgg 2.3.x API
 - Several code improvements
