@@ -237,7 +237,7 @@ class AgoraOptions {
             }
         } 
         else if ($whocanpost === 'admins' && elgg_is_active_plugin('paypal_api')) {
-            return elgg_get_plugin_setting('merchant_id', PaypalApiOptions::PAPI_ID);
+            return elgg_get_plugin_setting('merchant_id', PaypalApiOptions::PLUGIN_ID);
         }
         
         return false;

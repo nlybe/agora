@@ -315,9 +315,12 @@ $inputs_list['access_id_input'] = [
 
 if (!$guid && AgoraOptions::checkTermsClassifieds()) {
     $termslink = elgg_view('output/url', array(
-        'href' => elgg_normalize_url("mod/agora/terms.php"),
+        'href' => elgg_normalize_url("agora/terms"),
         'text' => elgg_echo('agora:terms:title'),
         'class' => "elgg-lightbox",
+		'data-colorbox-opts' => json_encode(array(
+			'width' => 800,
+		)),
     ));
     $termsaccept = sprintf(elgg_echo("agora:terms:accept"), $termslink);
     

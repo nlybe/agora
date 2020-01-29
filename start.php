@@ -240,6 +240,10 @@ function agora_page_handler($page) {
             }
             break;  
 
+        case "terms":
+            echo elgg_view_resource('agora/terms');
+            break;            
+
         default:
             echo elgg_view_resource('agora/all');
             return false;
