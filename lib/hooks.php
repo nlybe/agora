@@ -163,6 +163,8 @@ function agora_review_reminder_cron_hook($hook, $entity_type, $returnvalue, $par
  * @return type
  */
 function agora_paypal_successful_payment_hook($hook, $type, $return, $params) {
+    $ia = elgg_set_ignore_access(true);
+
     $transactions_params = $params['txn'];
     if (!$transactions_params) {
         error_log(elgg_echo('paypal_api:error:empty_ipn'));
@@ -184,10 +186,7 @@ function agora_paypal_successful_payment_hook($hook, $type, $return, $params) {
     if (!($buyer instanceof \ElggUser)) {
         error_log(elgg_echo('paypal_api:error:invalid:user:guid'));
         return $return;
-    }    
-    
-    $ia = elgg_get_ignore_access();
-    elgg_set_ignore_access(true);
+    }
     
     $entity = new AgoraSale();
     $entity->subtype = AgoraSale::SUBTYPE;
