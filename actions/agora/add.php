@@ -110,17 +110,17 @@ if ($_FILES['product_icon']['tmp_name']) {
                 }
 
             } 
-            elseif (filesize($_FILES['product_icon']['tmp_name'][$key]) > 5120000) { // file size exceed 5MB
-                unset($file_keys[$key]);
-                system_message(elgg_echo('product_icon:error:image:sizeMB'));
+            // elseif (filesize($_FILES['product_icon']['tmp_name'][$key]) > 5120000) { // file size exceed 5MB
+            //     unset($file_keys[$key]);
+            //     system_message(elgg_echo('product_icon:error:image:sizeMB'));
 
-            } 
-            elseif (!$size || $size[0] > 3264 || $size[1] > 3264) {   // obs } elseif (!$size || $size[0] > 2048 || $size[1] > 1536) {
-                if (($k = array_search($key, $file_keys)) !== false) {
-                    unset($file_keys[$key]);
-                    system_message(elgg_echo('product_icon:error:image:size'));
-                }
-            }
+            // } 
+            // elseif (!$size || $size[0] > 3264 || $size[1] > 3264) {   // obs } elseif (!$size || $size[0] > 2048 || $size[1] > 1536) {
+            //     if (($k = array_search($key, $file_keys)) !== false) {
+            //         unset($file_keys[$key]);
+            //         system_message(elgg_echo('product_icon:error:image:size'));
+            //     }
+            // }
     }
 }
 /////////////////////////////////////////////
