@@ -4,13 +4,14 @@
  * @package agora
  */
 
+use Agora\AgoraOptions;
+
 // get variables
 $s_keyword = stripslashes(get_input('s_keyword', ''));
 $s_category = get_input('s_category', '');
 $s_price_min = get_input('s_price_min', '');
 $s_price_max = get_input('s_price_max', '');
 $sort_by = get_input('sort_by', '');
-
 if (!$sort_by) {
     $sort_by = 'newest';
 }
@@ -30,12 +31,12 @@ if (!$s_category) {
     $selected_category = $s_category;
 }
 
-$options = array(
+$options = [
     'type' => 'object',
     'subtype' => Agora::SUBTYPE,
     'full_view' => false,
     'view_toggle_type' => false
-);
+];
 
 $options["wheres"] = [
     function(\Elgg\Database\QueryBuilder $qb, $alias) use ($s_keyword, $s_category, $s_price_min, $s_price_max) {
@@ -68,33 +69,35 @@ $options["wheres"] = [
 
 // sort results
 if ($sort_by == 's_price_min') {
-    $options["order_by_metadata"] = array('name' => 'price_final', 'direction' => 'ASC', 'as' => 'integer');
+    $options["order_by_metadata"] = ['name' => 'price_final', 'direction' => 'ASC', 'as' => 'integer'];
 } else if ($sort_by == 's_price_max') {
-    $options["order_by_metadata"] = array('name' => 'price_final', 'direction' => 'DESC', 'as' => 'integer');
+    $options["order_by_metadata"] = ['name' => 'price_final', 'direction' => 'DESC', 'as' => 'integer'];
 }
 
 // load the search form
-$body_vars = array();
+$body_vars = [];
 $body_vars['s_action'] = 'agora/search';
 $body_vars['initial_keyword'] = $s_keyword;
 $body_vars['initial_category'] = $s_category;
 $body_vars['initial_price_min'] = $s_price_min;
 $body_vars['initial_price_max'] = $s_price_max;
 $body_vars['sort_by'] = $sort_by;
-$form_vars = array('name' => 'agora_search', 'enctype' => 'multipart/form-data', 'action' => elgg_get_site_url() . 'agora/all');
+$form_vars = ['name' => 'agora_search', 'enctype' => 'multipart/form-data', 'action' => elgg_get_site_url() . 'agora/all'];
 $content = elgg_view_form('agora/search', $form_vars, $body_vars);
 
-$form_vars = array('name' => 'agora_sort_by', 'enctype' => 'multipart/form-data', 'action' => elgg_get_site_url() . 'agora/all');
+$form_vars = ['name' => 'agora_sort_by', 'enctype' => 'multipart/form-data', 'action' => elgg_get_site_url() . 'agora/all'];
 $content .= elgg_view_form('agora/sort_by', $form_vars, $body_vars);
 
+$category = AgoraOptions::getCatName($s_category);
 elgg_pop_breadcrumb();
 if (!empty($s_category)) {
     elgg_push_breadcrumb(elgg_echo('agora'), 'agora/all');
-    elgg_push_breadcrumb(agora_get_cat_name_settings($s_category));
+    elgg_push_breadcrumb($category);
+    
     //$options['metadata_name'] = "category";
     //$options['metadata_value'] = $selected_category;
     $content_tmp = elgg_list_entities($options);
-    $title = elgg_echo('agora') . ': ' . agora_get_cat_name_settings($s_category);
+    $title = elgg_echo('agora') . ': ' . $category;
 } 
 else {    
     $content_tmp = elgg_list_entities($options);
@@ -110,17 +113,17 @@ if (!$content_tmp) {
     $content_tmp = elgg_echo('agora:none');
 }
 
-$content .= elgg_view('agora/list', array(
+$content .= elgg_view('agora/list', [
     'content' => $content_tmp,
-        ));
+]);
 
-$body = elgg_view_layout('content', array(
-    'filter_context' => 'all',
+$body = elgg_view_layout('default', [
+    'filter_value' => 'all',
     'content' => $content,
     'title' => $title,
-    'sidebar' => elgg_view('agora/sidebar', array('selected' => 'all', 'category' => $selected_category)),
-    'filter_override' => elgg_view('agora/nav', array('selected' => 'all')),
-));
+    'sidebar' => elgg_view('agora/sidebar', ['selected' => 'all', 'category' => $selected_category]),
+    'filter_override' => elgg_view('agora/nav', ['selected' => 'all']),
+]);
 
 echo elgg_view_page($title, $body);
 

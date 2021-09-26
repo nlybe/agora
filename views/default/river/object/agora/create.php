@@ -10,9 +10,9 @@ $excerpt = elgg_get_excerpt($object->description);
 $icon = elgg_view_entity_icon($object, 'medium', ['img_class' => 'elgg-photo']);
 $message = elgg_format_element('div', ['style' => 'float:left; margin-right: 5px;'], $icon).$excerpt;
 
-echo elgg_view('river/elements/layout', array(
+echo elgg_view('river/elements/layout', [
     'item' => $vars['item'],
     'message' => $message,
-    'attachments' => elgg_view('output/url', array('href' => $object->address)),
-));
+    'attachments' => elgg_view('output/url', ['href' => $object->address]),
+]);
 

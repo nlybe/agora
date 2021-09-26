@@ -4,6 +4,8 @@
  * @package agora
  */
 
+use Agora\AgoraOptions;
+
 elgg_require_js("agora/agora_add");
 
 $user = elgg_get_logged_in_user_entity();
@@ -34,11 +36,11 @@ if ($guid) {
     $entity = get_entity($guid);
 }
 
-$answers_yesno = array('Yes', 'No');
-$answers_shipping_type = array(
+$answers_yesno = ['Yes', 'No'];
+$answers_shipping_type = [
     AGORA_SHIPPING_TYPE_TOTAL => AGORA_SHIPPING_TYPE_TOTAL,
     AGORA_SHIPPING_TYPE_PERCENTAGE => AGORA_SHIPPING_TYPE_PERCENTAGE
-);
+];
 
 if (empty($currency)) {
     $currency = trim(elgg_get_plugin_setting('default_currency', 'agora'));
@@ -53,7 +55,7 @@ $whocanpost = trim(elgg_get_plugin_setting('agora_uploaders', 'agora'));
 if ($whocanpost === 'allmembers') {
     $paypal_tip = elgg_format_element('div', ['class' => 'paypal_tip'], elgg_echo('agora:add:price:note:importantall', [elgg_normalize_url('agora/user/'.$user->username)]));
 } else if ($whocanpost === 'admins') {
-    $paypal_tip = elgg_format_element('div', ['class' => 'paypal_tip'], elgg_echo('agora:add:price:note:importantadmin', [elgg_normalize_url('admin/settings/agora/')]));
+    $paypal_tip = elgg_format_element('div', ['class' => 'paypal_tip'], elgg_echo('agora:add:price:note:importantadmin', [elgg_normalize_url('admin/agora/paypal_options/')]));
 }
 
 $allow_digital_products = AgoraOptions::isDigitalProductsEnabled();
@@ -156,7 +158,7 @@ $inputs_list['category_input'] = [
         'value' => $category,
         '#label' => elgg_echo('agora:add:category'),
         '#help' => elgg_echo('agora:add:category:note'),
-        'options_values' => agora_settings('categories'),
+        'options_values' => AgoraOptions::getCategories(),
         'required' => true,
     ])),
 ];
@@ -271,22 +273,8 @@ if ($allow_digital_products) {
 }   
 
 
-if (elgg_is_active_plugin('amap_maps_api') && AgoraOptions::isGeolocationEnabled()) {
-    $inputs_list['location_input'] = [
-        'priority' => 110,
-        'render' => elgg_format_element('div', ['id' => 'location_input'], elgg_view_field([
-            '#type' => 'location_autocomplete',
-            'name' => 'location',
-            'value' => $location,
-            '#label' => elgg_echo('agora:add:location'),
-            '#help' => elgg_echo('agora:add:location:note'),
-        ])),
-    ];    
-}
-    
 $inputs_list['description_input'] = [
     'priority' => 120,
-    // 'render' => elgg_format_element('div', ['id' => 'description_input'], elgg_view_input((agora_html_allowed()?'longtext':'plaintext'), array(
     'render' => elgg_format_element('div', ['id' => 'description_input'], elgg_view_field([
         '#type' => agora_html_allowed()?'longtext':'plaintext',
         'id' => 'description',
@@ -318,7 +306,7 @@ if (!AgoraOptions::allowedComRatOnlyForBuyers()) {
         'name' => 'comments_on',
         'value' => elgg_extract('comments_on', $vars, ''),
         '#label' => elgg_echo('comments'),
-        'options_values' => array('On' => elgg_echo('on'), 'Off' => elgg_echo('off')),
+        'options_values' => ['On' => elgg_echo('on'), 'Off' => elgg_echo('off')],
     ]));
 } 
 else {  // if reviews/ratings for buyers is enabled, make comments on in silence
@@ -345,12 +333,12 @@ $inputs_list['access_id_input'] = [
     ])),
 ];
 
-if (!$guid && AgoraOptions::checkTermsClassifieds()) {
-    $termslink = elgg_view('output/url', array(
-        'href' => elgg_normalize_url("mod/agora/terms.php"),
+if (!$guid && AgoraOptions::isTermsEnabled()) {
+    $termslink = elgg_view('output/url', [
+        'href' => elgg_generate_url('agora:rerms'),
         'text' => elgg_echo('agora:terms:title'),
         'class' => "elgg-lightbox",
-    ));
+    ]);
     $termsaccept = sprintf(elgg_echo("agora:terms:accept"), $termslink);
     
     $inputs_list['accept_terms_input'] = [

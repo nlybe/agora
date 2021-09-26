@@ -4,6 +4,8 @@
  * @package agora
  */
 
+use Agora\AgoraOptions;
+
 $settings = [
     'max_images_gallery' => AgoraOptions::MAX_IMAGES_GALLERY,
 ];

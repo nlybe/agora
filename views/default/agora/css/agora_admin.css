@@ -22,30 +22,3 @@
 .list_features .f_text	{
     display: table-cell;
 }
-
-.agora_adaptive_settings {
-    padding: 0 0 0 20px;
-    margin: 0 0 20px 0;
-}
-
-.agora_adaptive_settings fieldset {
-    border:1px solid #eaeaea; 
-    padding: 5px 10px;
-}
-
-.agora_adaptive_settings fieldset legend {
-    padding: 0px 5px;
-}
-
-.agora_adaptive_settings fieldset .elgg-field .elgg-input-single-checkbox {
-    display: inline;
-}
-
-.agora_adaptive_settings fieldset .elgg-field {
-    display: inline;
-    margin-right: 30px;
-}
-
-.agora_adaptive_settings fieldset .elgg-field .elgg-input-single-checkbox {
-    max-width:33%;
-}

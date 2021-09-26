@@ -4,16 +4,13 @@
  * @package agora
  */
 
-if (!elgg_is_active_plugin('amap_maps_api')) {
-    echo elgg_echo('agora:plugins:amap_maps_api:missing');
-    return;
-}
+use Agora\AgoraOptions;
 
 $plugin = elgg_get_plugin_from_id(AgoraOptions::PLUGIN_ID);
-$pyn = array(
+$pyn = [
     AgoraOptions::YES => elgg_echo('agora:settings:yes'),
     AgoraOptions::NO => elgg_echo('agora:settings:no'),
-);
+];
 
 echo elgg_view_field([
     '#type' => 'dropdown',
@@ -59,7 +56,7 @@ $initial_load = $plugin->initial_load;
 if (!$initial_load) {
     $initial_load = 'all';
 }
-$options = array();
+$options = [];
 $options[elgg_echo('agora:settings:initial_load:all')] = 'all';
 $options[elgg_echo('agora:settings:initial_load:newest')] = 'newest';
 $options[elgg_echo('agora:settings:initial_load:mylocation')] = 'location';

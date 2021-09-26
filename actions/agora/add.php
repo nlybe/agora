@@ -4,9 +4,7 @@
  * @package agora
  */
 
-if (elgg_is_active_plugin("amap_maps_api")){
-    elgg_load_library('elgg:amap_maps_api'); 
-} 
+use Agora\AgoraOptions;
 
 // check if user can post classifieds
 if (!AgoraOptions::canUserPostClassifieds()) { 
@@ -36,11 +34,7 @@ elgg_make_sticky_form('agora');
 if (!$title) {
     return elgg_error_response(elgg_echo('agora:save:missing_title'));
 }
-/*    
-if (!$category) {
-    return elgg_error_response(elgg_echo('agora:save:missing_category'));
-}    
-*/
+
 if ($price && !is_numeric($price)) {
     return elgg_error_response(elgg_echo('agora:save:price_not_numeric'));
 }  
@@ -68,54 +62,31 @@ if ($uploaded_files) {
 
     if ($uploaded_file) {
         $allowed_mime_types = AgoraOptions::getAllowedImageFiles();
-        $mime_type = ElggFile::detectMimeType($uploaded_file->getPathname(), $uploaded_file->getClientMimeType());
+        $mime_type = elgg()->mimetype->getMimeType($uploaded_file->getPathname());
         if (!in_array($mime_type, $allowed_mime_types)) {
             return elgg_error_response(elgg_echo('agora:add:error:mime_type', [$mime_type]));
         }
     }
 }
 
-/////////////////////////////////////////////
-// get image sizes
-$icon_sizes = elgg_get_config('agora_image_sizes');
-
-// validate images OBS
-//$existing_images = elgg_get_entities(array(
-//    'type' => 'object',
-//    'subtype' => AgoraImage::SUBTYPE,
-//    'owner_guid' => $guid,
-//    'limit' => 0,
-//    'order_by' => 'e.time_created ASC'
-//));
-
-$file_keys = array();
-if ($_FILES['product_icon']['tmp_name']) {
-
-    $file_keys = array_keys($_FILES['product_icon']['tmp_name']);
-    foreach ($_FILES['product_icon']['tmp_name'] as $key => $tmp_name) {
-        $size = getimagesize($_FILES['product_icon']['tmp_name'][$key]);
-
-        // check for image errors
-        if (!substr_count($_FILES['product_icon']['type'][$key], 'image/') || $_FILES['product_icon']['error'][$key]) {
-            if (($k = array_search($key, $file_keys)) !== false) {
-                    unset($file_keys[$key]);
-            }
-
-        } 
-        elseif (filesize($_FILES['product_icon']['tmp_name'][$key]) > 5120000) { // file size exceed 5MB
-            unset($file_keys[$key]);
-            return elgg_error_response(elgg_echo('agora:product_icon:error:image:sizeMB'));
-
-        } //
-        elseif (!$size || $size[0] > 3264 || $size[1] > 3264) {   
-            if (($k = array_search($key, $file_keys)) !== false) {
-                unset($file_keys[$key]);
-                return elgg_error_response(elgg_echo('agora:product_icon:error:image:size'));
-            }
+$uploaded_files_more = elgg_get_uploaded_files('product_icon');
+if (is_array($uploaded_files_more) && count($uploaded_files_more) > 0) {
+    foreach ($uploaded_files_more as $f) {
+        $uploaded_file_s = array_shift($f);
+        if ($uploaded_file_s && !$uploaded_file_s->isValid()) {
+            $error = elgg_get_friendly_upload_error($uploaded_file_s->getError());
+            return elgg_error_response(elgg_echo($error));
         }
+    
+        if ($uploaded_file_s) {
+            $allowed_mime_types = AgoraOptions::getAllowedImageFiles();
+            $mime_type = elgg()->mimetype->getMimeType($uploaded_file_s->getPathname());
+            if (!in_array($mime_type, $allowed_mime_types)) {
+                return elgg_error_response(elgg_echo('agora:add:error:mime_type', [$mime_type]));
+            }
+        }        
     }
 }
-/////////////////////////////////////////////
 
 $new_flag = false;
 if ($guid == 0) {
@@ -157,11 +128,8 @@ if ($allow_digital_products) { // check for file uploaded only if digital produc
 
             $temp = explode(".", $_FILES["digital_file_box"]["name"]);
             $extension = end($temp);
-            if (in_array($extension, $allowedExts))	 {
-            }
-            else
-            {
-                return elgg_error_response(elgg_echo('agora:add:digital:invalidfiletype', array($digital_file_types)));
+            if (!in_array($extension, $allowedExts))	 {
+                return elgg_error_response(elgg_echo('agora:add:digital:invalidfiletype', [$digital_file_types]));
             } 
         }
     }
@@ -192,16 +160,12 @@ if ($entity->save()) {
         $entity->saveIconFromUploadedFile('upload');
     } 
 
-    // save ad coords location and if amap_maps_api is enabled
-    if (elgg_is_active_plugin("amap_maps_api") && $location){
-        amap_ma_save_object_coords($location, $entity, 'amap_maps_api');
-    }
-
-            // if we have new digital file, upload the file
+    // if we have new digital file, upload the file
     if ($digital && $_FILES["digital_file_box"]["error"] != 4) {	
         $prefixdocs = "agora/file-".$entity->guid;
         $filedocs = new ElggFile();
-        $mime_type_docs = $filedocs->detectMimeType($_FILES['digital_file_box']['tmp_name'], $_FILES['digital_file_box']['type']);
+        $mime_type_docs = elgg()->mimetype->getMimeType($_FILES['digital_file_box']['tmp_name']);
+        // $mime_type_docs = $filedocs->detectMimeType($_FILES['digital_file_box']['tmp_name'], $_FILES['digital_file_box']['type']); // Deprecated
 
         $filedocs->owner_guid = $entity->owner_guid;
         $filedocs->container_guid = $entity->container_guid;
@@ -219,66 +183,88 @@ if ($entity->save()) {
         $filedocs->save();
     } 
 
+    // get image sizes
+    $icon_sizes = elgg_get_config('agora_image_sizes');
+
     /////////////////////////////////////////////// more images
-    if ($file_keys) {
+    if (is_array($uploaded_files_more) && count($uploaded_files_more) > 0) {
         $time = time();
-        $invalid = 0;
-        foreach ($file_keys as $key) {
-            $prefix = "agora/" . $time . $key;
+        foreach ($uploaded_files_more as $key => $f) {
+            $prefix = "agora/".$time.$key;
 
-            // rotate photos if needed (iOS issue)
-            $exif = exif_read_data($_FILES['product_icon']['tmp_name'][$key]);
-            if (!empty($exif['Orientation'])) {
-                $image = imagecreatefromstring(file_get_contents($_FILES['product_icon']['tmp_name'][$key]));
-                switch ($exif['Orientation']) {
-                    case 3:
-                        $image = imagerotate($image, 180, 0);
-                        break;
+            //         // rotate photos if needed (iOS issue)
+            //         $exif = exif_read_data($_FILES['product_icon']['tmp_name'][$key]);
+            //         if (!empty($exif['Orientation'])) {
+            //             $image = imagecreatefromstring(file_get_contents($_FILES['product_icon']['tmp_name'][$key]));
+            //             switch ($exif['Orientation']) {
+            //                 case 3:
+            //                     $image = imagerotate($image, 180, 0);
+            //                     break;
 
-                    case 6:
-                        $image = imagerotate($image, -90, 0);
-                        break;
+            //                 case 6:
+            //                     $image = imagerotate($image, -90, 0);
+            //                     break;
 
-                    case 8:
-                        $image = imagerotate($image, 90, 0);
-                        break;
-                }
-                imagejpeg($image, $_FILES['product_icon']['tmp_name'][$key]);
-            }     
+            //                 case 8:
+            //                     $image = imagerotate($image, 90, 0);
+            //                     break;
+            //             }
+            //             imagejpeg($image, $_FILES['product_icon']['tmp_name'][$key]);
+            //         }             
 
-            $img_orig = get_resized_image_from_existing_file($_FILES['product_icon']['tmp_name'][$key], 2048, 1536, false);
-            $filehandler = new AgoraImage();
-            $filehandler->access_id = ACCESS_PUBLIC;
-            $filehandler->owner_guid = elgg_get_logged_in_user_guid();
-            $filehandler->container_guid = $entity->guid;
-            $filehandler->prefix_time = $time;
-            $filehandler->prefix_key = $key;
-            $filehandler->setFilename($prefix . ".jpg");
-            $filehandler->open("write");
-            $filehandler->write($img_orig);
-            $filehandler->close();
-            $filehandler->save();
+            $fh = new AgoraImage();
+            $fh->access_id = ACCESS_PUBLIC;
+            $fh->owner_guid = elgg_get_site_entity()->guid;
+            $fh->container_guid = $entity->guid;
+            $fh->prefix_time = $time;
+            $fh->prefix_key = $key;
+            $fh->originalfilename = "ad_{$entity->guid}.jpg";
+            $fh->setFilename($prefix.".jpg");
+
+            $uploaded = false;
+            $filestorename = $fh->getFilenameOnFilestore();
+            try {
+                $uploaded = $f->move(pathinfo($filestorename, PATHINFO_DIRNAME), pathinfo($filestorename, PATHINFO_BASENAME));
+            } catch (FileException $ex) {
+                return elgg_error_response(elgg_echo('agora:products:invalid:icon'));
+            }
+
+            $guid = 0;
+            if ($uploaded) {
+                $mime_type = $fh->getMimeType();
+                $fh->setMimeType($mime_type);
+                $fh->simpletype = elgg()->mimetype->getSimpleType($mime_type);
+                // $fh->simpletype = elgg_get_file_simple_type($mime_type);
+                $guid = $fh->save();
+            }
+
+            // if (!$guid) {
+            //     return elgg_error_response(elgg_echo('agora:products:invalid:icon'));
+            // }
 
             foreach ($icon_sizes as $name => $size_info) {
-                $resized = get_resized_image_from_existing_file($filehandler->getFilenameOnFilestore(),$size_info['w'], $size_info['h'], $size_info['square']);
-                if ($resized) {
-                    $file = new ElggFile();
-                    $file->owner_guid = elgg_get_logged_in_user_guid();
-                    $file->setMimeType('image/jpeg');
-                    $file->setFilename($prefix.$name.".jpg");
-                    $file->open("write");
-                    $file->write($resized);
-                    $file->close();					
+                try {
+                    $fh->setFilename($prefix.$name.".jpg");
+                    // touch file location in order to create the file
+                    $fh->open('write');
+                    $fh->close();
+        
+                    $resized = elgg_save_resized_image($filestorename, $fh->getFilenameOnFilestore(), [
+                        'w' => $size_info['w'], 
+                        'h' => $size_info['h'], 
+                        'square' => $size_info['square'], 
+                    ]);
+                } catch (Exception $e) {
+                    error_log($e->getMessage());
+                    
+                    if ($fh->exists()) {
+                        $fh->delete();
+                    }
                 } 
             }
 
-            $filehandler->file_prefix = $prefix;
-
-            if ($invalid) {
-                return elgg_error_response(elgg_echo('agora:products:invalid:icon:size'));
-            }
+            $fh->file_prefix = $prefix;
         }
-
     }
     /////////////////////////////////////////////// more images
 

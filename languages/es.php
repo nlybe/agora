@@ -5,7 +5,7 @@
  * Traduccido por Javier @Inside the hotel
  */
 
-$lang = array(
+return [
 
     // menu items and titles	
     'agora' => "Experiencias",
@@ -23,8 +23,6 @@ $lang = array(
     'agora:price' => "Precio",
     'agora:location' => "Localización",
     'agora:howmany' => "No de unidades disponibles",
-    'agora:list:list' => "Ver lista",
-    'agora:list:gallery' => "Vista de la galería",
     'agora:categories:all' => "Todas las categorías",
     'agora:terms:title' => "Términos de uso",
     'agora:terms:accept' => "He leído y aceptado el %s",
@@ -176,7 +174,6 @@ $lang = array(
     'agora:settings:digital:file_types' => 'Select allowed file type for digital products',
     'agora:settings:digital:file_types:note' => 'Set the allowed file type for digital products. Seperate each type with commas like <strong>pdf, PDF, zip, ZIP</strong> etc.',   
     'agora:settings:ads_geolocation:notenabled' => 'Experiences Geolocation is not enabled',
-	'agora:settings:amap_maps_api_geocoder:notenabled' => 'Kanellga Maps Api is not enabled. Map of ads cannot be displayed', 
 	'agora:settings:users_to_notify' => 'Usuarios que notificar',
     'agora:settings:users_to_notify:note' => 'Establecer una lista de usuarios que van a ser notificados por cada transaccción . Utilice nombres de usuario y separarlos con comas.',
     'agora:settings:tabs:general_options' => 'Opciones generales',
@@ -281,6 +278,4 @@ $lang = array(
     'agora:usersettings:update:error' => "Error on saving Classifieds Settings",
     'agora:usersettings:no_fornormaluseryet' => "No settings to configure yet",  
 
-);
-
-add_translation("es", $lang);
+];

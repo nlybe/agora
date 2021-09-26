@@ -4,7 +4,7 @@
  * @package Agora
  */
 
-$lang = array(
+return [
 
     // menu items and titles
     'agora' => "Αγγελίες",
@@ -22,8 +22,6 @@ $lang = array(
     'agora:price' => "Τιμή",
     'agora:location' => "Location",
     'agora:howmany' => "Αριθμός διαθέσιμων",
-    'agora:list:list' => "Προβολή λίστας",
-    'agora:list:gallery' => "Προβολή εικονιδίων",
     'agora:categories:all' => "Όλες οι κατηγορίες",
     'agora:terms:title' => "Όρους χρήσης",
     'agora:terms:accept' => "Έχω διαβάσει και αποδέχομαι τους %s",
@@ -46,6 +44,7 @@ $lang = array(
     'agora:delete:success' => "Η αγγελία σας διαγράφτηκε.",    
     'agora:delete:failed' => "Η αγγελίαςσας δεν μπορεί να διαγραφτεί.",   
     'agora:save:howmany_not_numeric' => "Ο αριθμός των διαθέσιμων δεν είναι έγκυρος αριθμός. Η αγγελία σας δεν μπορεί να αποθηκευτεί.",
+    'agora:icon:delete:success' => 'Επιτυχής διαγραφή φωτογραφίας',
     
     // add classfieds function
     'agora:add' => "Δημοσίευση Αγγελίας",
@@ -114,8 +113,7 @@ $lang = array(
     'agora:settings:ads_geolocation' => 'Enable ad geolocation and map',
     'agora:settings:ads_geolocation:note' => 'Set yes for enable ad geolocation and map view.',  
     'agora:settings:ads_geolocation:notenabled' => 'Classifieds Geolocation is not enabled',
-    'agora:settings:amap_maps_api_geocoder:notenabled' => 'Kanellga Maps Api is not enabled. Map of ads cannot be displayed',       
-	'agora:settings:users_to_notify' => 'Users to Notify',
+    'agora:settings:users_to_notify' => 'Users to Notify',
     'agora:settings:users_to_notify:note' => 'Set a list of users who will be notified for every transsaction. Use usernames and seperate them with comma.',
     'agora:settings:tabs:general_options' => 'General Options',
     'agora:settings:tabs:paypal_options' => 'Paypal Options',
@@ -185,6 +183,4 @@ $lang = array(
     'agora:search:usersfound' => "Προϊόντα που βρέθηκαν",
     'agora:search:around' => "Προϊόντα κοντινά στα προϊόντα που βρέθηκαν",  
     
-);
-
-add_translation("el", $lang);
+];

@@ -4,16 +4,18 @@
  * @package agora
  */
 
+use Agora\AgoraOptions;
+
 if (!elgg_is_active_plugin('ratings')) {
     echo elgg_echo('agora:plugins:ratings:missing');
     return;
 }
 
 $plugin = elgg_get_plugin_from_id(AgoraOptions::PLUGIN_ID);
-$pyn = array(
+$pyn = [
     AgoraOptions::YES => elgg_echo('agora:settings:yes'),
     AgoraOptions::NO => elgg_echo('agora:settings:no'),
-);
+];
 
 echo elgg_view_field([
     '#type' => 'dropdown',

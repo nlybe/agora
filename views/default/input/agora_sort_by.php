@@ -4,21 +4,17 @@
  * @package agora
  */
  
-$selected_item = elgg_extract("value", $vars, "");
+$options = [];
+$options['newest'] = elgg_echo('agora:add:category:newest');
+$options['s_price_min'] = elgg_echo('agora:add:category:s_price_min');
+$options['s_price_max'] = elgg_echo('agora:add:category:s_price_max');
 
-?>
-
-<div class="lm_sports">
-	<select <?php echo elgg_format_attributes($vars); ?> onchange="this.form.submit()">
-	<?php	
-	
-		echo "<option value='0' >".elgg_echo('agora:add:category:sortby')."</option>";	
-		echo "<option value='newest' ".($selected_item=='newest'?'selected=\"selected\"':'')." >".elgg_echo('agora:add:category:newest')."</option>";
-		echo "<option value='s_price_min' ".($selected_item=='s_price_min'?'selected=\"selected\"':'')." >".elgg_echo('agora:add:category:s_price_min')."</option>";
-		echo "<option value='s_price_max' ".($selected_item=='s_price_max'?'selected=\"selected\"':'')." >".elgg_echo('agora:add:category:s_price_max')."</option>";
-
-	?>
-	</select>
-</div>
-
+echo elgg_view_field([
+	'#type' => 'select',
+	'id' => elgg_extract("id", $vars),
+	'name' => elgg_extract("name", $vars),
+	'options_values' => $options,
+	'value' => elgg_extract("value", $vars),
+	'onchange' => "this.form.submit()",
+]);
 

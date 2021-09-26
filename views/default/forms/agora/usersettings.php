@@ -4,6 +4,8 @@
  * @package agora
  */
 
+use Agora\AgoraOptions;
+
 $user = elgg_extract("user", $vars);
 
 if (empty($user) || !$user->canEdit()) {
@@ -37,7 +39,7 @@ if (!empty($form_body)) {
     ]);
     $form_body .= elgg_format_element('div', ['class' => 'elgg-foot'], $form_footer);
 
-    echo elgg_view("input/form", array("body" => $form_body, "action" => "action/agora/usersettings", "class" => "elgg-form-alt", 'enctype' => 'multipart/form-data'));
+    echo elgg_view("input/form", ["body" => $form_body, "action" => "action/agora/usersettings", "class" => "elgg-form-alt", 'enctype' => 'multipart/form-data']);
 } else {
     echo elgg_echo("agora:usersettings:no_settings");
 }

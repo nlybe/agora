@@ -4,6 +4,8 @@
  * @package agora
  */
 
+namespace Agora; 
+
 class AgoraOptions {
 
     const PLUGIN_ID = 'agora';                      // current plugin ID
@@ -12,7 +14,6 @@ class AgoraOptions {
     const ON = 'on';                                // general purpose On
     const ICON = 'agora_forest_green';              // default map icon
     const PURCHASE_METHOD_PAYPAL = 'Paypal';        // paypal method of purchase
-    const PURCHASE_METHOD_PAYPAL_ADAPTIVE = 'Paypal Adaptive';        // paypal adaptive method of purchase
     const PURCHASE_METHOD_OFFLINE = 'Offline';      // offline method of purchase
     const INTEREST = 'INTEREST';                    // define initial interest
     const INTEREST_ACCEPTED = 'ACCEPTED';           // define interest as accepted
@@ -22,7 +23,6 @@ class AgoraOptions {
     const UPLOADER_ALL = 'allmembers';              // who can posts ads: all
     const UPLOADER_ADMINS = 'admins';               // who can posts ads: admins
     const MAX_IMAGES_GALLERY = 10;                  // define maximum number of images in ads gallery
-    const ADAPTIVE_DEFAULT_COMMISSION = 10;         // define default commission for adaptive payments
     
     /**
      * Get param value from settings
@@ -35,6 +35,48 @@ class AgoraOptions {
         }
         
         return trim(elgg_get_plugin_setting($setting_param, self::PLUGIN_ID)); 
+    }
+
+    /**
+     * Get list of categories
+     * 
+     * @return array: list of categories
+     */
+    Public Static function getCategories() {
+        $type = trim(elgg_get_plugin_setting('categories', self::PLUGIN_ID));
+        $fields = explode(",", $type);
+
+        $field_values[NULL] = elgg_echo('agora:add:category:select');
+        foreach ($fields as $val) {
+            $key = elgg_get_friendly_title($val);
+            if ($key) {
+                $field_values[$key] = $val;
+            }
+        }
+        return $field_values;
+    }
+
+    /**
+     * Get category title
+     * 
+     * @return string
+     */
+    
+    Public Static function getCatName($catname = null, $linked = false) {
+        $type = trim(elgg_get_plugin_setting('categories', self::PLUGIN_ID));
+        $fields = explode(",", $type);
+        foreach ($fields as $val) {
+            $key = elgg_get_friendly_title($val);
+            if ($key == $catname) {
+                if ($linked) {
+                    $page = "agora/all/{$key}/";
+                    return elgg_format_element('a', ['class' => 'elgg-menu-item', 'href' => elgg_get_site_url().$page], $val);
+                } else {
+                    return $val;
+                }
+            }
+        }
+        return null;
     }
     
     /**
@@ -227,17 +269,17 @@ class AgoraOptions {
      * @param type $owner_guid
      * @return type
      */
-    function getPaypalAccount($owner_guid) {
+    Public Static function getPaypalAccount($owner_guid) {
         $whocanpost = self::getParams('agora_uploaders');
     
         if ($whocanpost === 'allmembers') {
             $owner = get_user($owner_guid);
-            if (elgg_instanceof($owner, 'user')) {
+            if ($owner instanceof \ElggUser) {
                 return trim($owner->getPrivateSetting("agora_paypal_account"));
             }
         } 
         else if ($whocanpost === 'admins' && elgg_is_active_plugin('paypal_api')) {
-            return elgg_get_plugin_setting('merchant_id', PaypalApiOptions::PLUGIN_ID);
+            return elgg_get_plugin_setting('cliend_id', 'paypal_api');
         }
         
         return false;
@@ -246,7 +288,7 @@ class AgoraOptions {
     /**
      * Get list of users to notify for transactions in settings
      * 
-     * @return type
+     * @return array
      */
     Public Static function getUserToNotify(){
         $users_to_notify = self::getParams('users_to_notify');
@@ -310,7 +352,7 @@ class AgoraOptions {
     }
     
     /**
-     C check if members can send private message to seller
+     * Check if members can send private message to seller
      * 
      * @return boolean
      */
@@ -406,8 +448,8 @@ class AgoraOptions {
      * @return type
      */
     Public Static function getAllTimesZones() {
-        $zones_array = array();
-        $timestamp = time();
+        $zones_array = [];
+        // $timestamp = time();
 
         foreach (timezone_identifiers_list() as $key => $zone) {
             $zones_array[$zone] = $zone;
@@ -425,7 +467,7 @@ class AgoraOptions {
      * 
      * @return boolean
      */
-    Public Static function checkTermsClassifieds() {
+    Public Static function isTermsEnabled() {
         $terms_of_use = self::getParams('terms_of_use');
 
         if (!empty($terms_of_use) && $terms_of_use != null) {
@@ -434,6 +476,21 @@ class AgoraOptions {
 
         return false;
     }    
+
+    /**
+     * Get terms of use
+     * 
+     * @return boolean
+     */
+    Public Static function getTerms() {
+        $terms_of_use = self::getParams('terms_of_use');
+
+        if (!empty($terms_of_use) && $terms_of_use != null) {
+            return $terms_of_use ;
+        }
+
+        return false;
+    }     
     
     /**
      * Check if purchase datetime is with period spcified in settings.
@@ -499,65 +556,8 @@ class AgoraOptions {
         }
 
         return false;
-    }    
+    }
     
-    /**
-    * Check if adaptive payments is enabled. 
-    * 
-    * Returns true if all options below are true:
-    * 1. paypal_api is enabled
-    * 2. adaptive payment option is enabled on agora settings
-    * 3. all fields on paypal_api settings are not empty
-    * 4. the commission is numeric and between 0 and 100
-    * 
-    */ 
-    Public Static function isPaypalAdaptivePaymentsEnabled() {
-        if (!self::isPaypalEnabled()) {
-            return false;
-        }
-
-        $adaptive_payments = self::getParams('agora_adaptive_payments');
-        if ($adaptive_payments !== self::ON) {
-            return false;
-        }  
-        else {
-            $API_caller_username = trim(elgg_get_plugin_setting('paypal_API_caller_username', 'paypal_api'));
-            $API_caller_passwd = trim(elgg_get_plugin_setting('paypal_API_caller_passwd', 'paypal_api'));
-            $API_caller_signature = trim(elgg_get_plugin_setting('paypal_API_signature', 'paypal_api'));
-            $API_app_id = trim(elgg_get_plugin_setting('paypal_API_app_id', 'paypal_api'));
-            $commission = self::getParams('agora_adaptive_payments_commission');
-              
-            if (
-                    !empty($API_caller_username) 
-                    && !empty($API_caller_passwd) 
-                    && !empty($API_caller_signature) 
-                    && !empty($API_app_id) 
-                    && (is_numeric($commission) 
-                    && ($commission > 0) 
-                    && ($commission < 100) 
-                )) {
-                    return true;
-            }
-        }
-
-        return false;
-   }
-   
-    /*
-     * Get the owner commission amount for adaptive payments for a given price
-     * 
-     * Returns the commission
-     */
-    Public Static function getAdaptivePaymentOwnerCommission($classifieds_price) {
-        $site_owner_commission = self::getParams('agora_adaptive_payments_commission');
-        
-        if (is_numeric($site_owner_commission)) {
-            return $classifieds_price * $site_owner_commission / 100;
-        }
-
-        return 0;
-    }   
-   
     /**
      * Notify buyer for transaction
      * 
@@ -570,7 +570,7 @@ class AgoraOptions {
             return false;
         }
         
-        if (!elgg_instanceof($ad, 'object', Agora::SUBTYPE)) {
+        if (!$ad instanceof Agora) { 
             return false;
         }
 
@@ -594,11 +594,11 @@ class AgoraOptions {
             return false;
         }
         
-        if (!elgg_instanceof($ad, 'object', Agora::SUBTYPE)) {
+        if (!$ad instanceof Agora) { 
             return false;
         }
         
-        if (!elgg_instanceof($entity, 'object', AgoraSale::SUBTYPE)) {
+        if (!$entity instanceof AgoraSale) {
             return false;
         }
 

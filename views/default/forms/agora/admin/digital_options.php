@@ -4,17 +4,19 @@
  * @package agora
  */
 
+use Agora\AgoraOptions;
+
 $plugin = elgg_get_plugin_from_id(AgoraOptions::PLUGIN_ID);
 
 $ads_digital = $plugin->ads_digital;
 if(empty($ads_digital)){
     $ads_digital = 'no';
 }    
-$pad = array(
+$pad = [
     "no" => elgg_echo('agora:settings:no'),
     "digitalplus" => elgg_echo('agora:settings:ads_digital:plus'),
     "digitalonly" => elgg_echo('agora:settings:ads_digital:only'),
-); 
+]; 
 
 echo elgg_view_field([
     '#type' => 'dropdown',

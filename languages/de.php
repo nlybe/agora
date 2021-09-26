@@ -25,7 +25,6 @@ return [
     'agora:error:offline:failed' => "Purchace not possbile to be saved. Please contact with site administrator",
     'agora:plugins:paypal_api:missing' => 'Paypal API plugin (paypal_api) is missing', 
     'agora:plugins:ratings:missing' => 'Ratings (ratings) plugin is missing', 
-    'agora:plugins:amap_maps_api:missing' => 'The Maps API plugin (amap_maps_api) plugin is missing',
     'agora:error:invalid:entity' => 'Invalid entity',
     
     // basic options
@@ -38,8 +37,6 @@ return [
     'agora:price' => "Price",
     'agora:location' => "Location",
     'agora:howmany' => "No of available units",
-    'agora:list:list' => "List view",
-    'agora:list:gallery' => "Gallery view",
     'agora:categories:all' => "All Categories",
     'agora:terms:title' => "Terms of use",
     'agora:terms:accept' => "I have read and accepted the %s",
@@ -271,7 +268,6 @@ return [
     'agora:settings:digital:file_types' => 'Select allowed file type for digital products',
     'agora:settings:digital:file_types:note' => 'Set the allowed file type for digital products. Seperate each type with commas like <strong>pdf, PDF, zip, ZIP</strong> etc.',   
     'agora:settings:ads_geolocation:notenabled' => "Classifieds Geolocation is not enabled",
-    'agora:settings:amap_maps_api_geocoder:notenabled' => "Kanellga Maps Api is not enabled. Map of ads cannot be displayed", 
     'agora:settings:users_to_notify' => 'Users to Notify',
     'agora:settings:users_to_notify:note' => 'Set a list of users who will be notified for every transsaction. Use usernames and seperate them with comma.',
     'agora:settings:tabs:basic_options' => 'Basic Options',
@@ -299,7 +295,6 @@ return [
     'agora:settings:agora_paypal_enabled' => "Enable Paypal Gateway",    
     'agora:settings:max_images' => "Maximum number of images",  
     'agora:settings:max_images:note' => "Set maximum number of images for ad ",    
-    'agora:settings:amap_maps_api:not_enabled' => 'The maps API plugin is not enabled', 
     'agora:settings:initial_load:title' => 'Initial map',
     'agora:settings:initial_load:note' => 'Select what to show on initial map',
     'agora:settings:initial_load:all' => 'All ads',
@@ -355,19 +350,6 @@ return [
     'agora:ipn:error6' => "This buyer is not registered user",
     'agora:ipn:error7' => "Item_number not set",
     'agora:ipn:error8' => "Item is not valid agora object",
-    'agora:settings:agora_adaptive_payments:title' => 'Adaptive Payments',
-    'agora:settings:agora_adaptive_payments:paypal_api' => 'Paypal API plugin settings',
-    'agora:settings:agora_adaptive_payments' => 'Enable adaptive payments',
-    'agora:settings:agora_adaptive_payments:note' => 'Select Yes to enable adaptive payments in PayPal. To configure settings for adaptive payments, %s.',
-    'agora:settings:agora_adaptive_payments_commission' => 'Commission: ',
-    'agora:settings:agora_adaptive_payments_commission:note' => 'Select commission in &#37 which will be applied for every ad sale. Value must be numeric between 0 and 100.<br />The commission will be received by <strong>Merchant ID or email address</strong> as entered in %s.',
-    'agora:paypal:agora_adaptive_payments_important' => '<strong>Important notice:</strong> Adaptive payment will be applied ONLY IF ALL OPTIONS below are true:
-		<ul>
-			<li>1. paypal_api plugin is enabled</li>
-                        <li>2. all fields about adaptive payments on paypal_api plugin settings are NOT EMPTY</li>
-			<li>3. adaptive payment option is enabled on current settings</li>			
-			<li>4. the commission is numeric and between 0 and 100</li>
-		</ul> ',
     
     // paypal api
     'agora:sales:title' => "Sale of %s",

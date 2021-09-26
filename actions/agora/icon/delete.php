@@ -7,8 +7,8 @@
 $guid = get_input('guid');
 $img = get_entity($guid);
 
-if (!elgg_instanceof($img, 'object', AgoraImage::SUBTYPE) || !$img->canEdit()) {
-    return elgg_error_response(elgg_echo('products:error:invalid:guid'));
+if (!$img instanceof AgoraImage || !$img->canEdit()) {
+    return elgg_error_response(elgg_echo('agora:icon:delete:error'));
 }
 
 // Delete all icons from diskspace

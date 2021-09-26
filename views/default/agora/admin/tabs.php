@@ -18,11 +18,11 @@ $tabs[] = [
 	'selected' => elgg_extract('paypal_options_selected', $vars, false),
 ];
 
-$tabs[] = [
-    'text' => elgg_echo('admin:agora:map_options'),
-    'href' => 'admin/agora/map_options',
-	'selected' => elgg_extract('map_options_selected', $vars, false),
-];
+// $tabs[] = [
+//     'text' => elgg_echo('admin:agora:map_options'),
+//     'href' => 'admin/agora/map_options',
+// 	'selected' => elgg_extract('map_options_selected', $vars, false),
+// ];
 
 $tabs[] = [
     'text' => elgg_echo('admin:agora:ratings_options'),

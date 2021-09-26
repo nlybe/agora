@@ -14,12 +14,12 @@ if (!$num) {
 }
 
 // load list of bought items
-$options_bought = array(
+$options_bought = [
     'type' => 'object',
     'subtype' => AgoraSale::SUBTYPE,
     'limit' => $num,
     'owner_guid' => $owner->guid,
-);
+];
 $items_bought = elgg_get_entities($options_bought);
 
 $item_guid = 0;

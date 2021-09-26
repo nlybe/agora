@@ -11,7 +11,7 @@ $entity = elgg_extract('entity', $vars, false);
 $owner = $entity->getOwnerEntity();
 
 $post = get_entity($entity->container_guid);
-if (!elgg_instanceof($post, 'object', Agora::SUBTYPE)) {
+if (!$post instanceof Agora) { 
     return;
 }
 
@@ -54,12 +54,12 @@ if ($full) {
         ]);
     }
 
-    $params = array(
+    $params = [
         'entity' => $entity,
         'title' => $post->title,
         //'metadata' => $metadata,
         'content' => elgg_format_element('div', ['style' => 'margin: 10px 0;'], $content),
-    );
+    ];
 
     $params = $params + $vars;
     $body = elgg_view('object/elements/summary', $params);
@@ -77,10 +77,10 @@ else {
             'href' => $entity->getURL(), 
             'class' => 'elgg-lightbox', 
             'text' => $entity->transaction_id,
-            'data-colorbox-opts' => json_encode(array(
+            'data-colorbox-opts' => json_encode([
                 'width' => 800,
                 'height' => 400,
-            )),
+            ]),
         ]),
     ]);
     
@@ -106,11 +106,11 @@ else {
         ]);        
     }
     
-    $params = array(
+    $params = [
         'entity' => $entity,
         'title' => $is_buyer?$post->title:false,
         'content' => elgg_format_element('div', [], $content),
-    );
+    ];
 
     $params = $params + $vars;
     $body = elgg_view('object/elements/summary', $params);

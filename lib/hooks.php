@@ -6,37 +6,16 @@
  * All hooks are here
  */
  
-/**
- * Call from Paypal must be always accessible, even in walled garden Elgg sites
- *
- * @param string $hook
- * @param string $type
- * @param array $return_value
- * @param array $params
- * @return array
- */
-function agora_walled_garden_hook($hook, $type, $return_value, $params) {
-    $add = array();
-    $add[] = 'ipn';
-    $add[] = 'agora/ipn';
-
-    if (is_array($return_value))
-        $add = array_merge($add, $return_value);
-
-    return $add;
-}
+use Agora\AgoraOptions;
 
 /**
  * Appends input fields for posting ads
  *
- * @param string $hook        "members:config"
- * @param string $type        "tabs"
- * @param array  $returnvalue array that build navigation tabs
- * @param array  $params      unused
+ * @param \Elgg\Hook $hook The hook object
  * @return array
  */
-function agora_input_list($hook, $type, $return, $params) {
-//    usort($return,'AgoraOptions::invenDescSort');
+function agora_input_list(\Elgg\Hook $hook) {
+    $return = $hook->getValue();
     usort($return, function ($item1, $item2) {
         if ($item1['priority'] == $item2['priority']) {
             return 0;
@@ -50,19 +29,16 @@ function agora_input_list($hook, $type, $return, $params) {
 /**
  * Format and return the URL for agora objects
  *
- * @param string $hook
- * @param string $type
- * @param string $url
- * @param array  $params
- * @return string URL of agora.
+ * @param \Elgg\Hook $hook The hook object
+ * @return string URL of agora
  */
-function agora_set_url($hook, $type, $url, $params) {
-    $entity = $params['entity'];
-    if (elgg_instanceof($entity, 'object', Agora::SUBTYPE)) {
+function agora_set_url(\Elgg\Hook $hook) {
+    $entity = $hook->getEntityParam();
+    if ($entity instanceof Agora) { 
         $friendly_title = elgg_get_friendly_title($entity->title);
         return "agora/view/{$entity->guid}/$friendly_title";
     }
-    else if (elgg_instanceof($entity, 'object', AgoraSale::SUBTYPE)) {
+    else if ($entity instanceof AgoraSale) {
         $friendly_title = elgg_get_friendly_title($entity->title);
         return "agora/transactions/view/{$entity->guid}/$friendly_title";
     }   
@@ -71,20 +47,20 @@ function agora_set_url($hook, $type, $url, $params) {
 /**
  * Add a menu item to an ownerblock
  * 
- * @param type $hook
- * @param type $type
- * @param type $return
- * @param type $params
+ * @param \Elgg\Hook $hook The hook object
  * @return \ElggMenuItem
  */
-function agora_owner_block_menu($hook, $type, $return, $params) {
-    if (elgg_instanceof($params['entity'], 'user')) {
-        $url = "agora/owner/{$params['entity']->username}";
+function agora_owner_block_menu(\Elgg\Hook $hook) {
+    $entity = $hook->getEntityParam();
+	$return = $hook->getValue();
+
+    if ($entity instanceof \ElggUser) {
+        $url = "agora/owner/{$entity->username}";
         $item = new ElggMenuItem('agora', elgg_echo('agora'), $url);
         $return[] = $item;
     } else {
-        if ($params['entity']->agora_enable != 'no') {
-            $url = "agora/group/{$params['entity']->guid}";
+        if ($entity->agora_enable != 'no') {
+            $url = "agora/group/{$entity->guid}";
             $item = new ElggMenuItem('agora', elgg_echo('agora:group'), $url);
             $return[] = $item;
         }
@@ -96,191 +72,106 @@ function agora_owner_block_menu($hook, $type, $return, $params) {
 /**
  * Cron function for sending notification to buyers for review of the the ad they bought with link and login
  * 
- * @param type $hook
- * @param type $entity_type
- * @param type $returnvalue
- * @param type $params
+ * @param \Elgg\Hook $hook The hook object
  * @return boolean
  */
-function agora_review_reminder_cron_hook($hook, $entity_type, $returnvalue, $params) {
+function agora_review_reminder_cron_hook(\Elgg\Hook $hook) {
+    if (!AgoraOptions::allowedComRatOnlyForBuyers()) {
+        return;
+    }
 
-    if (AgoraOptions::allowedComRatOnlyForBuyers()) {
+    $buyers_comrat_notify_by = trim(elgg_get_plugin_setting('buyers_comrat_notify_by', 'agora'));
+    $notifier = get_user_by_username($buyers_comrat_notify_by);
+    if ($notifier instanceof \ElggUser) {
+        $notifier_guid = $notifier->guid;
+    }
+    else {
+        $notifier_guid = elgg_get_site_entity()->guid;
+    }
 
-        $buyers_comrat_notify_by = trim(elgg_get_plugin_setting('buyers_comrat_notify_by', 'agora'));
-        $notifier = get_user_by_username($buyers_comrat_notify_by);
-        if (elgg_instanceof($notifier, 'user')) {
-            $notifier_guid = $notifier->guid;
-        }
-        else {
-            $notifier_guid = elgg_get_site_entity()->guid;
-        }
-
+    elgg_call(ELGG_IGNORE_ACCESS, function () use ($notifier_guid) {
         $ts_upper_days = trim(elgg_get_plugin_setting('buyers_comrat_notify', 'agora'));
         $ts_lower_days = $ts_upper_days + 1;
-
         $ts_upper = strtotime("-$ts_upper_days days");
         $ts_lower = strtotime("-$ts_lower_days days");
 
-        // set ignore access for loading all entries
-        $ia = elgg_get_ignore_access();
-        elgg_set_ignore_access(true);
-
-        $options = array(
+        $options = [
             'type' => 'object',
             'subtype' => AgoraSale::SUBTYPE,
             'limit' => 0,
             'created_time_lower' => $ts_lower,
             'created_time_upper' => $ts_upper,
-        );
+        ];
         $getsales = elgg_get_entities($options);
 
         foreach ($getsales as $gs) {
             $entity = get_entity($gs->txn_vguid);
-            if (!elgg_instanceof($entity, 'object', Agora::SUBTYPE)) {
-                return false;
+            if (!$entity instanceof Agora) { 
+                return;
             }
 
             if (!check_if_user_commented_this_ad($entity->guid, $gs->txn_buyer_guid)) {
-                notify_user($gs->txn_buyer_guid, $notifier_guid, elgg_echo('agora:comments:notify:subject'), elgg_echo('agora:comments:notify:body', array($entity->title, $entity->getURL()))
-                );
+                notify_user($gs->txn_buyer_guid, $notifier_guid, elgg_echo('agora:comments:notify:subject'), elgg_echo('agora:comments:notify:body', [$entity->title, $entity->getURL()])                    );
             }
         }
-
-        // restore ignore access
-        elgg_set_ignore_access($ia);
-    }
-
-    return false;
+    });
 }
 
 /**
  * This is triggered PayPal IPN verification. 
  * 
- * @param type $hook
- * @param type $type
- * @param type $return
- * @param type $params
+ * @param \Elgg\Hook $hook The hook object * 
  * @return type
  */
-function agora_paypal_successful_payment_hook($hook, $type, $return, $params) {
-    $ia = elgg_set_ignore_access(true);
-
-    $transactions_params = $params['txn'];
-    if (!$transactions_params) {
+function agora_paypal_successful_payment_hook(\Elgg\Hook $hook) {
+    $return = $hook->getValue();
+    $transaction_params = $hook->getParams();
+    $transaction = $transaction_params['transaction'];
+    
+    if (!$transaction) {
         error_log(elgg_echo('paypal_api:error:empty_ipn'));
         return $return;
     }
-    
-    // get company guid (item number)
-    $item_number = $transactions_params['item_number'];
-    $ad = get_entity($item_number);
-    if (!elgg_instanceof($ad, 'object', Agora::SUBTYPE)) {
-        error_log(elgg_echo('paypal_api:error:invalid:entity:guid', [$item_number]));
-        return $return;
-    }    
-    
-    $custom_arr = json_decode($transactions_params['custom'], true);
-    $buyer_guid = $custom_arr['user_guid'];
-    
-    $buyer = get_entity($buyer_guid);
-    if (!($buyer instanceof \ElggUser)) {
-        error_log(elgg_echo('paypal_api:error:invalid:user:guid'));
-        return $return;
-    }
-    
-    $entity = new AgoraSale();
-    $entity->subtype = AgoraSale::SUBTYPE;
-    $entity->access_id = ACCESS_PRIVATE;
-    $entity->owner_guid = $buyer_guid;
-    $entity->container_guid = $item_number;
-    $entity->title = $transactions_params['item_name']?elgg_echo('agora:sales:title', [str_replace("+", " ", $transactions_params['item_name'])]):'';
-    $entity->description = serialize($transactions_params);
-    $entity->transaction_id = $transactions_params['txn_id'];
-    $entity->txn_method = AgoraOptions::PURCHASE_METHOD_PAYPAL;
-    $entity->buyer_name = $buyer->name;
-    $entity->bill_number = AgoraSale::getNewInvoiceNumber();
-    $entity->save();
-    
-    // reduce availability
-    $ad->reduceItems();
 
-    // notify buyer
-    AgoraOptions::notifyBuyer($buyer, $ad);
-    
-    // notify site admins
-    AgoraOptions::notifyAdministrators($buyer, $ad, $entity);
-    
-    elgg_set_ignore_access($ia);
-    
-    elgg_ok_response('', elgg_echo('agora:sales:success'), REFERER);
-    
-    return $return;
-}
+    elgg_call(ELGG_IGNORE_ACCESS, function () use ($transaction) {
+        $purchase_units = $transaction->purchase_units;
+        if (is_array($purchase_units) && count($purchase_units) > 0) {
+            foreach ($purchase_units as $unit) {
+                $ad = get_entity($unit->reference_id);
+                if (!$ad instanceof Agora) {
+                    continue;
+                }
 
-/**
- * This is triggered PayPal IPN Adaptive verification. 
- * 
- * @param type $hook
- * @param type $type
- * @param type $return
- * @param type $params
- * @return type
- */
-function agora_paypal_adaptive_successful_payment_hook($hook, $type, $return, $params) {
-    $transactions_params = $params['txn'];
-    if (!$transactions_params) {
-        error_log(elgg_echo('paypal_api:error:empty_ipn'));
-        return $return;
-    }
-    
-    $tracking_id_arr = json_decode(urldecode($transactions_params['tracking_id']), true);
-    foreach ($tracking_id_arr as $k => $v) {
-        error_log($k.': '.$v);
-    }
-    
-    // get guid (entity_guid)
-    $ad = get_entity($tracking_id_arr['entity_guid']);
-    if (!elgg_instanceof($ad, 'object', Agora::SUBTYPE)) {
-        error_log(elgg_echo('paypal_api:error:invalid:entity:guid', [$tracking_id_arr['entity_guid']]));
-        return $return;
-    }    
-    
-    $buyer_guid = $tracking_id_arr['user_guid'];
-    
-    $buyer = get_entity($buyer_guid);
-    if (!($buyer instanceof \ElggUser)) {
-        error_log(elgg_echo('paypal_api:error:invalid:user:guid'));
-        return $return;
-    }    
-    
-    $ia = elgg_get_ignore_access();
-    elgg_set_ignore_access(true);
-    
-    $entity = new AgoraSale();
-    $entity->subtype = AgoraSale::SUBTYPE;
-    $entity->access_id = ACCESS_PRIVATE;
-    $entity->owner_guid = $buyer_guid;
-    $entity->container_guid = $tracking_id_arr['entity_guid'];
-    $entity->title = elgg_echo('agora:sales:title', [$ad->title]);
-    $entity->description = serialize($transactions_params);
-    $entity->transaction_id = $transactions_params['pay_key'];
-    $entity->txn_method = AgoraOptions::PURCHASE_METHOD_PAYPAL_ADAPTIVE;
-    $entity->buyer_name = $buyer->name;
-    $entity->bill_number = AgoraSale::getNewInvoiceNumber();
-    $entity->save();
-    
-    // reduce availability
-    $ad->reduceItems();
+                $custom = explode("-", $unit->custom_id);
+                $buyer = get_entity($custom[1]);
+                if (!($buyer instanceof \ElggUser)) {
+                    continue;
+                }
+            
+                $entity = new AgoraSale();
+                $entity->subtype = AgoraSale::SUBTYPE;
+                $entity->access_id = ACCESS_PRIVATE;
+                $entity->owner_guid = $buyer->guid;
+                $entity->container_guid = $ad->guid;
+                $entity->title = elgg_echo("agora:transaction:title", [$ad->title]);
+                $entity->description = serialize($transaction);
+                $entity->transaction_id = $transaction->id;
+                $entity->txn_method = AgoraOptions::PURCHASE_METHOD_PAYPAL;
+                $entity->buyer_name = $buyer->name;
+                $entity->bill_number = AgoraSale::getNewInvoiceNumber();
+                $entity->save();
+            
+                // reduce availability
+                $ad->reduceItems();
 
-    // notify buyer
-    AgoraOptions::notifyBuyer($buyer, $ad);
-    
-    // notify site admins
-    AgoraOptions::notifyAdministrators($buyer, $ad, $entity);
-    
-    elgg_set_ignore_access($ia);
-    
-    elgg_ok_response('', elgg_echo('agora:sales:success'), REFERER);
+                // notify buyer
+                AgoraOptions::notifyBuyer($buyer, $ad);
+                
+                // notify site admins
+                AgoraOptions::notifyAdministrators($buyer, $ad, $entity); 
+            }
+        }
+    });
     
     return $return;
 }
@@ -288,56 +179,108 @@ function agora_paypal_adaptive_successful_payment_hook($hook, $type, $return, $p
 /**
  * Manage menu items options to agora entities menu
  * 
- * @param type $hook
- * @param type $type
- * @param type $return
- * @param type $params
- * @return type
+ * @param \Elgg\Hook $hook 'register', 'menu:entity' *
+ * @return void|ElggMenuItem[]
  */
-function agora_menu_setup($hook, $type, $return, $params) {
-    
-    $entity = $params['entity'];
-    if (!elgg_instanceof($entity, 'object', Agora::SUBTYPE))	{
-        return $return;
+function agora_menu_setup(\Elgg\Hook $hook) {
+    $return = $hook->getValue();
+    $entity = $hook->getEntityParam();
+    if (!$entity instanceof Agora) {
+        return;
     }
-    
+
     $user = elgg_get_logged_in_user_entity();
-    if (!($user instanceof \ElggUser)) {
-        return $return;
+    if (!$user) {
+        return;
     }
-    
+
     if ($entity->canEdit()) {
-        $options = array(
+        $return[] = \ElggMenuItem::factory([
             'name' => 'agora_sales',
             'text' => elgg_echo("agora:sales:short"),
             'title' => elgg_echo("agora:sales:short:note", [$entity->title]),
             'href' =>  elgg_normalize_url("agora/sales/{$entity->guid}"),
             'priority' => 110,
             'icon' => 'chart-line',
-        );
-        $return[] = ElggMenuItem::factory($options);
-        
+        ]);
+
         if (AgoraOptions::canMembersSendPrivateMessage()) {
-            $options = array(
+            $return[] = \ElggMenuItem::factory([
                 'name' => 'agora_interest',
                 'text' => elgg_echo("agora:requests"),
                 'title' => elgg_echo("agora:requests:note", [$entity->title]),
                 'href' =>  elgg_normalize_url("agora/requests/{$entity->guid}"),
                 'priority' => 120,
                 'icon' => 'exchange-alt ',
-            );
-            $return[] = ElggMenuItem::factory($options);
+            ]);
         }
     }
-    
+
     return $return;
 }
 
 /**
+ * Manage menu items options to agora_sale entities menu
+ * 
+ * @param \Elgg\Hook $hook 'register', 'menu:entity' *
+ * @return void|ElggMenuItem[]
+ */
+function agorasale_menu_setup(\Elgg\Hook $hook) {
+    $entity = $hook->getEntityParam();
+    if (!$entity instanceof AgoraSale) {
+        return;
+    }
+
+    $user = elgg_get_logged_in_user_entity();
+    if (!$user) {
+        return;
+    }
+
+    $return = $hook->getValue();        
+    if (!$user->isAdmin()) {
+        // Prevend sale deletion from non-admin users
+        $return->remove('delete');
+    }
+    else {
+        // Change url/action for delete for just in case
+        $return['delete']->setHref(elgg_generate_action_url('agorasale/delete', [
+            'guid' => $entity->guid,
+        ]));
+    }    
+
+    return $return;
+}
+
+// /**
+//  * Edit delete actions
+//  * 
+//  * @param \Elgg\Hook $hook 'register', 'menu:entity' *
+//  * @return void|ElggMenuItem[]
+//  */
+// function agora_delete_action(\Elgg\Hook $hook) {
+//     $entity = $hook->getEntityParam();
+//     if (!$entity instanceof AgoraSale || !$entity instanceof Agora) {
+//         return;
+//     }
+
+//     $user = elgg_get_logged_in_user_entity();
+//     if (!$user) {
+//         return;
+//     }
+
+//     $return = $hook->getValue();        
+//     if (!$user->isAdmin()) {
+//         // Prevend sale deletion from non-admin users
+//         $return->remove('delete');
+//     }
+
+//     return $return;
+// }
+
+/**
  * Register menu items in user settings
  *
- * @param \Elgg\Hook $hook 'register', 'menu:page'
- *
+ * @param \Elgg\Hook $hook 'register', 'menu:page' *
  * @return void|ElggMenuItem[]
  */
 function agora_notifications_page_menu(\Elgg\Hook $hook) {
@@ -352,14 +295,7 @@ function agora_notifications_page_menu(\Elgg\Hook $hook) {
 	}
 	
 	$return = $hook->getValue();
-	$return[] = \ElggMenuItem::factory([
-		// 'name' => '2_a_user_notify',
-		// 'text' => elgg_echo('notifications:subscriptions:changesettings'),
-		// 'href' => elgg_generate_url('settings:notification:personal', [
-		// 	'username' => $user->username,
-		// ]),
-        // 'section' => 'notifications',
-        
+	$return[] = \ElggMenuItem::factory([        
         "name" => "agora",
         "text" => elgg_echo("agora:usersettings:settings"),
         "href" => elgg_normalize_url("agora/user/" . $user->username),

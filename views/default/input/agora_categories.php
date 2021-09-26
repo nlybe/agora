@@ -8,34 +8,21 @@ $type = elgg_get_plugin_setting('categories','agora');
 $fields = explode(",", $type);
 $fields = array_map('trim', $fields);
 
-$selected_items = elgg_extract("value", $vars, "");
-if(!is_array($selected_items)){
-	$selected_items = string_to_tag_array($selected_items);
+if (!is_array($fields)) {
+	return;
 }
-$selected_items = array_map("strtolower", $selected_items);
 
-?>
+$options = [ 0 => elgg_echo('agora:add:category:select')];
+// $options[0] = elgg_echo('agora:add:category:select');
+foreach($fields as $val) {
+	$options[$val] = $val;
+}
 
-<div class="agora_categories">
-	<select <?php echo elgg_format_attributes($vars); ?>>
-	<?php	
-	
-		echo "<option value=\"0\" >".elgg_echo('agora:add:category:select')."</option>";				
-
-		if(!empty($fields)){
-			foreach($fields as $val) {
-				//$key = elgg_get_friendly_title($val);	
-				if (in_array(strtolower($val), $selected_items)) {
-					echo "<option value=\"$val\" selected=\"selected\">$val</option>";
-				} 
-				else {
-					echo "<option value=\"$val\" >$val</option>";
-				}					
-			}
-		}
-
-	?>
-	</select>
-</div>
-
+echo elgg_view_field([
+	'#type' => 'select',
+	'id' => elgg_extract("id", $vars),
+	'name' => elgg_extract("name", $vars),
+	'options_values' => $options,
+	'value' => elgg_extract("value", $vars),
+]);
 

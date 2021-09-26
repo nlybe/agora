@@ -4,6 +4,8 @@
  * @package agora
  */
 
+use Agora\AgoraOptions;
+
 $page_owner = elgg_get_page_owner_entity();
 if (!$page_owner) {
     forward('agora/all');
@@ -31,7 +33,7 @@ if (AgoraOptions::canUserPostClassifieds()) {
 
 $title = elgg_echo('agora:friends');
 
-$content = elgg_list_entities(array(
+$content = elgg_list_entities([
     'type' => 'object',
     'subtype' => Agora::SUBTYPE,
     'full_view' => false,
@@ -39,15 +41,15 @@ $content = elgg_list_entities(array(
     'relationship_guid' => $page_owner->guid,
     'relationship_join_on' => 'container_guid',
     'no_results' => elgg_echo('agora:none'),
-));
+]);
 
-$params = array(
-    'filter_context' => 'friends',
+$params = [
+    'filter_value' => 'friends',
     'content' => $content,
     'title' => $title,
-    'filter_override' => elgg_view('agora/nav', array('selected' => 'friends')),
-);
+    'filter_override' => elgg_view('agora/nav', ['selected' => 'friends']),
+];
 
-$body = elgg_view_layout('content', $params);
+$body = elgg_view_layout('default', $params);
 
 echo elgg_view_page($title, $body);

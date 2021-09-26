@@ -2,6 +2,13 @@
 
 ## Change Log
 
+### 3.12
+
+- Upgraded to be compatible with Elgg 3.3.x
+- Removed map of ads until new the maps functionality will be integrated
+- Code cleanup / deprecated functions removed
+- Several code improvements
+
 ### 3.11 (Jan 2019)
 
 - Upgraded to be compatible with Elgg 3.x

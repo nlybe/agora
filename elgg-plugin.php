@@ -4,7 +4,13 @@
  * @package agora
  */
 
+use Agora\Elgg\Bootstrap;
+
+require_once(dirname(__FILE__) . '/lib/hooks.php');
+require_once(dirname(__FILE__) . '/lib/functions.php'); 
+
 return [
+    'bootstrap' => Bootstrap::class,
     'entities' => [
         [
             'type' => 'object',
@@ -33,17 +39,16 @@ return [
     ],
     'actions' => [
         'agora/add' => [],
-        'agora/delete' => [],
         'agora/be_interested' => [],
         'agora/set_accepted' => [],
         'agora/set_rejected' => [],
         'agora/usersettings' => [],
         'agora/icon/delete' => [],
-        'agora/nearby_search' => [],
         'agora/admin/paypal_options' => ['access' => 'admin'],
         'agora/admin/map_options' => ['access' => 'admin'],
         'agora/admin/ratings_options' => ['access' => 'admin'],
         'agora/admin/digital_options' => ['access' => 'admin'],
+        'agorasale/delete' => [],
     ],
     'routes' => [
         'default:object:agora' => [
@@ -54,10 +59,6 @@ return [
             'path' => '/agora/all/{category?}',
             'resource' => 'agora/all',
         ],
-        // 'collection:object:agora:map' => [
-        //     'path' => '/agora/map/{category?}',
-        //     'resource' => 'agora/nearby',
-        // ],        
         'collection:object:agora:owner' => [
             'path' => '/agora/owner/{username?}/{category?}',
             'resource' => 'agora/owner',
@@ -68,11 +69,14 @@ return [
         ],
         'collection:object:agora:group' => [
 			'path' => '/agora/group/{guid?}',
-			'resource' => 'agora/owner',
+			'resource' => 'agora/group',
 		],
 		'add:object:agora' => [
             'path' => '/agora/add/{guid?}',
             'resource' => 'agora/add',
+            'middleware' => [
+                \Elgg\Router\Middleware\Gatekeeper::class,
+            ],
         ],
         'edit:object:agora' => [
             'path' => '/agora/edit/{guid}',
@@ -112,6 +116,10 @@ return [
         'transactions:object:agora' => [
             'path' => '/agora/transactions/view/{guid}/{title?}',
             'resource' => 'agora/transactions/view',
+        ],
+        'agora:rerms' => [
+            'path' => '/agora/terms',
+            'resource' => 'agora/terms',
         ],    
     ],
     'widgets' => [

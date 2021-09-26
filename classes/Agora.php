@@ -7,7 +7,7 @@
 class Agora extends ElggObject {
     const SUBTYPE = "agora";
     
-    protected $meta_defaults = array(
+    protected $meta_defaults = [
         "title" 	=> NULL,
         "description" 	=> NULL,
         "price" 	=> NULL,
@@ -24,7 +24,7 @@ class Agora extends ElggObject {
         "shipping_type" => NULL,	// type of shipping, amount or percentage
         "tags"          => NULL,
         "comments_on"	=> NULL,
-    );    
+    ];
 
     protected function initializeAttributes() {
         parent::initializeAttributes();
@@ -108,13 +108,13 @@ class Agora extends ElggObject {
      * @return mixed. If count, true/false. If not count, array.
      */
     public function userPurchasedAd($user_guid, $count = false) {
-        $options = array(
+        $options = [
             'type' => 'object',
             'subtype' => AgoraSale::SUBTYPE,
             'container_guid' => $this->getGUID(),
             'owner_guid' => $user_guid,
             'count' => $count,
-        );
+        ];
         $entities = elgg_get_entities($options);
         
         if ($count && $entities > 0) {
@@ -134,25 +134,22 @@ class Agora extends ElggObject {
      * @return type
      */
     public function getSales($list = false) {
-        $ia = elgg_get_ignore_access();
-        elgg_set_ignore_access(true);
+        return elgg_call(ELGG_IGNORE_ACCESS, function () use ($list) {
+            $options = [
+                'type' => 'object',
+                'subtype' => AgoraSale::SUBTYPE,
+                'container_guid' => $this->getGUID(),
+            ];
+            
+            if ($list) {
+                $options['no_results'] =  elgg_echo('agora:sales:none');
+                return elgg_list_entities($options);
+            }
+            else {
+                return elgg_get_entities($options);
+            }
+        });
         
-        $options = array(
-            'type' => 'object',
-            'subtype' => AgoraSale::SUBTYPE,
-            'container_guid' => $this->getGUID(),
-        );
-        
-        if ($list) {
-            $options['no_results'] =  elgg_echo('agora:sales:none');
-            $result = elgg_list_entities($options);
-        }
-        else {
-            $result = elgg_get_entities($options);
-        }
-        
-        elgg_set_ignore_access($ia);
-        return $result;
     }
     
     /**
@@ -162,14 +159,14 @@ class Agora extends ElggObject {
      * @return type
      */
     public function getRequests($list = false) {
-        $options = array(
+        $options = [
             'type' => 'object',
             'subtype' => AgoraInterest::SUBTYPE,
             'limit' => 0,
-            'metadata_name_value_pairs' => array(
-                array('name' => 'int_ad_guid', 'value' =>  $this->getGUID(), 'operand' => '='),
-            ),
-        );
+            'metadata_name_value_pairs' => [
+                ['name' => 'int_ad_guid', 'value' =>  $this->getGUID(), 'operand' => '='],
+            ],
+        ];
         if ($list) {
             $options['no_results'] =  elgg_echo('agora:requests:none');
             $options['full_view'] =  true;
@@ -188,7 +185,7 @@ class Agora extends ElggObject {
     public function getImageUrl($size = 'medium') {
         // Get the size
         $size = elgg_strtolower($size);
-        if (!in_array($size, array('master', 'large', 'medium', 'small', 'tiny'))) {
+        if (!in_array($size, ['master', 'large', 'medium', 'small', 'tiny'])) {
             $size = 'medium';
         }
 
@@ -204,7 +201,7 @@ class Agora extends ElggObject {
      * @return boolean
      */
     public function getMoreImages($max_images = 0) {
-        return elgg_get_entities(array(
+        return elgg_get_entities([
             'type' => 'object',
             'subtype' => AgoraImage::SUBTYPE,
             'container_guid' => $this->guid,
@@ -213,8 +210,7 @@ class Agora extends ElggObject {
                 'name' => 'time_created',
                 'direction' => 'ASC',
             ]
-            // 'order_by' => 'e.time_created ASC'
-        ));
+        ]);
     }   
     
     /**

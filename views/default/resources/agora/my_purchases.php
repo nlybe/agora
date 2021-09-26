@@ -4,6 +4,8 @@
  * @package agora
  */
 
+use Agora\AgoraOptions;
+
 $user = elgg_get_logged_in_user_entity();
 if (!$user) {
     forward('agora/all');
@@ -24,17 +26,17 @@ $content = elgg_list_entities([
 ]);
 
 $title = elgg_echo('agora:my_purchases');
-$filter_context = 'my_purchases';
+$filter_value = 'my_purchases';
 
-$vars = array(
-    'filter_context' => $filter_context,
+$vars = [
+    'filter_value' => $filter_value,
     'content' => $content,
     'title' => $title,
     'sidebar' => elgg_view('agora/sidebar'),
-    'filter_override' => elgg_view('agora/nav', array('selected' => 'my_purchases')),
-);
+    'filter_override' => elgg_view('agora/nav', ['selected' => 'my_purchases']),
+];
 
-$body = elgg_view_layout('content', $vars);
+$body = elgg_view_layout('default', $vars);
 
 echo elgg_view_page($title, $body);
 

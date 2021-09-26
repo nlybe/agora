@@ -8,7 +8,8 @@ $guid = elgg_extract('guid', $vars, 0);
 $size = elgg_extract('size', $vars, '');
 
 $img = get_entity($guid);
-if (!elgg_instanceof($img, 'object', AgoraImage::SUBTYPE)) {
+
+if (!$img instanceof AgoraImage) {
     forward('','404');
 }
 

@@ -4,10 +4,12 @@
  * @package agora
  */
 
+use Agora\AgoraOptions;
+
 class AgoraSale extends ElggObject {
     const SUBTYPE = "agora_sale";
     
-    protected $meta_defaults = array(
+    protected $meta_defaults = [
         "title"            => NULL,
         "description"      => NULL,
         "container_guid"   => NULL,     // agora guid
@@ -19,7 +21,7 @@ class AgoraSale extends ElggObject {
         "bill_analysis"    => NULL,     // bill analysis due to tax, discount, fee etc
         "payable_amount"   => NULL,     // amount payed
         "payable_amount_f" => NULL,     // amount payed formatted
-    );    
+    ];
 
     protected function initializeAttributes() {
         parent::initializeAttributes();
@@ -48,13 +50,12 @@ class AgoraSale extends ElggObject {
      */
     Public Static function getNewInvoiceNumber() {
         $q = date("dmy");
-        error_log($q);
         $options = [
             'type' => 'object',
             'subtype' => AgoraSale::SUBTYPE,
-            'metadata_name_value_pairs' => array(
-                array('name' => 'bill_number', 'value' => $q.'%', 'operand' => 'like'),
-            ),
+            'metadata_name_value_pairs' => [
+                ['name' => 'bill_number', 'value' => $q.'%', 'operand' => 'like'],
+            ],
             'limit' => 1,
         ];
         $entities = elgg_get_entities($options);

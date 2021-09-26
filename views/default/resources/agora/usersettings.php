@@ -31,12 +31,12 @@ elgg_push_breadcrumb(elgg_echo("agora:usersettings:settings"));
 elgg_set_page_owner_guid($user->getGUID());
 
 $title_text = elgg_echo("agora:usersettings:title");
-$body = elgg_view("forms/agora/usersettings", array("user" => $user));
+$body = elgg_view("forms/agora/usersettings", ["user" => $user]);
 
-$params = array(
+$params = [
     "title" => $title_text,
     "content" => $body
-);
+];
 
 // draw page
 echo elgg_view_page($title_text, elgg_view_layout("one_sidebar", $params));

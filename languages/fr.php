@@ -4,7 +4,7 @@
  * @package Agora
  */
 
-$lang = array(
+return [
 
     // menu items and titles
     'agora' => "Petites annonmces",
@@ -22,8 +22,6 @@ $lang = array(
     'agora:price' => "Prix",
     'agora:location' => "Emplacement",
     'agora:howmany' => "Quantité disponible",
-    'agora:list:list' => "Affichage en liste",
-    'agora:list:gallery' => "Affichage en tableau",
     'agora:categories:all' => "Toutes les rubriques",
     'agora:terms:title' => "Conditions générales",
     'agora:terms:accept' => "J'ai pris connaissance et j'accepte le %s",
@@ -113,8 +111,7 @@ $lang = array(
     'agora:settings:ads_geolocation' => 'Activer la géolocalisation et la cartographie des annonces',
     'agora:settings:ads_geolocation:note' => 'Choisir Oui pour activer la géolocalisation et la cartographie.',  
     'agora:settings:ads_geolocation:notenabled' => "La géolocalisation des annonces est désactivée",
-    'agora:settings:amap_maps_api_geocoder:notenabled' => "Kanellga Maps Api est désactivée. La Cartographie des annonces est impossible.", 
-	'agora:settings:users_to_notify' => 'Utilisateurs à alerter',
+    'agora:settings:users_to_notify' => 'Utilisateurs à alerter',
     'agora:settings:users_to_notify:note' => 'Etablir la liste des utilisateurs à alerter après chaque transaction. Renseigner les identifiants et les séparer avec des virgules.',
     'agora:settings:tabs:general_options' => 'Paramètres généraux',
     'agora:settings:tabs:paypal_options' => 'Paramètres Paypal',
@@ -198,6 +195,4 @@ $lang = array(
     'agora:search:usersfound' => "Annonces trouvées",
     'agora:search:around' => "Annonces trouvées aux alentours",    
     
-);
-
-add_translation("fr", $lang);
+];

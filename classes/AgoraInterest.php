@@ -7,12 +7,12 @@
 class AgoraInterest extends ElggObject {
     const SUBTYPE = "agora_interest";
     
-    protected $meta_defaults = array(
+    protected $meta_defaults = [
         "int_ad_guid" 		=> NULL,
         "int_buyer_guid"   	=> NULL,
         "int_status"            => NULL,    // interest status (interested, accepted, rejected)
         "int_message_guid" 	=> NULL,    // message guid
-    );    
+    ];
 
     protected function initializeAttributes() {
         parent::initializeAttributes();
@@ -28,7 +28,7 @@ class AgoraInterest extends ElggObject {
     public function getAd() {
         $ad = get_entity($this->int_ad_guid);
 
-        if (elgg_instanceof($ad, 'object', Agora::SUBTYPE)) {
+        if ($ad instanceof Agora) { 
             return $ad;
         }
 

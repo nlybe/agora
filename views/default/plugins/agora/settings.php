@@ -4,14 +4,16 @@
  * @package agora
  */
 
+use Agora\AgoraOptions;
+
 $plugin = elgg_get_plugin_from_id(AgoraOptions::PLUGIN_ID);
 
 echo elgg_view('agora/admin/tabs', ['basic_options_selected' => true]);
 
-$pyn = array(
+$pyn = [
     AgoraOptions::YES => elgg_echo('agora:settings:yes'),
     AgoraOptions::NO => elgg_echo('agora:settings:no'),
-); 
+];
 
 // set categories
 $output .= elgg_view_field([
