@@ -1,7 +1,7 @@
 Agora Classifieds Plugin
 ========================
 
-![Elgg 3.3](https://img.shields.io/badge/Elgg-3.0-orange.svg?style=flat-square)
+![Elgg 3.3](https://img.shields.io/badge/Elgg-3.3-orange.svg?style=flat-square)
 
 Elgg plugin for posting classifieds to community members using PayPal Payment Gateway.
 
