@@ -66,7 +66,7 @@ return [
     'agora:add:currency:note' => "Επιλέξτε νόμισμα",
     'agora:add:price' => "Τιμή",
     'agora:add:pricesimple' => "Τιμή",
-    'agora:add:price:note' => "Τιμή για πώληση μέσω paypal.<br />Εισάγετε 0 εάν είναι δωρεάν.",
+    'agora:add:price:note' => "Τιμή πώληση.<br />Εισάγετε 0 εάν είναι δωρεάν.",
     'agora:add:price:note:importantall' => "(για λήψη πληρωμών μέσω Paypal, η διεύθυνση email στις ρυθμίσεις σας πρέπει να είναι έγκυρος Λογαριασμός στο Paypal)",
     'agora:add:price:note:importantadmin' => "(Απαιτείται έγκυρος Λογαριασμός Paypal στις ρυθμίσεις: Administration - Settings - Agora Classifieds)",
     'agora:add:image' => "Ανεβάστε μία εικόνα για την αγγελία σας. Αφήστε κενό για καμία αλλαγή.",
@@ -89,7 +89,7 @@ return [
     
     // groups
     'agora:group' => 'Αγγελίες ομάδας',
-    'agora:group:enableagora' => 'Ενεργοποίηση αγγελιών',
+    'groups:tool:agora' => 'Ενεργοποίηση αγγελιών',
     
     // settings
     'agora:settings:defaultdateformat' => 'Default date format',

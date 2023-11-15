@@ -44,9 +44,8 @@ $content = elgg_view_entity($entity, [
 if (AgoraOptions::allowedComRatOnlyForBuyers()) { 
     // Reviews and ratings enabled only for buyers, ratings plugin is required
     if (
-            $user_purchases[0] instanceof AgoraSale
+            $user_purchases[0] instanceof \AgoraSale
             && !check_if_user_commented_this_ad($entity->getGUID(), $user->guid) 
-//            && AgoraOptions::checkComratTime($user_purchases[0]->time_created)
         ) {
         $vars['rate_label'] = elgg_echo('agora:comments:add:rate');
         $vars['comment_label'] = elgg_echo('agora:comments:add:comment');
@@ -60,7 +59,7 @@ else if ($entity->canComment()) {
 } 
 
 // add download button if current user has purchased this item or if file is available for free
-if ($entity->digital && ($user_purchases[0] instanceof AgoraSale || !$entity->price || elgg_is_admin_logged_in())) {
+if ($entity->digital && ($user_purchases[0] instanceof \AgoraSale || !$entity->price || elgg_is_admin_logged_in())) {
     elgg_register_menu_item('title', [
         'name' => 'download_product',
         'text' => elgg_echo('agora:download:file'),
@@ -69,14 +68,12 @@ if ($entity->digital && ($user_purchases[0] instanceof AgoraSale || !$entity->pr
     ]);
 }
 
-$body = elgg_view_layout('default', [
-    'content' => $content,
-    'title' => $title,
-    'filter' => '',
-    'sidebar' => elgg_view('agora/sidebar/request', ['entity' => $entity]),
+echo elgg_view_page($title, [
+	'content' => $content,
+	'filter_id' => '',
+	'entity' => $entity,
+	'sidebar' => elgg_view('agora/sidebar/request', ['entity' => $entity]),
+], 'default', [
+	'entity' => $entity,
 ]);
-
-echo elgg_view_page($title, $body);
-
-
 

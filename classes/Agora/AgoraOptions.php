@@ -78,6 +78,18 @@ class AgoraOptions {
         }
         return null;
     }
+
+    /**
+     * Get the max number of allowed images per ad
+     * 
+     * @return int
+     */
+    
+    Public Static function getMaxallowedImages() {
+        $max_images = intval(self::getParams('max_images'));
+
+        return $max_images > 0 ? $max_images : self::MAX_IMAGES_GALLERY;
+    }
     
     /**
      * Check if posts for digital products are allowed
@@ -570,7 +582,7 @@ class AgoraOptions {
             return false;
         }
         
-        if (!$ad instanceof Agora) { 
+        if (!$ad instanceof \Agora) { 
             return false;
         }
 
@@ -594,11 +606,11 @@ class AgoraOptions {
             return false;
         }
         
-        if (!$ad instanceof Agora) { 
+        if (!$ad instanceof \Agora) { 
             return false;
         }
         
-        if (!$entity instanceof AgoraSale) {
+        if (!$entity instanceof \AgoraSale) {
             return false;
         }
 

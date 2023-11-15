@@ -87,7 +87,7 @@ return [
     
     // groups
     'agora:group' => 'Petites annonces pour le groupe',
-    'agora:group:enableagora' => 'Activer les petites annonces',
+    'groups:tool:agora' => 'Activer les petites annonces',
     
     // settings
     'agora:settings:defaultdateformat' => 'Format de date par défaut',

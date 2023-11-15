@@ -11,7 +11,7 @@ $entity = elgg_extract('entity', $vars, false);
 $owner = $entity->getOwnerEntity();
 
 $post = get_entity($entity->container_guid);
-if (!$post instanceof Agora) { 
+if (!$post instanceof \Agora) { 
     return;
 }
 

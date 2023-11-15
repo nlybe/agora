@@ -53,7 +53,7 @@ if ($shipping_cost && !is_numeric($shipping_cost)) {
 
 // upload uploaded
 $uploaded_files = elgg_get_uploaded_files('upload');
-if ($uploaded_files) {
+if ($uploaded_files && is_array($uploaded_files)) {
     $uploaded_file = array_shift($uploaded_files);
     if ($uploaded_file && !$uploaded_file->isValid()) {
         $error = elgg_get_friendly_upload_error($uploaded_file->getError());
@@ -72,19 +72,18 @@ if ($uploaded_files) {
 $uploaded_files_more = elgg_get_uploaded_files('product_icon');
 if (is_array($uploaded_files_more) && count($uploaded_files_more) > 0) {
     foreach ($uploaded_files_more as $f) {
-        $uploaded_file_s = array_shift($f);
-        if ($uploaded_file_s && !$uploaded_file_s->isValid()) {
-            $error = elgg_get_friendly_upload_error($uploaded_file_s->getError());
+        if ($f && !$f->isValid()) {
+            $error = elgg_get_friendly_upload_error($f->getError());
             return elgg_error_response(elgg_echo($error));
         }
-    
-        if ($uploaded_file_s) {
+
+        if ($f) {
             $allowed_mime_types = AgoraOptions::getAllowedImageFiles();
-            $mime_type = elgg()->mimetype->getMimeType($uploaded_file_s->getPathname());
+            $mime_type = elgg()->mimetype->getMimeType($f->getPathname());
             if (!in_array($mime_type, $allowed_mime_types)) {
                 return elgg_error_response(elgg_echo('agora:add:error:mime_type', [$mime_type]));
             }
-        }        
+        }
     }
 }
 
@@ -92,7 +91,7 @@ $new_flag = false;
 if ($guid == 0) {
     $new_flag = true;
     $entity = new Agora;
-    $entity->subtype = Agora::SUBTYPE;
+    $entity->setSubtype(Agora::SUBTYPE);
     $entity->container_guid = $container_guid;
     $entity->owner_guid = elgg_get_logged_in_user_guid(); 
 

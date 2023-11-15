@@ -5,6 +5,7 @@
  */
 
 use Agora\AgoraOptions;
+use Elgg\Database\Clauses\OrderByClause;
 
 // get variables
 $s_keyword = stripslashes(get_input('s_keyword', ''));
@@ -15,6 +16,12 @@ $sort_by = get_input('sort_by', '');
 if (!$sort_by) {
     $sort_by = 'newest';
 }
+
+// check if user can post classifieds
+if (AgoraOptions::canUserPostClassifieds()) {
+    elgg_register_title_button('agora', 'add', 'object', 'agora');
+}
+
 
 if (!$s_category) {
     // Get category
@@ -94,19 +101,12 @@ if (!empty($s_category)) {
     elgg_push_breadcrumb(elgg_echo('agora'), 'agora/all');
     elgg_push_breadcrumb($category);
     
-    //$options['metadata_name'] = "category";
-    //$options['metadata_value'] = $selected_category;
     $content_tmp = elgg_list_entities($options);
     $title = elgg_echo('agora') . ': ' . $category;
 } 
 else {    
     $content_tmp = elgg_list_entities($options);
     $title = elgg_echo('agora');
-}
-
-// check if user can post classifieds
-if (AgoraOptions::canUserPostClassifieds()) {
-    elgg_register_title_button();
 }
 
 if (!$content_tmp) {
@@ -117,22 +117,8 @@ $content .= elgg_view('agora/list', [
     'content' => $content_tmp,
 ]);
 
-$body = elgg_view_layout('default', [
-    'filter_value' => 'all',
+echo elgg_view_page($title, [
     'content' => $content,
-    'title' => $title,
     'sidebar' => elgg_view('agora/sidebar', ['selected' => 'all', 'category' => $selected_category]),
-    'filter_override' => elgg_view('agora/nav', ['selected' => 'all']),
+    'filter_value' => 'all',
 ]);
-
-echo elgg_view_page($title, $body);
-
-
-
-
-
-
-
-
-
-

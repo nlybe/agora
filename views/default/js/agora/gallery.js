@@ -1,10 +1,4 @@
-define(function(require) {
-    var elgg = require('elgg');
-    var $ = require('jquery');
-    require('jquery-ui');
-    
-    var lightbox = require('elgg/lightbox');
-
+define(['jquery', 'elgg/lightbox'], function($, lightbox) { 
     var options = {
         photo: true,
     };

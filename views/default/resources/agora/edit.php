@@ -9,7 +9,7 @@ elgg_gatekeeper();
 $guid = elgg_extract('guid', $vars, '');
 $entity = get_entity($guid);
 
-if (!$entity instanceof Agora || !$entity->canEdit()) {
+if (!$entity instanceof \Agora || !$entity->canEdit()) {
     elgg_error_response(elgg_echo('agora:error:access:invalid'));
     forward(REFERRER);
 }

@@ -50,14 +50,6 @@ if (!$location && $user->location) {
     $location = $user->location;
 }
 
-// check who can post for retrieving paypal account
-$whocanpost = trim(elgg_get_plugin_setting('agora_uploaders', 'agora'));
-if ($whocanpost === 'allmembers') {
-    $paypal_tip = elgg_format_element('div', ['class' => 'paypal_tip'], elgg_echo('agora:add:price:note:importantall', [elgg_normalize_url('agora/user/'.$user->username)]));
-} else if ($whocanpost === 'admins') {
-    $paypal_tip = elgg_format_element('div', ['class' => 'paypal_tip'], elgg_echo('agora:add:price:note:importantadmin', [elgg_normalize_url('admin/agora/paypal_options/')]));
-}
-
 $allow_digital_products = AgoraOptions::isDigitalProductsEnabled();
 if ($allow_digital_products) {
     $digital_checked = false;
@@ -184,7 +176,7 @@ $inputs_list['price_input'] = [
         'name' => 'price',
         'value' => $price,
         '#label' => elgg_echo('agora:add:price'),
-        '#help' => elgg_echo('agora:add:price:note').$paypal_tip,
+        '#help' => elgg_echo('agora:add:price:note').getPaypalToolTip(),
         'class' => 'short',
     ])),
 ];
@@ -335,7 +327,7 @@ $inputs_list['access_id_input'] = [
 
 if (!$guid && AgoraOptions::isTermsEnabled()) {
     $termslink = elgg_view('output/url', [
-        'href' => elgg_generate_url('agora:rerms'),
+        'href' => elgg_generate_url('agora:terms'),
         'text' => elgg_echo('agora:terms:title'),
         'class' => "elgg-lightbox",
     ]);

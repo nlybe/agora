@@ -15,7 +15,7 @@ if (!elgg_is_active_plugin('paypal_api')) {
 }
 
 $entity = elgg_extract('entity', $vars, '');
-if (!$entity instanceof Agora) { 
+if (!$entity instanceof \Agora) { 
     return;
 }
 

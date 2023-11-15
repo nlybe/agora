@@ -13,13 +13,13 @@ if (!$interest_guid) { // if not interest guid
 
 elgg_call(ELGG_IGNORE_ACCESS, function () use ($interest_guid) {
     $interest = get_entity($interest_guid);
-    if (!$interest instanceof AgoraInterest) {
+    if (!$interest instanceof \AgoraInterest) {
         $errmsg = elgg_echo('agora:set_rejected:interest_entity_missing');
     }
     
     // get classified entity
     $entity = get_entity($interest->int_ad_guid);
-    if (!$entity instanceof Agora) { 
+    if (!$entity instanceof \Agora) { 
         $errmsg = elgg_echo('agora:set_rejected:agora_entity_missing');
     }    
 

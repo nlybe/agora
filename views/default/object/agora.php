@@ -11,7 +11,7 @@ elgg_require_js("agora/gallery");
 $full = elgg_extract('full_view', $vars, false);
 $entity = elgg_extract('entity', $vars, false);
 
-if (!$entity instanceof Agora) {
+if (!$entity instanceof \Agora) {
     return;
 }
 

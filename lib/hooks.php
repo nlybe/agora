@@ -34,11 +34,11 @@ function agora_input_list(\Elgg\Hook $hook) {
  */
 function agora_set_url(\Elgg\Hook $hook) {
     $entity = $hook->getEntityParam();
-    if ($entity instanceof Agora) { 
+    if ($entity instanceof \Agora) { 
         $friendly_title = elgg_get_friendly_title($entity->title);
         return "agora/view/{$entity->guid}/$friendly_title";
     }
-    else if ($entity instanceof AgoraSale) {
+    else if ($entity instanceof \AgoraSale) {
         $friendly_title = elgg_get_friendly_title($entity->title);
         return "agora/transactions/view/{$entity->guid}/$friendly_title";
     }   
@@ -106,7 +106,7 @@ function agora_review_reminder_cron_hook(\Elgg\Hook $hook) {
 
         foreach ($getsales as $gs) {
             $entity = get_entity($gs->txn_vguid);
-            if (!$entity instanceof Agora) { 
+            if (!$entity instanceof \Agora) { 
                 return;
             }
 
@@ -138,7 +138,7 @@ function agora_paypal_successful_payment_hook(\Elgg\Hook $hook) {
         if (is_array($purchase_units) && count($purchase_units) > 0) {
             foreach ($purchase_units as $unit) {
                 $ad = get_entity($unit->reference_id);
-                if (!$ad instanceof Agora) {
+                if (!$ad instanceof \Agora) {
                     continue;
                 }
 
@@ -185,7 +185,7 @@ function agora_paypal_successful_payment_hook(\Elgg\Hook $hook) {
 function agora_menu_setup(\Elgg\Hook $hook) {
     $return = $hook->getValue();
     $entity = $hook->getEntityParam();
-    if (!$entity instanceof Agora) {
+    if (!$entity instanceof \Agora) {
         return;
     }
 
@@ -227,7 +227,7 @@ function agora_menu_setup(\Elgg\Hook $hook) {
  */
 function agorasale_menu_setup(\Elgg\Hook $hook) {
     $entity = $hook->getEntityParam();
-    if (!$entity instanceof AgoraSale) {
+    if (!$entity instanceof \AgoraSale) {
         return;
     }
 
@@ -259,7 +259,7 @@ function agorasale_menu_setup(\Elgg\Hook $hook) {
 //  */
 // function agora_delete_action(\Elgg\Hook $hook) {
 //     $entity = $hook->getEntityParam();
-//     if (!$entity instanceof AgoraSale || !$entity instanceof Agora) {
+//     if (!$entity instanceof \AgoraSale || !$entity instanceof \Agora) {
 //         return;
 //     }
 

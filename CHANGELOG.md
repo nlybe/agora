@@ -1,6 +1,11 @@
-# Agora Classifieds Plugin
+# Agora Classifieds Plugin Change Log
 
 ## Change Log
+
+## 4.14 (Nov 2023)
+
+- Upgraded for Elgg 4.3.x compatibility
+
 
 ### 3.13  (Nov 2021)
 

@@ -1,19 +1,23 @@
-define(function (require) {
-    var elgg = require('elgg');
-    var $ = require('jquery');
-    
-    var settings = require("agora/settings");
+define(['jquery', 'elgg', 'elgg/Ajax', 'agora/settings'], function($, elgg, Ajax, settings) {      
     var max_images_gallery = settings['max_images_gallery'];
     
     $(document).ready(function () {
         $("#product_icon").on("change", function() {
+            console.log("product_icon updated");
             var img_existed = $("#agora-icons li").length;
+            console.log("img_existed: "+img_existed);
             var img_new = $("#product_icon")[0].files.length;
+            console.log("img_new: "+img_new);
             var remaning_images = max_images_gallery - img_existed;
+            console.log("remaning_images: "+remaning_images);
             if( img_existed+img_new > max_images_gallery) {
+                console.log("problem");
                $(this).val(null); 
                alert("You can select only " + remaning_images + " images");
             } 
+            else {
+                console.log("no problem");
+            }
         });
 
         // remove screenshot field
@@ -33,7 +37,8 @@ define(function (require) {
             // hide it initially
             container.hide();
 
-            elgg.action('agora/icon/delete', {
+            var ajax = new Ajax();
+            ajax.action('agora/icon/delete', {
                 timeout: 30000,
                 data: {
                     guid: $(this).attr('data-guid')

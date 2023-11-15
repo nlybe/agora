@@ -28,7 +28,7 @@ class AgoraInterest extends ElggObject {
     public function getAd() {
         $ad = get_entity($this->int_ad_guid);
 
-        if ($ad instanceof Agora) { 
+        if ($ad instanceof \Agora) { 
             return $ad;
         }
 

@@ -9,12 +9,12 @@ use Agora\AgoraOptions;
 $full = elgg_extract('full_view', $vars, false);
 
 $entity = elgg_extract('entity', $vars, false);
-if (!$entity instanceof AgoraInterest) {
+if (!$entity instanceof \AgoraInterest) {
     return;
 }
 
 $ad = $entity->getAd();
-if (!$ad instanceof Agora) { 
+if (!$ad instanceof \Agora) { 
     return;
 }
 

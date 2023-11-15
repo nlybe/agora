@@ -27,7 +27,7 @@ if ($selected_category == 'all') {
 
 // check if user can post classifieds
 if (AgoraOptions::canUserPostClassifieds()) {
-    elgg_register_title_button();
+    elgg_register_title_button('agora', 'add', 'object', 'agora');
 }
 
 $options = [

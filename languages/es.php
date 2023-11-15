@@ -142,7 +142,7 @@ return [
     	
     // groups	
     'agora:group' => 'Experiencias ',
-    'agora:group:enableagora' => 'Habilitar experiencias',
+    'groups:tool:agora' => 'Habilitar experiencias',
     	
     // settings	
     'agora:settings:defaultdateformat' => 'Formato de fecha por defecto',

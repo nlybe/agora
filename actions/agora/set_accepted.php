@@ -16,14 +16,13 @@ if (!$interest_guid) { // if not interest guid
 
 elgg_call(ELGG_IGNORE_ACCESS, function () use ($interest_guid) {
     $interest = get_entity($interest_guid);
-    if (!$interest instanceof AgoraInterest) {
+    if (!$interest instanceof \AgoraInterest) {
         $errmsg = elgg_echo('agora:set_accepted:interest_entity_missing');
     }
     
     // get classified entity
     $entity = get_entity($interest->int_ad_guid);
-    if (!$entity instanceof Agora) {   // if not agora interest entity
-    
+    if (!$entity instanceof \Agora) {   // if not agora interest entity    
         $errmsg = elgg_echo('agora:set_accepted:agora_entity_missing');
     }
     
@@ -37,19 +36,17 @@ elgg_call(ELGG_IGNORE_ACCESS, function () use ($interest_guid) {
         return elgg_error_response(elgg_echo($errmsg));
     } 
     else if ($entity->canEdit()) {
-        $entity = new AgoraSale();
-        $entity->subtype = AgoraSale::SUBTYPE;
-        $entity->access_id = ACCESS_PRIVATE;
-        $entity->owner_guid = $buyer->guid;
-        $entity->container_guid = $entity->guid;
-        $entity->title = $entity->title;
-    //    $entity->description = serialize($transactions_params);
-        $entity->transaction_id = 'Offline-' . $entity->guid . '-' . $interest->int_buyer_guid;
-        $entity->txn_method = AgoraOptions::PURCHASE_METHOD_OFFLINE;
-        $entity->buyer_name = $buyer->name;
-        $entity->bill_number = AgoraSale::getNewInvoiceNumber();
+        $sale = new AgoraSale();
+        $sale->access_id = ACCESS_PRIVATE;
+        $sale->owner_guid = $buyer->guid;
+        $sale->container_guid = $entity->guid;
+        $sale->title = $entity->title;
+        $sale->transaction_id = 'Offline-' . $entity->guid . '-' . $interest->int_buyer_guid;
+        $sale->txn_method = AgoraOptions::PURCHASE_METHOD_OFFLINE;
+        $sale->buyer_name = $buyer->name;
+        $sale->bill_number = AgoraSale::getNewInvoiceNumber();
         
-        if ($entity->save()) {
+        if ($sale->save()) {
             $interest->int_status = AgoraOptions::INTEREST_ACCEPTED;
             if ($interest->save()) {
                 // reduce availability

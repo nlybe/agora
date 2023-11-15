@@ -1,7 +1,6 @@
-Agora Classifieds Plugin
-========================
+# Agora Classifieds Plugin
 
-![Elgg 3.3](https://img.shields.io/badge/Elgg-3.3-orange.svg?style=flat-square)
+![Elgg 4.3](https://img.shields.io/badge/Elgg-4.3-orange.svg?style=flat-square)
 
 Elgg plugin for posting classifieds to community members using PayPal Payment Gateway.
 
@@ -38,16 +37,6 @@ Administrator can set who can post classifieds in settings, administrators or al
 - Notifications are send for each transaction to users specified by administrator
 - Transactions log list in admin area
 - Several configuration options
-
-## Installation
-
-Requires: Elgg 3.3.x or higher
-
-1. Upload classifieds plugin in "mod/" elgg folder and activate it
-2. In "Administration/Configure/Settings/Agora Classifieds" you can configure several options
-3. The PayPal API plugin is required in order to use PayPal as payment gateway.
-4. The [Ratings plugin](https://github.com/nlybe/Elgg-Ratings) is suggested in order to allow comments and ratings only from buyers.
-5. The [HTML email handler]((https://github.com/ColdTrick/html_email_handler)) plugin is suggested for sending html emails.
 
 ## Future Tasks List
 

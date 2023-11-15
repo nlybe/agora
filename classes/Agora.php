@@ -134,46 +134,56 @@ class Agora extends ElggObject {
      * @return type
      */
     public function getSales($list = false) {
-        return elgg_call(ELGG_IGNORE_ACCESS, function () use ($list) {
+        if ($this->canEdit()) {
             $options = [
                 'type' => 'object',
                 'subtype' => AgoraSale::SUBTYPE,
-                'container_guid' => $this->getGUID(),
+                // 'container_guid' => $this->getGUID(),
+                'limit' => 0,
             ];
-            
-            if ($list) {
-                $options['no_results'] =  elgg_echo('agora:sales:none');
-                return elgg_list_entities($options);
-            }
-            else {
-                return elgg_get_entities($options);
-            }
-        });
         
+            return elgg_call(ELGG_IGNORE_ACCESS, function() use ($options, $list) {                
+                if ($list) {
+                    $options['no_results'] =  elgg_echo('agora:sales:none');
+                    return elgg_list_entities($options);
+                }
+                else {
+                    return elgg_get_entities($options);
+                }
+            });
+        }
+        
+        return false;
     }
     
     /**
-     * Get list of sales
+     * Get list of requests
      * 
      * @param type $list
      * @return type
      */
     public function getRequests($list = false) {
-        $options = [
-            'type' => 'object',
-            'subtype' => AgoraInterest::SUBTYPE,
-            'limit' => 0,
-            'metadata_name_value_pairs' => [
-                ['name' => 'int_ad_guid', 'value' =>  $this->getGUID(), 'operand' => '='],
-            ],
-        ];
-        if ($list) {
-            $options['no_results'] =  elgg_echo('agora:requests:none');
-            $options['full_view'] =  true;
-            return elgg_list_entities($options);
+        if ($this->canEdit()) { 
+            $options = [
+                'type' => 'object',
+                'subtype' => AgoraInterest::SUBTYPE,
+                'limit' => 0,
+                'metadata_name_value_pairs' => [
+                    ['name' => 'int_ad_guid', 'value' =>  $this->getGUID(), 'operand' => '='],
+                ],
+            ];
+
+            return elgg_call(ELGG_IGNORE_ACCESS, function() use ($options, $list) {
+                if ($list) {
+                    $options['no_results'] =  elgg_echo('agora:requests:none');
+                    $options['full_view'] =  true;
+                    return elgg_list_entities($options);
+                }        
+                return elgg_get_entities($options);
+            });
         }
-        
-        return elgg_get_entities($options);
+
+        return false;
     }
     
     /**
@@ -188,7 +198,6 @@ class Agora extends ElggObject {
         if (!in_array($size, ['master', 'large', 'medium', 'small', 'tiny'])) {
             $size = 'medium';
         }
-
         $image_url = "agora/image/$this->guid/$size/" . time() . ".jpg";
 
         return elgg_normalize_url($image_url);

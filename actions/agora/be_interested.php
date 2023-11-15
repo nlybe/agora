@@ -17,7 +17,7 @@ $agora = get_entity($classified_guid);
 
 elgg_make_sticky_form('messages');
 
-if (!$agora instanceof Agora) {
+if (!$agora instanceof \Agora) {
     return elgg_error_response(elgg_echo('agora:be_interested:failed'));
 }
 
@@ -50,7 +50,7 @@ else {
 
     // save interest transaction
     $entity = new ElggObject;
-    $entity->subtype = AgoraInterest::SUBTYPE;
+    $entity->setSubtype(AgoraInterest::SUBTYPE);
     $entity->access_id = 0;
     $entity->save();
 

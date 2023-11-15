@@ -14,7 +14,7 @@ if (!$user) {
 elgg_push_breadcrumb(elgg_echo('agora:my_purchases'));
 
 if (AgoraOptions::canUserPostClassifieds()) {
-    elgg_register_title_button();
+    elgg_register_title_button('agora', 'add', 'object', 'agora');
 }
 
 $content = elgg_list_entities([

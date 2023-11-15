@@ -28,7 +28,7 @@ elgg_push_breadcrumb(elgg_echo('friends'));
 
 // check if user can post classifieds
 if (AgoraOptions::canUserPostClassifieds()) {
-    elgg_register_title_button();
+    elgg_register_title_button('agora', 'add', 'object', 'agora');
 }
 
 $title = elgg_echo('agora:friends');
@@ -43,13 +43,19 @@ $content = elgg_list_entities([
     'no_results' => elgg_echo('agora:none'),
 ]);
 
-$params = [
-    'filter_value' => 'friends',
+// $params = [
+//     'filter_value' => 'friends',
+//     'content' => $content,
+//     'title' => $title,
+//     'filter_override' => elgg_view('agora/nav', ['selected' => 'friends']),
+// ];
+
+// $body = elgg_view_layout('default', $params);
+
+// echo elgg_view_page($title, $body);
+
+echo elgg_view_page($title, [
     'content' => $content,
-    'title' => $title,
-    'filter_override' => elgg_view('agora/nav', ['selected' => 'friends']),
-];
-
-$body = elgg_view_layout('default', $params);
-
-echo elgg_view_page($title, $body);
+    'sidebar' => elgg_view('agora/sidebar', ['selected' => 'friends', 'category' => $selected_category]),
+    'filter_value' => elgg_view('agora/nav', ['selected' => 'friends']),
+]);

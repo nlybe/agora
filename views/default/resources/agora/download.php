@@ -8,7 +8,7 @@ $guid = elgg_extract('guid', $vars, '');
 
 // Get the file
 $entity = get_entity($guid);
-if (!$entity instanceof Agora) { 
+if (!$entity instanceof \Agora) { 
     return elgg_error_response(elgg_echo('agora:download:filenotexists'));
 }
 
@@ -17,6 +17,7 @@ if (!$entity->digital) {
 }
 
 if ($entity->price && !$entity->userPurchasedAd(elgg_get_logged_in_user_entity()->guid) && !elgg_is_admin_logged_in()) {
+    forward('','404');
     return elgg_error_response(elgg_echo('agora:download:nopurchased'));
 }
 

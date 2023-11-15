@@ -11,11 +11,11 @@ if (!elgg_is_admin_logged_in()) {
 $guid = (int) get_input('guid');
 $entity = get_entity($guid);
 
-if (!$entity instanceof ElggEntity) {
+if (!$entity instanceof \ElggEntity) {
 	return elgg_error_response(elgg_echo('entity:delete:item_not_found'));
 }
 
-if (!$entity->canDelete() || $entity instanceof ElggPlugin || $entity instanceof ElggSite) {
+if (!$entity->canDelete() || $entity instanceof \ElggPlugin || $entity instanceof \ElggSite) {
 	return elgg_error_response(elgg_echo('entity:delete:permission_denied'));
 }
 
@@ -44,9 +44,9 @@ if (!$forward_url) {
 		
 		// check if there is a collection route (eg. blog/owner/username)
 		$route_name = false;
-		if ($container instanceof ElggUser) {
+		if ($container instanceof \ElggUser) {
 			$route_name = "collection:{$type}:{$subtype}:owner";
-		} elseif ($container instanceof ElggGroup) {
+		} elseif ($container instanceof \ElggGroup) {
 			$route_name = "collection:{$type}:{$subtype}:group";
 		}
 		
@@ -57,7 +57,7 @@ if (!$forward_url) {
 		}
 		
 		// no route found, fallback to container url
-		if ($container instanceof ElggEntity) {
+		if ($container instanceof \ElggEntity) {
 			return $container->getURL();
 		}
 		

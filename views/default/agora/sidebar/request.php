@@ -15,7 +15,7 @@ if (
     && AgoraOptions::canMembersSendPrivateMessage() 
     && !$soldout
     && !(elgg_get_logged_in_user_guid() == $entity->owner_guid)
-    && $entity instanceof Agora
+    && $entity instanceof \Agora
 ) {
     $pmbutton = elgg_view('output/url', [
         'name' => 'reply',

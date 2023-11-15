@@ -121,3 +121,20 @@ function get_digital_filename($entity_guid) {
 
     return false;
 }
+
+// get additional tooltip info for price when edit an ad
+function getPaypalToolTip() {
+    if (!elgg_is_active_plugin('paypal_api')) {
+        return '';
+    }
+
+    // check who can post for retrieving paypal account
+    $whocanpost = trim(elgg_get_plugin_setting('agora_uploaders', 'agora'));
+    if ($whocanpost === 'allmembers') {
+        return elgg_format_element('div', ['class' => 'paypal_tip'], elgg_echo('agora:add:price:note:importantall', [elgg_normalize_url('agora/user/'.$user->username)]));
+    } else if ($whocanpost === 'admins') {
+        return elgg_format_element('div', ['class' => 'paypal_tip'], elgg_echo('agora:add:price:note:importantadmin', [elgg_normalize_url('admin/agora/paypal_options/')]));
+    }
+
+    return '';
+}

@@ -10,31 +10,62 @@ require_once(dirname(__FILE__) . '/lib/hooks.php');
 require_once(dirname(__FILE__) . '/lib/functions.php'); 
 
 return [
+    'plugin' => [
+        'name' => 'Agora Classifieds',
+		'version' => '4.14',
+		'dependencies' => [
+			'geomaps_api' => [
+				'must_be_active' => false,
+            ],
+			'ratings' => [
+				'must_be_active' => false,
+            ],
+			'paypal_api' => [
+				'must_be_active' => false,
+            ],
+        ],
+	],	
     'bootstrap' => Bootstrap::class,
     'entities' => [
         [
             'type' => 'object',
             'subtype' => 'agora',
             'class' => 'Agora',
-            'searchable' => true,
+            'capabilities' => [
+				'commentable' => true,
+				'searchable' => true,
+				'likable' => true,
+			],
         ],
         [
             'type' => 'object',
             'subtype' => 'agora_img',
             'class' => 'AgoraImage',
-            'searchable' => false,
+            'capabilities' => [
+				'commentable' => false,
+				'searchable' => false,
+				'likable' => false,
+			],
         ],
         [
             'type' => 'object',
             'subtype' => 'agora_sale',
             'class' => 'AgoraSale',
-            'searchable' => false,
+            'capabilities' => [
+				'commentable' => true,
+				'searchable' => true,
+				'likable' => true,
+			],
         ],
         [
             'type' => 'object',
             'subtype' => 'agora_interest',
             'class' => 'AgoraInterest',
-            'searchable' => false,
+            'capabilities' => [
+				'commentable' => false,
+				'searchable' => false,
+				'likable' => false,
+			],
         ],
     ],
     'actions' => [
@@ -117,7 +148,7 @@ return [
             'path' => '/agora/transactions/view/{guid}/{title?}',
             'resource' => 'agora/transactions/view',
         ],
-        'agora:rerms' => [
+        'agora:terms' => [
             'path' => '/agora/terms',
             'resource' => 'agora/terms',
         ],    

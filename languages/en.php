@@ -14,6 +14,9 @@ return [
     'collection:object:agora_sale' => 'Classifieds Sales',
     'collection:object:agora_interest' => 'Classifieds Interest',
     'collection:object:agora_img' => 'Classifieds Images',
+    'item:object:agora_sale' => 'Classifieds Sales',
+    'item:object:agora_interest' => 'Classifieds Interest',
+    'item:object:agora_img' => 'Classifieds Images',
     'agora:buyer' => "Buyer",
     'agora:seller' => "Seller",
     'agora:transaction:id' => "ID",
@@ -170,7 +173,7 @@ return [
     'agora:add:currency:note' => "Select currency",
     'agora:add:price' => "Price of Ad",
     'agora:add:pricesimple' => "Price",
-    'agora:add:price:note' => "Price of Ad for buying through paypal. Enter zero for free.",
+    'agora:add:price:note' => "Price of Ad. Enter zero for free.",
     'agora:add:price:note:importantall' => "For receiving online payments, you have to enter at least one valid account for payment gateways in your <a href='%s'>settings</a>.",
     'agora:add:price:note:importantadmin' => "For receiving online payments, you have to enter at least one valid account for payment gateways in <a href='%s'>Administration</a> area.",
     'agora:add:image' => "Main Photo",
@@ -212,7 +215,7 @@ return [
     
     // groups
     'agora:group' => 'Group classifieds',
-    'agora:group:enableagora' => 'Enable classifieds',
+    'groups:tool:agora' => 'Enable group classifieds',
     
     // my purchases
     'agora:my_purchases' => 'My Purchases',

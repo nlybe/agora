@@ -9,7 +9,7 @@ $size = elgg_extract('size', $vars, '');
 
 $img = get_entity($guid);
 
-if (!$img instanceof AgoraImage) {
+if (!$img instanceof \AgoraImage) {
     forward('','404');
 }
 

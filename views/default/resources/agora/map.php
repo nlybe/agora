@@ -75,7 +75,7 @@ else {
 
 // check if user can post classifieds
 if (AgoraOptions::canUserPostClassifieds()) {
-    elgg_register_title_button();
+    elgg_register_title_button('agora', 'add', 'object', 'agora');
 }
 
 $content = elgg_view('agora/adsmap', [
