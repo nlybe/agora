@@ -51,12 +51,12 @@ if (AgoraOptions::allowedComRatOnlyForBuyers()) {
         $vars['comment_label'] = elgg_echo('agora:comments:add:comment');
         $content .= ratings_elgg_view_comments($entity, true, $vars);	// allow add review
     } else {
-        $content .= ratings_elgg_view_comments($entity, false);	// disable review form 
+        $content .= ratings_elgg_view_comments($entity, false);	// disable review form
     }
 } 
 else if ($entity->canComment()) {
     $content .= elgg_view_comments($entity);
-} 
+}
 
 // add download button if current user has purchased this item or if file is available for free
 if ($entity->digital && ($user_purchases[0] instanceof \AgoraSale || !$entity->price || elgg_is_admin_logged_in())) {
@@ -72,7 +72,6 @@ echo elgg_view_page($title, [
 	'content' => $content,
 	'filter_id' => '',
 	'entity' => $entity,
-	'sidebar' => elgg_view('agora/sidebar/request', ['entity' => $entity]),
 ], 'default', [
 	'entity' => $entity,
 ]);

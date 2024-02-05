@@ -4,24 +4,34 @@
  * @package agora
  */
 
+use Elgg\Exceptions\Http\EntityNotFoundException;
 use Agora\AgoraOptions;
 
 $page_owner = elgg_get_page_owner_entity();
 if (!$page_owner) {
-    forward('agora/all');
+    throw new EntityNotFoundException();
 }
 
 // Get category
 $selected_category = elgg_extract('category', $vars, 'all');
-if ($selected_category == 'all') {
-    $s_category = '';
-} else {
-    $s_category = $selected_category;
+$s_category = $selected_category == 'all'?'':$selected_category;
+
+$user = elgg_get_logged_in_user_entity();
+if ($user) {
+    elgg_register_menu_item('title', [
+        'name' => 'my_purchases',
+        'icon' => 'money-check',
+        'text' => elgg_echo('agora:label:my_purchases'),
+        'href' => elgg_generate_url('my_purchases:object:agora', [
+			'username' => $user->username,
+		]),
+        'link_class' => 'elgg-button elgg-button-action',
+    ]);
 }
 
 // check if user can post classifieds
 if (AgoraOptions::canUserPostClassifieds()) {
-    elgg_register_title_button('agora', 'add', 'object', 'agora');
+    elgg_register_title_button('add', 'object', 'agora');
 }
 
 $options = [
@@ -50,11 +60,6 @@ else {
     $content = elgg_list_entities($options);
 }
 
-$filter_value = '';
-if ($page_owner->getGUID() == elgg_get_logged_in_user_guid()) {
-    $filter_value = 'mine';
-}
-
 // build sidebar categories url
 if ($page_owner instanceof \ElggGroup) {
     $sidebar_cats_url = $page_owner->getGUID() . '/all';
@@ -63,14 +68,11 @@ else {
     $sidebar_cats_url = $page_owner->username;
 }
 
-$vars = [
-    'filter_value' => $filter_value,
-    'filter_override' => elgg_view('agora/nav', ['selected' => $vars['page'], 'page_owner_guid' => $page_owner->getGUID()]),
+echo elgg_view_page($title, [
     'content' => $content,
-    'title' => $title,
-    'sidebar' => elgg_view('agora/sidebar', ['selected' => $sidebar_cats_url, 'category' => $selected_category]),
-];
-
-$body = elgg_view_layout('default', $vars);
-
-echo elgg_view_page($title, $body);
+    'sidebar' => elgg_view('agora/sidebar', [
+        'selected' => $sidebar_cats_url, 
+        'category' => $selected_category,
+        'page' => "agora/owner/$sidebar_cats_url/", 
+    ]),
+]);

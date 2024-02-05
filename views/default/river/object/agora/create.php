@@ -5,7 +5,7 @@
  */
 
 $object = $vars['item']->getObjectEntity();
-$excerpt = elgg_get_excerpt($object->description);
+$excerpt = $object->description?elgg_get_excerpt($object->description):'';
 
 $icon = elgg_view_entity_icon($object, 'medium', ['img_class' => 'elgg-photo']);
 $message = elgg_format_element('div', ['style' => 'float:left; margin-right: 5px;'], $icon).$excerpt;

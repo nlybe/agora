@@ -22,13 +22,11 @@ if (($user = get_user($user_guid)) && $user->canEdit()) {
     }
 
     if ($error_count == 0) {
-        return elgg_ok_response('', elgg_echo('agora:usersettings:update:success'), REFERER);
-    } else {
-        return elgg_error_response(elgg_echo('agora:usersettings:update:error'));
-    }
+        return elgg_ok_response('', elgg_echo('agora:usersettings:update:success'), REFERRER);
+    } 
 } else {
     return elgg_error_response(elgg_echo("InvalidClassException:NotValidElggStar", [$user_guid, "ElggUser"]));
 }
 
-forward(REFERER);
+return elgg_error_response(elgg_echo('agora:usersettings:update:error'), REFERRER);
 

@@ -10,13 +10,11 @@ $guid = elgg_extract('guid', $vars, '');
 $entity = get_entity($guid);
 
 if (!$entity instanceof \Agora) { 
-    elgg_error_response(elgg_echo('agora:error:invalid:entity'));
-    forward(REFERRER);
+    return elgg_error_response(elgg_echo('agora:error:invalid:entity'), REFERRER);
 }
 
 if (!$entity->canEdit()) {
-    elgg_error_response(elgg_echo('Invalid access to this page'));
-    forward(REFERRER);
+    return elgg_error_response(elgg_echo('Invalid access to this page'), REFERRER);
 }
 
 elgg_push_breadcrumb(elgg_echo('agora'), 'agora/all');

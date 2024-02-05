@@ -19,13 +19,13 @@
     ],
     "require": {
         "composer/installers": ">=1.0.8",
-        "nlybe/geomaps_api": "4.x",
-        "nlybe/ratings": "4.x"
+        "nlybe/geomaps_api": "5.x",
+        "nlybe/ratings": "5.x"
     },
     "extra": {
         "installer-name": "agora"
     },
 	"conflict": {
-		"elgg/elgg": "<4.0"
+		"elgg/elgg": "<5.0"
 	}
 }

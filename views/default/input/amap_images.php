@@ -11,7 +11,7 @@ elgg_require_js("agora/amap_images");
 // maximum number of images
 $max_images = elgg_extract('$max_images', $vars, AgoraOptions::getParams('max_images'));
 
-$entity = get_entity(elgg_extract('guid', $vars));
+$entity = get_entity(intval(elgg_extract('guid', $vars)));
 
 if ($entity) {
     $images = $entity->getMoreImages();

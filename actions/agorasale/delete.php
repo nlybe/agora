@@ -35,7 +35,7 @@ if (!$entity->delete()) {
 // determine forward URL
 $forward_url = elgg_normalize_site_url(get_input('forward_url'));
 if (!$forward_url) {
-	$forward_url = REFERER;
+	$forward_url = REFERRER;
 	$referrer_url = elgg_extract('HTTP_REFERER', $_SERVER, '');
 	$site_url = elgg_get_site_url();
 	
@@ -66,7 +66,7 @@ if (!$forward_url) {
 	};
 	
 	if ($referrer_url && 0 == elgg_strpos($referrer_url, $site_url)) {
-		// referer is on current site
+		// referrer is on current site
 		$referrer_path = elgg_substr($referrer_url, elgg_strlen($site_url));
 		$segments = explode('/', $referrer_path);
 		

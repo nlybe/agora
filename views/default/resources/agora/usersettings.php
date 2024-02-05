@@ -16,8 +16,7 @@ else {
 }
 
 if (empty($user) || !$user->canEdit()) {
-    elgg_error_response(elgg_echo('agora:usersettings:error:user'));
-    forward();
+    return elgg_error_response(elgg_echo('agora:usersettings:error:user'), REFERRER);
 }
 
 // set correct context

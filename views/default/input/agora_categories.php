@@ -13,7 +13,6 @@ if (!is_array($fields)) {
 }
 
 $options = [ 0 => elgg_echo('agora:add:category:select')];
-// $options[0] = elgg_echo('agora:add:category:select');
 foreach($fields as $val) {
 	$options[$val] = $val;
 }

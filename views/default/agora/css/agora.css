@@ -22,7 +22,7 @@ div.agorabody {
     margin-top: 10px;
 }
  
-.elgg-image-block .desc {
+.desc {
     width: 100%;
     margin: 20px 0 30px;
     clear:both;
@@ -150,13 +150,13 @@ div.features	{
 
 .list_features .f_label	{
     font-weight: bold;
-    width: 30%;
+    width: 35%;
     border-right: 2px solid #fff;
     vertical-align: top;
 }
 
 .list_features .f_text	{
-    width: 69%;
+    width: 63%;
 }
 
 div.total_price {
@@ -276,6 +276,7 @@ div.agoraprint #login-dropdown {
     max-width: 100%!important;
     clear:both;
     text-align: left;
+    margin-bottom: 10px;
 }
 
 .agora_search_form input, .agora_sort_by input, .nsf_element {

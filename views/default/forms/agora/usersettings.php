@@ -14,7 +14,7 @@ if (empty($user) || !$user->canEdit()) {
 
 if (AgoraOptions::canAllUsersPostClassifieds()) {
     if (AgoraOptions::isPaypalEnabled()) {
-        $agora_paypal_account = $user->getPrivateSetting("agora_paypal_account");
+        $agora_paypal_account = $user->getMetadata("agora_paypal_account");
         $form_body .= elgg_view_module("inline", elgg_echo("agora:usersettings:paypal_settings"), 
             elgg_format_element('div', ['style' => 'margin-top: 20px;'], elgg_view_field([
                 '#type' => 'text',

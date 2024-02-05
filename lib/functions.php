@@ -3,6 +3,8 @@
  * Elgg Agora Classifieds plugin
  * @package agora
  */
+
+use Agora\AgoraOptions;
  
 //add classifieds form parameters
 function agora_prepare_form_vars($entity = null) {
@@ -74,26 +76,17 @@ function check_if_user_commented_this_ad($entity_guid, $user_guid) {
     return $noComments;
 }
 
-// check if html tags on desctription are allowed
-function agora_html_allowed() {
-    $html_allowed = trim(elgg_get_plugin_setting('html_allowed', 'agora'));
-
-    if ($html_allowed === 'yes') {
-        return true;
+// get ad description
+function agora_get_ad_description($description) {
+    if (!$description) {
+        return false;
     }
 
-    return false;
-}
-
-// check if html tags on desctription are allowed
-function agora_get_ad_description($description) {
-    if (!$description)
-        return false;
-
-    if (agora_html_allowed())
+    if (AgoraOptions::isHtmlAllowed()) {
         return $description;
-    else
-        return strip_tags($description);
+    }
+
+    return strip_tags($description);
 }
 
 // check if user has purchased a specific ad
@@ -137,4 +130,30 @@ function getPaypalToolTip() {
     }
 
     return '';
+}
+
+/**
+ * Sanitise string
+ * 
+ * @param string $query
+ * 
+ * @return string
+ */
+function agoraGetStringSanitised($query) {
+    $query = strip_tags($query);
+    $query = htmlspecialchars($query, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8');
+    $query = trim($query);
+    
+    return $query;
+}
+
+/**
+ * Format gategory name by removing spaces, capital letters etc
+ * 
+ * @param string $val
+ * 
+ * @return string
+ */
+function agoraGetCatFormatted($val) {
+    return elgg_get_friendly_title($val);
 }

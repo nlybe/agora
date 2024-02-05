@@ -4,18 +4,16 @@
  * @package agora
  */
 
+use Elgg\Exceptions\Http\EntityNotFoundException;
 use Agora\AgoraOptions;
 
 $user = elgg_get_logged_in_user_entity();
 if (!$user) {
-    forward('agora/all');
+    throw new EntityNotFoundException();
 }
 
+elgg_push_breadcrumb(elgg_echo('agora'), 'agora/all');
 elgg_push_breadcrumb(elgg_echo('agora:my_purchases'));
-
-if (AgoraOptions::canUserPostClassifieds()) {
-    elgg_register_title_button('agora', 'add', 'object', 'agora');
-}
 
 $content = elgg_list_entities([
     'type' => 'object',
@@ -26,17 +24,14 @@ $content = elgg_list_entities([
 ]);
 
 $title = elgg_echo('agora:my_purchases');
-$filter_value = 'my_purchases';
 
 $vars = [
-    'filter_value' => $filter_value,
     'content' => $content,
     'title' => $title,
-    'sidebar' => elgg_view('agora/sidebar'),
-    'filter_override' => elgg_view('agora/nav', ['selected' => 'my_purchases']),
 ];
 
-$body = elgg_view_layout('default', $vars);
 
-echo elgg_view_page($title, $body);
-
+echo elgg_view_page($title, [
+    'content' => $content,
+    'filter' => false,
+]);

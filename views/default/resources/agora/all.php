@@ -17,11 +17,23 @@ if (!$sort_by) {
     $sort_by = 'newest';
 }
 
-// check if user can post classifieds
-if (AgoraOptions::canUserPostClassifieds()) {
-    elgg_register_title_button('agora', 'add', 'object', 'agora');
+$user = elgg_get_logged_in_user_entity();
+if ($user) {
+    elgg_register_menu_item('title', [
+        'name' => 'my_purchases',
+        'icon' => 'money-check',
+        'text' => elgg_echo('agora:label:my_purchases'),
+        'href' => elgg_generate_url('my_purchases:object:agora', [
+			'username' => $user->username,
+		]),
+        'link_class' => 'elgg-button elgg-button-action',
+    ]);
 }
 
+// check if user can post classifieds
+if (AgoraOptions::canUserPostClassifieds()) {
+    elgg_register_title_button('add', 'object', 'agora');
+}
 
 if (!$s_category) {
     // Get category
@@ -50,7 +62,7 @@ $options["wheres"] = [
         $ands = [];
         
         if ($s_keyword && !empty($s_keyword)) {
-            $s_keyword = sanitise_string($s_keyword);
+            $s_keyword = agoraGetStringSanitised($s_keyword);
             $joined_alias = $qb->joinMetadataTable($alias, 'guid', 'title', 'inner', 'alias_1');
             $ands[] = $qb->compare("$joined_alias.value", 'like', "%$s_keyword%", ELGG_VALUE_STRING);
         }
@@ -95,16 +107,16 @@ $content = elgg_view_form('agora/search', $form_vars, $body_vars);
 $form_vars = ['name' => 'agora_sort_by', 'enctype' => 'multipart/form-data', 'action' => elgg_get_site_url() . 'agora/all'];
 $content .= elgg_view_form('agora/sort_by', $form_vars, $body_vars);
 
-$category = AgoraOptions::getCatName($s_category);
-elgg_pop_breadcrumb();
+elgg_push_collection_breadcrumbs('object', 'agora');
 if (!empty($s_category)) {
+    $category = AgoraOptions::getCatName($s_category);
     elgg_push_breadcrumb(elgg_echo('agora'), 'agora/all');
     elgg_push_breadcrumb($category);
-    
+
     $content_tmp = elgg_list_entities($options);
     $title = elgg_echo('agora') . ': ' . $category;
 } 
-else {    
+else {
     $content_tmp = elgg_list_entities($options);
     $title = elgg_echo('agora');
 }
@@ -119,6 +131,9 @@ $content .= elgg_view('agora/list', [
 
 echo elgg_view_page($title, [
     'content' => $content,
-    'sidebar' => elgg_view('agora/sidebar', ['selected' => 'all', 'category' => $selected_category]),
-    'filter_value' => 'all',
+    'sidebar' => elgg_view('agora/sidebar', [
+        'selected' => 'all', 
+        'category' => $selected_category,
+        'page' => 'agora/all/', 
+    ]),
 ]);

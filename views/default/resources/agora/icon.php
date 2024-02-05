@@ -4,13 +4,15 @@
  * @package Agora
  */
 
+use Elgg\Exceptions\Http\EntityNotFoundException;
+
 $guid = elgg_extract('guid', $vars, 0);
 $size = elgg_extract('size', $vars, '');
 
 $img = get_entity($guid);
 
 if (!$img instanceof \AgoraImage) {
-    forward('','404');
+    throw new EntityNotFoundException();
 }
 
 $img->setFilename($img->file_prefix.($size == 'original'?'':$size).'.jpg');

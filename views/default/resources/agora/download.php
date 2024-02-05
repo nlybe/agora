@@ -4,21 +4,24 @@
  * @package Agora
  */
 
+ use Elgg\Exceptions\Http\EntityPermissionsException;
+ use Elgg\Exceptions\Http\EntityNotFoundException;
+ use Elgg\Exceptions\Http\PageNotFoundException;
+
 $guid = elgg_extract('guid', $vars, '');
 
 // Get the file
 $entity = get_entity($guid);
-if (!$entity instanceof \Agora) { 
-    return elgg_error_response(elgg_echo('agora:download:filenotexists'));
+if (!$entity instanceof \Agora) {
+    throw new EntityNotFoundException();
 }
 
 if (!$entity->digital) {
-    return elgg_error_response(elgg_echo('agora:download:nodigitalproduct'));
+    throw new PageNotFoundException();
 }
 
 if ($entity->price && !$entity->userPurchasedAd(elgg_get_logged_in_user_entity()->guid) && !elgg_is_admin_logged_in()) {
-    forward('','404');
-    return elgg_error_response(elgg_echo('agora:download:nopurchased'));
+    throw new EntityPermissionsException();
 }
 
 $file_ext = 'agora/file-' . $entity->guid . '.zip';
@@ -26,21 +29,16 @@ $file_ext = 'agora/file-' . $entity->guid . '.zip';
 elgg_call(ELGG_IGNORE_ACCESS, function () use ($entity, $file_ext) {
     $options = [
         'type' => 'object',
-        //'subtype' => 'file',
+        'subtype' => AgoraFile::SUBTYPE,
         'limit' => 0,
-        'metadata_name_value_pairs' => [
-            ['name' => 'agora_guid', 'value' => $entity->guid, 'operand' => '='],
-            ['name' => 'filename', 'value' => $file_ext, 'operand' => '='],
-        ],
-        'metadata_name_value_pairs_operator' => 'AND',
+        'container_guid' => $entity->guid,
     ];
 
     $files = elgg_get_entities($options);
-
     if (!$files) {
         return elgg_error_response(elgg_echo('agora:download:filenotexists'));
     }
-
+    
     if (count($files) > 0) {
         $file = get_entity($files[0]->guid);
     } else {

@@ -35,11 +35,11 @@ if (!$msg || !$subject) {
     return elgg_error_response(elgg_echo('messages:blank'));
 }
 
-// Otherwise, 'send' the message 
+// Otherwise, send the message 
 $body = elgg_echo("agora:be_interested:adtitle", [$agora->getURL(), $agora->title]);
 $body .= '<br />' . elgg_echo("agora:be_interested:requests", [elgg_generate_url('requests:object:agora', ['guid' => $agora->guid])]);
 $body .= '<br /><br />' . $msg;
-$result = messages_send($subject, $body, $recipient_guid, 0, $reply);
+$result = messages_send($subject, $body, $recipient_guid, 0);
 
 // Save 'send' the message
 if (!$result) {
@@ -63,12 +63,10 @@ else {
     $entity->int_message_guid = $result;
 
     if ($entity->save()) {
-        return elgg_ok_response('', elgg_echo('agora:be_interested:success'), REFERER);
-    } else {
-        return elgg_error_response(elgg_echo('agora:be_interested:error'));
+        return elgg_ok_response('', elgg_echo('agora:be_interested:success'), REFERRER);
     }
 }
 
-forward(REFERER);
+return elgg_error_response(elgg_echo('agora:be_interested:error'), REFERRER);
 
 

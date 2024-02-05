@@ -17,13 +17,12 @@ $pyn = [
 
 // set categories
 $output .= elgg_view_field([
-    '#type' => 'text',
+    '#type' => 'tags',
     'name' => 'params[categories]',
     'value' => $plugin->categories,
     '#label' => elgg_echo('agora:settings:categories'),
     '#help' => elgg_echo('agora:settings:categories:note'),
 ]);
-
 
 // set default currency
 $output .= elgg_view_field([
@@ -57,19 +56,23 @@ $output .= elgg_view_field([
 ]);
 
 $output .= elgg_view_field([
-    '#type' => 'dropdown',
+    '#type' => 'checkbox',
     'name' => 'params[multiple_ad_purchase]',
-    'value' => $plugin->multiple_ad_purchase?$plugin->multiple_ad_purchase:AgoraOptions::NO,
-    'options_values' => $pyn,
+    'default' => 'no',
+    'switch' => true,
+    'value' => 'yes',
+    'checked' => ($plugin->multiple_ad_purchase === 'yes'),
     '#label' => elgg_echo('agora:settings:multiple_ad_purchase'),
     '#help' => elgg_echo('agora:settings:multiple_ad_purchase:note'),
 ]);
 
 $output .= elgg_view_field([
-    '#type' => 'dropdown',
+    '#type' => 'checkbox',
     'name' => 'params[html_allowed]',
-    'value' => $plugin->html_allowed?$plugin->html_allowed:AgoraOptions::NO,
-    'options_values' => $pyn,
+    'default' => 'no',
+    'switch' => true,
+    'value' => 'yes',
+    'checked' => ($plugin->html_allowed === 'yes'),
     '#label' => elgg_echo('agora:settings:html_allowed'),
     '#help' => elgg_echo('agora:settings:html_allowed:note'),
 ]);
@@ -86,9 +89,12 @@ $output .= elgg_view_field([
 
 // set if members can send private message to seller
 $output .= elgg_view_field([
-    '#type' => 'dropdown',
+    '#type' => 'checkbox',
     'name' => 'params[send_message]',
-    'value' => $plugin->send_message?$plugin->send_message:AgoraOptions::NO,
+    'default' => 'no',
+    'switch' => true,
+    'value' => 'yes',
+    'checked' => ($plugin->send_message === 'yes'),
     'options_values' => $pyn,
     '#label' => elgg_echo('agora:settings:send_message'),
     '#help' => elgg_echo('agora:settings:send_message:note'),

@@ -22,6 +22,7 @@ return [
     'agora:transaction:id' => "ID",
     'agora:transaction:date' => "Date",
     'agora:transaction:title' => "Purchace of %s",
+    'collection:object:agora_file' => 'Classifieds Digital File',
     
     // errors / warnings
     'agora:error:access:invalid' => "Invalid access to this page",
@@ -63,7 +64,7 @@ return [
     'agora:object:total_cost' => "Total Cost: %s",
     'agora:object:total_cost:simple' => "Total Cost",
     'agora:object:login_to_buy' => "Login to Buy",
-    
+
     // Status messages
     'agora:none' => "No classifieds yet",
     'agora:owner' => "%s's classifieds",
@@ -78,7 +79,8 @@ return [
     'agora:save:howmany_not_numeric' => "No of available items is not valid, must be numeric. Your ad cannot be saved.",
     'agora:save:tax_cost_not_numeric' => "Tax is not valid, must be numeric. Your ad cannot be saved.",
     'agora:save:shipping_cost_not_numeric' => "Cost of Shipping is not valid, must be numeric. Your ad cannot be saved.",
-    'agora:be_interested:failed' => "Send interest failed",   
+    'agora:be_interested:title' => "I'm interested in %s",
+    'agora:be_interested:failed' => "Send interest failed",
     'agora:be_interested:adtitle' => "Ad: <a href='%s'>%s</a>",
     'agora:be_interested:requests' => "<a href='%s'>All requests</a>",
     'agora:be_interested:ad_message_subject' => "New interest for %s",
@@ -132,7 +134,7 @@ return [
 	You cannot reply to this email.",    
 	'agora:comments:stars_caption' => "%s/%s stars (%s votes)",  
 	'generic_comments:latest' => "Latest reviews",
-	
+
     
     // interest messages
     'agora:interests' => "Users interested",
@@ -324,7 +326,6 @@ return [
     'agora:widget:bought' => "Purchases",
     'agora:widget:bought:description' => "Latest purchases",
     'agora:widget:items_bought' => "Recent items bought",
-//    'agora:widget:items_sold' => "Recent items sold",
     
     // paypal 
     'agora:buy' => "Buy this",
@@ -411,7 +412,13 @@ return [
     'agora:usersettings:update:error' => "Error on saving Classifieds Settings",
     'agora:usersettings:no_fornormaluseryet' => "No settings to configure yet",    
     
-    //////////////////////////////////
+    
     'agora:add:error:mime_type' => '%s is not supported',
+
+    // widgets
+    'widgets:agora:name' => "My ads",
+    'widgets:agora:description' => "Display your latest ads",
+    'widgets:agorabs:name' => "My Purchases",
+    'widgets:agorabs:description' => "Display your latest purchases",
     
 ];

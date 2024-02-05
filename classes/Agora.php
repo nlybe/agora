@@ -47,7 +47,11 @@ class Agora extends ElggObject {
         return $price;
     } 
     
-    // get the price of ad depending on price and taxes
+    /**
+     * Get the price of ad depending on price and taxes
+     * 
+     * @return type
+     */
     public function getTaxCost() {
         $tax_cost = 0;
 
@@ -58,7 +62,11 @@ class Agora extends ElggObject {
         return $tax_cost;
     }     
     
-    // get the shipping cost applied
+    /**
+     * Get the shipping cost applied
+     * 
+     * @return type
+     */
     public function getShippingCost() {
         if ($this->shipping_cost && is_numeric($this->shipping_cost)) {
             if ($this->shipping_type == AGORA_SHIPPING_TYPE_TOTAL) {
@@ -138,7 +146,6 @@ class Agora extends ElggObject {
             $options = [
                 'type' => 'object',
                 'subtype' => AgoraSale::SUBTYPE,
-                // 'container_guid' => $this->getGUID(),
                 'limit' => 0,
             ];
         
@@ -201,13 +208,13 @@ class Agora extends ElggObject {
         $image_url = "agora/image/$this->guid/$size/" . time() . ".jpg";
 
         return elgg_normalize_url($image_url);
-    }    
+    }
     
     /**
      * Get entity images
      * 
-     * @param type $size
-     * @return boolean
+     * @param int $max_images
+     * @return array
      */
     public function getMoreImages($max_images = 0) {
         return elgg_get_entities([
@@ -249,11 +256,42 @@ class Agora extends ElggObject {
      *
      * @return bool
      */
-    public function canComment($user_guid = 0, $default = null) {        
+    public function canComment($user_guid = 0, $default = null):bool {        
         if ($this->comments_on === 'Off') {
             return false;
         }
 
         return true;
-    }     
+    }
+    
+    /**
+     * Get entity digital files
+     * 
+     * @return array
+     */
+    public function getDigitalFiles() {
+        return elgg_get_entities([
+            'type' => 'object',
+            'subtype' => AgoraFile::SUBTYPE,
+            'container_guid' => $this->guid,
+            'limit' => 0,
+        ]);
+    } 
+    
+    /**
+     * Get entity digital files
+     * 
+     * @return array
+     */
+    public function deleteDigitalFiles() {
+        if ($this->canEdit()) { 
+            $files = $this->getDigitalFiles();
+
+            if ($files) {
+                foreach ($files as $f) {
+                    $f->delete();
+                }
+            }
+        }
+    }  
 }

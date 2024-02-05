@@ -8,7 +8,6 @@ use Agora\AgoraOptions;
 
 if (!AgoraOptions::isGeolocationEnabled()) {
     elgg_error_response(elgg_echo('agora:settings:ads_geolocation:notenabled'));
-    forward(REFERER);
 }
 
 // retrieve specific ad if any
@@ -52,7 +51,7 @@ $options = [
 
 $category = AgoraOptions::getCatName($s_category);
 
-elgg_pop_breadcrumb();
+elgg_push_collection_breadcrumbs('object', 'agora');
 if (!empty($s_category)) {
     elgg_push_breadcrumb(elgg_echo('agora'), "agora/all");
     elgg_push_breadcrumb(elgg_echo('agora:label:map'), "agora/map");
@@ -75,7 +74,7 @@ else {
 
 // check if user can post classifieds
 if (AgoraOptions::canUserPostClassifieds()) {
-    elgg_register_title_button('agora', 'add', 'object', 'agora');
+    elgg_register_title_button('add', 'object', 'agora');
 }
 
 $content = elgg_view('agora/adsmap', [

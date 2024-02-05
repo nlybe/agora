@@ -19,12 +19,13 @@ $pyn = [
 
 echo elgg_view_field([
     '#type' => 'checkbox',
-    'id' => 'agora_paypal_enabled',
     'name' => 'params[agora_paypal_enabled]',
+    'default' => 'no',
+    'switch' => true,
+    'value' => 'yes',
+    'checked' => ($plugin->agora_paypal_enabled === 'yes'), 
     '#label' => elgg_echo('agora:settings:agora_paypal_enabled'),
-    'checked' => ($plugin->agora_paypal_enabled? true : false),
     '#help' => elgg_echo('agora:settings:agora_paypal_enabled:note', [$pa_setings_url]),
-    'required' => false,
 ]);
 
 echo elgg_view_field([

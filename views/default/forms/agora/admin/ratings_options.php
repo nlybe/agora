@@ -18,10 +18,12 @@ $pyn = [
 ];
 
 echo elgg_view_field([
-    '#type' => 'dropdown',
+    '#type' => 'checkbox',
     'name' => 'params[buyers_comrat]',
-    'value' => $plugin->buyers_comrat?$plugin->buyers_comrat:AgoraOptions::NO,
-    'options_values' => $pyn,
+    'default' => 'no',
+    'switch' => true,
+    'value' => 'yes',
+    'checked' => ($plugin->buyers_comrat === 'yes'),
     '#label' => elgg_echo('agora:settings:buyers_comrat'),
     '#help' => elgg_echo('agora:settings:buyers_comrat:note'),
 ]);

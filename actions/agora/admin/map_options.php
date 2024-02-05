@@ -13,4 +13,4 @@ foreach ($params as $k => $v) {
     }
 }
 
-return elgg_ok_response('', elgg_echo('agora:settings:save:ok'), REFERER);
+return elgg_ok_response('', elgg_echo('agora:settings:save:ok'), REFERRER);

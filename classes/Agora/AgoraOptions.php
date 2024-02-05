@@ -48,7 +48,7 @@ class AgoraOptions {
 
         $field_values[NULL] = elgg_echo('agora:add:category:select');
         foreach ($fields as $val) {
-            $key = elgg_get_friendly_title($val);
+            $key = agoraGetCatFormatted($val);
             if ($key) {
                 $field_values[$key] = $val;
             }
@@ -66,14 +66,16 @@ class AgoraOptions {
         $type = trim(elgg_get_plugin_setting('categories', self::PLUGIN_ID));
         $fields = explode(",", $type);
         foreach ($fields as $val) {
-            $key = elgg_get_friendly_title($val);
-            if ($key == $catname) {
+            if (elgg_get_friendly_title($val) == $catname || strtolower($val) == $catname) {
                 if ($linked) {
                     $page = "agora/all/{$key}/";
                     return elgg_format_element('a', ['class' => 'elgg-menu-item', 'href' => elgg_get_site_url().$page], $val);
                 } else {
                     return $val;
                 }
+            }
+            else {
+
             }
         }
         return null;
@@ -287,7 +289,7 @@ class AgoraOptions {
         if ($whocanpost === 'allmembers') {
             $owner = get_user($owner_guid);
             if ($owner instanceof \ElggUser) {
-                return trim($owner->getPrivateSetting("agora_paypal_account"));
+                return trim($owner->getMetadata("agora_paypal_account"));
             }
         } 
         else if ($whocanpost === 'admins' && elgg_is_active_plugin('paypal_api')) {
@@ -316,17 +318,15 @@ class AgoraOptions {
      * @return true if current can post ads
      */
     Public Static function canUserPostClassifieds() {
-        if (elgg_is_logged_in()) {
-            $whocanpost = self::getParams('agora_uploaders');
-            
-            if ($whocanpost === 'allmembers') {
-                return true;
-            } 
-            else if ($whocanpost === 'admins' && elgg_is_admin_logged_in()) {
-                return true;
-            }
+        if (!elgg_is_logged_in()) {
+            return false;
         }
 
+        $whocanpost = self::getParams('agora_uploaders');
+        if ($whocanpost === 'allmembers' || ($whocanpost === 'admins' && elgg_is_admin_logged_in())) {
+            return true;
+        }
+    
         return false;
     }
     
@@ -336,13 +336,18 @@ class AgoraOptions {
      * @return boolean
      */
     Public Static function isMultipleAdPurchaseEnabled() {
-        $multiple_ad_purchase = self::getParams('multiple_ad_purchase');
-
-        if ($multiple_ad_purchase === 'yes') {
-            return true;
-        }
-
-        return false;
+        $get_param = self::getParams('multiple_ad_purchase');
+        return $get_param === self::YES ? true : false;
+    }  
+    
+    /**
+     * Check if html tags on desctription are allowed
+     * 
+     * @return boolean
+     */
+    Public Static function isHtmlAllowed() {
+        $get_param = self::getParams('html_allowed');
+        return $get_param === self::YES ? true : false;
     }   
     
     /**
@@ -355,12 +360,8 @@ class AgoraOptions {
             return false;
         }
 
-        $buyers_comrat = self::getParams('buyers_comrat');
-        if ($buyers_comrat === self::YES) {
-            return true;
-        }
-
-        return false;
+        $get_param = self::getParams('buyers_comrat');
+        return $get_param === self::YES ? true : false;
     }
     
     /**
@@ -369,13 +370,8 @@ class AgoraOptions {
      * @return boolean
      */
     Public Static function canMembersSendPrivateMessage() {
-        $send_message = self::getParams('send_message');
-
-        if ($send_message === AgoraOptions::YES) {
-            return true;
-        }
-
-        return false;
+        $get_param = self::getParams('send_message');
+        return $get_param === self::YES ? true : false;
     }    
     
     /**
@@ -447,11 +443,7 @@ class AgoraOptions {
      * @return type
      */
     Public Static function getCommonGatewayCurrencies() {
-//        if (AgoraOptions::isPaypalEnabled()) {
-            $currencies = self::getPaypalCurrencyList();
-//        } 
-        
-        return $currencies;
+        return self::getPaypalCurrencyList();
     }    
     
     /**
@@ -461,14 +453,9 @@ class AgoraOptions {
      */
     Public Static function getAllTimesZones() {
         $zones_array = [];
-        // $timestamp = time();
 
         foreach (timezone_identifiers_list() as $key => $zone) {
             $zones_array[$zone] = $zone;
-
-            //date_default_timezone_set($zone);
-            //$zones_array[$key]['zone'] = $zone;
-            //$zones_array[$key]['diff_from_GMT'] = 'UTC/GMT ' . date('P', $timestamp);
         }
 
         return $zones_array;
@@ -562,12 +549,8 @@ class AgoraOptions {
             return false;
         }
 
-        $use_paypal = self::getParams('agora_paypal_enabled');
-        if ($use_paypal === self::ON) {
-            return true;
-        }
-
-        return false;
+        $get_param = self::getParams('agora_paypal_enabled');
+        return $get_param === self::YES ? true : false;
     }
     
     /**

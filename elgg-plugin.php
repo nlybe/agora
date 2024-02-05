@@ -6,13 +6,13 @@
 
 use Agora\Elgg\Bootstrap;
 
-require_once(dirname(__FILE__) . '/lib/hooks.php');
+require_once(dirname(__FILE__) . '/lib/events.php');
 require_once(dirname(__FILE__) . '/lib/functions.php'); 
 
 return [
     'plugin' => [
         'name' => 'Agora Classifieds',
-		'version' => '4.14',
+		'version' => '5.15',
 		'dependencies' => [
 			'geomaps_api' => [
 				'must_be_active' => false,
@@ -41,6 +41,16 @@ return [
             'type' => 'object',
             'subtype' => 'agora_img',
             'class' => 'AgoraImage',
+            'capabilities' => [
+				'commentable' => false,
+				'searchable' => false,
+				'likable' => false,
+			],
+        ],
+        [
+            'type' => 'object',
+            'subtype' => 'agora_file',
+            'class' => 'AgoraFile',
             'capabilities' => [
 				'commentable' => false,
 				'searchable' => false,
@@ -81,6 +91,48 @@ return [
         'agora/admin/digital_options' => ['access' => 'admin'],
         'agorasale/delete' => [],
     ],
+    'events' => [
+        'register' => [        
+            'menu:title' => [
+                'Elgg\Agora\Menus\Title::register' => [],
+            ],      
+            'menu:entity' => [
+                'agora_menu_setup' => [],
+                'agorasale_menu_setup' => [],
+            ],     
+            'menu:owner_block' => [
+                'agora_owner_block_menu' => [],
+            ],     
+            'menu:page' => [
+                'agora_notifications_page_menu' => [],
+            ],      
+        ],
+        'entity:url' => [      
+            'object' => [
+                'agora_set_url' => [],
+            ], 
+        ],
+        'agora:inputs:config' => [      
+            'agora' => [
+                'agora_input_list' => [],
+            ], 
+        ],
+        'paypal_api' => [      
+            'ipn_log' => [
+                'agora_paypal_successful_payment_hook' => [],
+            ], 
+        ],
+        'cron' => [      
+            'daily' => [
+                'agora_review_reminder_cron_hook' => [],
+            ], 
+        ],
+        'action:validate' => [      
+            'entity/delete' => [
+                'agora_delete_action' => [],
+            ], 
+        ],
+    ],
     'routes' => [
         'default:object:agora' => [
             'path' => '/agora',
@@ -99,7 +151,7 @@ return [
             'resource' => 'agora/friends',
         ],
         'collection:object:agora:group' => [
-			'path' => '/agora/group/{guid?}',
+			'path' => '/agora/group/{guid?}/{category?}',
 			'resource' => 'agora/group',
 		],
 		'add:object:agora' => [
@@ -112,6 +164,13 @@ return [
         'edit:object:agora' => [
             'path' => '/agora/edit/{guid}',
             'resource' => 'agora/edit',
+            'middleware' => [
+                \Elgg\Router\Middleware\Gatekeeper::class,
+            ],
+        ],
+        'be_interested:object:agora' => [
+            'path' => '/agora/be_interested/{guid}',
+            'resource' => 'agora/be_interested',
             'middleware' => [
                 \Elgg\Router\Middleware\Gatekeeper::class,
             ],
@@ -155,11 +214,9 @@ return [
     ],
     'widgets' => [
         'agora' => [
-            'description' => elgg_echo('agora:widget:description'),
             'context' => ['profile', 'groups', 'dashboard'],
         ],
         'agorabs' => [
-            'description' => elgg_echo('agora:widget:bought:description'),
             'context' => ['profile', 'dashboard'],
         ],
     ],
@@ -168,5 +225,12 @@ return [
             'agora/graphics/' => __DIR__ . '/graphics',
         ],
     ],
-    'upgrades' => [],
+	'view_extensions' => [
+		'elgg.css' => [
+			'agora/css/agora.css' => [],
+		],
+		'css/admin' => [
+			'agora/css/agora_admin.css' => [],
+		],
+	],
 ];

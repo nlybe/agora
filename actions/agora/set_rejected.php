@@ -31,12 +31,12 @@ elgg_call(ELGG_IGNORE_ACCESS, function () use ($interest_guid) {
             $interest->int_status = AgoraOptions::INTEREST_REJECTED;
     
             if ($interest->save()) {
-                return elgg_ok_response('', elgg_echo('agora:set_rejected:success'), REFERER);
+                return elgg_ok_response('', elgg_echo('agora:set_rejected:success'), REFERRER);
             } 
             
-            return elgg_error_response(elgg_echo('agora:set_rejected:failed'));
+            return elgg_error_response(elgg_echo('agora:set_rejected:failed'), REFERRER);
         } 
         
-        return elgg_error_response(elgg_echo('agora:error:action:invalid'));
+        return elgg_error_response(elgg_echo('agora:error:action:invalid'), REFERRER);
     }    
 });

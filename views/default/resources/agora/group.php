@@ -27,7 +27,7 @@ if ($selected_category == 'all') {
 
 // check if user can post classifieds
 if (AgoraOptions::canUserPostClassifieds()) {
-    elgg_register_title_button('agora', 'add', 'object', 'agora');
+    elgg_register_title_button('add', 'object', 'agora');
 }
 
 $options = [
@@ -64,12 +64,19 @@ $vars = [
     'filter_override' => elgg_view('agora/nav', ['selected' => $vars['page'], 'page_owner_guid' => $group->getGUID()]),
     'content' => $content,
     'title' => $title,
-    'sidebar' => elgg_view('agora/sidebar', ['selected' => $sidebar_cats_url, 'category' => $selected_category]),
+    'sidebar' => elgg_view('agora/sidebar', [
+        'selected' => $sidebar_cats_url, 
+        'category' => $selected_category,
+        'page' => "agora/group/$group->guid/",
+    ]),
 ];
 
-// don't show filter if out of filter context
-$vars['filter'] = false;
-
-$body = elgg_view_layout('default', $vars);
-
-echo elgg_view_page($title, $body);
+echo elgg_view_page($title, [
+    'content' => $content,
+    'sidebar' => elgg_view('agora/sidebar', [
+        'selected' => $sidebar_cats_url, 
+        'category' => $selected_category,
+        'page' => "agora/group/$group->guid/",
+    ]),
+    'filter' => false,
+]);

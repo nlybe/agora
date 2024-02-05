@@ -134,7 +134,6 @@ if ($allow_digital_products) { // check for file uploaded only if digital produc
     }
 }
 
-$tagarray = string_to_tag_array($tags);
 $entity->title = $title;
 $entity->description = $desc;
 $entity->access_id = $access_id;
@@ -147,7 +146,7 @@ $entity->shipping_cost = $shipping_cost;
 $entity->shipping_type = $shipping_type;
 $entity->currency = $currency;
 $entity->category = $category;
-$entity->tags = $tagarray;
+$entity->tags = elgg_string_to_array($tags);
 $entity->comments_on = $comments_on;
 
 if ($entity->save()) {
@@ -160,23 +159,20 @@ if ($entity->save()) {
     } 
 
     // if we have new digital file, upload the file
-    if ($digital && $_FILES["digital_file_box"]["error"] != 4) {	
+    if ($digital && $_FILES["digital_file_box"]["error"] != 4) {
+        $entity->deleteDigitalFiles();
         $prefixdocs = "agora/file-".$entity->guid;
-        $filedocs = new ElggFile();
+        $filedocs = new AgoraFile();
         $mime_type_docs = elgg()->mimetype->getMimeType($_FILES['digital_file_box']['tmp_name']);
-        // $mime_type_docs = $filedocs->detectMimeType($_FILES['digital_file_box']['tmp_name'], $_FILES['digital_file_box']['type']); // Deprecated
 
         $filedocs->owner_guid = $entity->owner_guid;
-        $filedocs->container_guid = $entity->container_guid;
-        $filedocs->agora_guid = $entity->guid;
+        $filedocs->container_guid = $entity->guid;
         $filedocs->originalfilename = $_FILES['digital_file_box']['name'];
         $filedocs->setMimeType($mime_type_docs);
         $filedocs->setFilename($prefixdocs . ".zip");
-        $filedocs->access_id = 0;  // private, so they are not visibled in file plugin if enabled
-        //$filedocs->simpletype = file_get_simple_type($mime_type_docs); // mallon obsolete, deixnei na douleuei ka xoris to file plugin
+        $filedocs->access_id = ACCESS_PRIVATE;
 
         $filedocs->open("write");
-        //$filedocs->write(get_uploaded_file('digital_file_box'));
         $filedocs->close();
         move_uploaded_file($_FILES['digital_file_box']['tmp_name'], $filedocs->getFilenameOnFilestore());
         $filedocs->save();
@@ -209,7 +205,7 @@ if ($entity->save()) {
             //                     break;
             //             }
             //             imagejpeg($image, $_FILES['product_icon']['tmp_name'][$key]);
-            //         }             
+            //         }     
 
             $fh = new AgoraImage();
             $fh->access_id = ACCESS_PUBLIC;
@@ -237,10 +233,6 @@ if ($entity->save()) {
                 $guid = $fh->save();
             }
 
-            // if (!$guid) {
-            //     return elgg_error_response(elgg_echo('agora:products:invalid:icon'));
-            // }
-
             foreach ($icon_sizes as $name => $size_info) {
                 try {
                     $fh->setFilename($prefix.$name.".jpg");
@@ -264,6 +256,7 @@ if ($entity->save()) {
 
             $fh->file_prefix = $prefix;
         }
+
     }
     /////////////////////////////////////////////// more images
 

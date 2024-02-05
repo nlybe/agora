@@ -95,19 +95,6 @@ if ($entity && $entity->hasIcon('medium')) {
     $icon_existed = elgg_format_element('div', ['style' => 'float:right;'], elgg_view_entity_icon($entity, 'small', []));
     $icon_style= 'width:75%;';
 }
-// $inputs_list['upload_input'] = [
-//     'priority' => 20,
-//     'render' => elgg_format_element('div', ['id' => 'upload_input'], 
-//         $icon_existed.
-//         elgg_view_input('file', [
-//             'id' => 'upload',
-//             'name' => 'upload',
-//             '#label' => elgg_echo('agora:add:image'),
-//             '#help' => elgg_echo('agora:add:image:note'),
-//             'style' => $icon_style,
-//         ]
-//     )),
-// ];
 $inputs_list['upload_input'] = [
     'priority' => 20,
     'render' => elgg_format_element('div', ['id' => 'upload_input'], 
@@ -268,7 +255,7 @@ if ($allow_digital_products) {
 $inputs_list['description_input'] = [
     'priority' => 120,
     'render' => elgg_format_element('div', ['id' => 'description_input'], elgg_view_field([
-        '#type' => agora_html_allowed()?'longtext':'plaintext',
+        '#type' => AgoraOptions::isHtmlAllowed()?'longtext':'plaintext',
         'id' => 'description',
         'name' => 'description',
         'value' => $description,

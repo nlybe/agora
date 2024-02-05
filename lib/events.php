@@ -11,11 +11,11 @@ use Agora\AgoraOptions;
 /**
  * Appends input fields for posting ads
  *
- * @param \Elgg\Hook $hook The hook object
+ * @param \Elgg\Event $event The hook object
  * @return array
  */
-function agora_input_list(\Elgg\Hook $hook) {
-    $return = $hook->getValue();
+function agora_input_list(\Elgg\Event $event) {
+    $return = $event->getValue();
     usort($return, function ($item1, $item2) {
         if ($item1['priority'] == $item2['priority']) {
             return 0;
@@ -29,11 +29,11 @@ function agora_input_list(\Elgg\Hook $hook) {
 /**
  * Format and return the URL for agora objects
  *
- * @param \Elgg\Hook $hook The hook object
+ * @param \Elgg\Event $event The hook object
  * @return string URL of agora
  */
-function agora_set_url(\Elgg\Hook $hook) {
-    $entity = $hook->getEntityParam();
+function agora_set_url(\Elgg\Event $event) {
+    $entity = $event->getEntityParam();
     if ($entity instanceof \Agora) { 
         $friendly_title = elgg_get_friendly_title($entity->title);
         return "agora/view/{$entity->guid}/$friendly_title";
@@ -47,12 +47,12 @@ function agora_set_url(\Elgg\Hook $hook) {
 /**
  * Add a menu item to an ownerblock
  * 
- * @param \Elgg\Hook $hook The hook object
+ * @param \Elgg\Event $event The hook object
  * @return \ElggMenuItem
  */
-function agora_owner_block_menu(\Elgg\Hook $hook) {
-    $entity = $hook->getEntityParam();
-	$return = $hook->getValue();
+function agora_owner_block_menu(\Elgg\Event $event) {
+    $entity = $event->getEntityParam();
+	$return = $event->getValue();
 
     if ($entity instanceof \ElggUser) {
         $url = "agora/owner/{$entity->username}";
@@ -72,10 +72,10 @@ function agora_owner_block_menu(\Elgg\Hook $hook) {
 /**
  * Cron function for sending notification to buyers for review of the the ad they bought with link and login
  * 
- * @param \Elgg\Hook $hook The hook object
+ * @param \Elgg\Event $event The hook object
  * @return boolean
  */
-function agora_review_reminder_cron_hook(\Elgg\Hook $hook) {
+function agora_review_reminder_cron_hook(\Elgg\Event $event) {
     if (!AgoraOptions::allowedComRatOnlyForBuyers()) {
         return;
     }
@@ -120,12 +120,12 @@ function agora_review_reminder_cron_hook(\Elgg\Hook $hook) {
 /**
  * This is triggered PayPal IPN verification. 
  * 
- * @param \Elgg\Hook $hook The hook object * 
+ * @param \Elgg\Event $event The hook object * 
  * @return type
  */
-function agora_paypal_successful_payment_hook(\Elgg\Hook $hook) {
-    $return = $hook->getValue();
-    $transaction_params = $hook->getParams();
+function agora_paypal_successful_payment_hook(\Elgg\Event $event) {
+    $return = $event->getValue();
+    $transaction_params = $event->getParams();
     $transaction = $transaction_params['transaction'];
     
     if (!$transaction) {
@@ -179,12 +179,12 @@ function agora_paypal_successful_payment_hook(\Elgg\Hook $hook) {
 /**
  * Manage menu items options to agora entities menu
  * 
- * @param \Elgg\Hook $hook 'register', 'menu:entity' *
+ * @param \Elgg\Event $event 'register', 'menu:entity' *
  * @return void|ElggMenuItem[]
  */
-function agora_menu_setup(\Elgg\Hook $hook) {
-    $return = $hook->getValue();
-    $entity = $hook->getEntityParam();
+function agora_menu_setup(\Elgg\Event $event) {
+    $return = $event->getValue();
+    $entity = $event->getEntityParam();
     if (!$entity instanceof \Agora) {
         return;
     }
@@ -222,11 +222,11 @@ function agora_menu_setup(\Elgg\Hook $hook) {
 /**
  * Manage menu items options to agora_sale entities menu
  * 
- * @param \Elgg\Hook $hook 'register', 'menu:entity' *
+ * @param \Elgg\Event $event 'register', 'menu:entity' *
  * @return void|ElggMenuItem[]
  */
-function agorasale_menu_setup(\Elgg\Hook $hook) {
-    $entity = $hook->getEntityParam();
+function agorasale_menu_setup(\Elgg\Event $event) {
+    $entity = $event->getEntityParam();
     if (!$entity instanceof \AgoraSale) {
         return;
     }
@@ -236,7 +236,7 @@ function agorasale_menu_setup(\Elgg\Hook $hook) {
         return;
     }
 
-    $return = $hook->getValue();        
+    $return = $event->getValue();        
     if (!$user->isAdmin()) {
         // Prevend sale deletion from non-admin users
         $return->remove('delete');
@@ -254,11 +254,11 @@ function agorasale_menu_setup(\Elgg\Hook $hook) {
 // /**
 //  * Edit delete actions
 //  * 
-//  * @param \Elgg\Hook $hook 'register', 'menu:entity' *
+//  * @param \Elgg\Event $event 'register', 'menu:entity' *
 //  * @return void|ElggMenuItem[]
 //  */
-// function agora_delete_action(\Elgg\Hook $hook) {
-//     $entity = $hook->getEntityParam();
+// function agora_delete_action(\Elgg\Event $event) {
+//     $entity = $event->getEntityParam();
 //     if (!$entity instanceof \AgoraSale || !$entity instanceof \Agora) {
 //         return;
 //     }
@@ -268,7 +268,7 @@ function agorasale_menu_setup(\Elgg\Hook $hook) {
 //         return;
 //     }
 
-//     $return = $hook->getValue();        
+//     $return = $event->getValue();        
 //     if (!$user->isAdmin()) {
 //         // Prevend sale deletion from non-admin users
 //         $return->remove('delete');
@@ -280,10 +280,10 @@ function agorasale_menu_setup(\Elgg\Hook $hook) {
 /**
  * Register menu items in user settings
  *
- * @param \Elgg\Hook $hook 'register', 'menu:page' *
+ * @param \Elgg\Event $event 'register', 'menu:page' *
  * @return void|ElggMenuItem[]
  */
-function agora_notifications_page_menu(\Elgg\Hook $hook) {
+function agora_notifications_page_menu(\Elgg\Event $event) {
 	
 	if (!elgg_in_context('settings') || !elgg_get_logged_in_user_guid()) {
 		return;
@@ -294,7 +294,7 @@ function agora_notifications_page_menu(\Elgg\Hook $hook) {
 		$user = elgg_get_logged_in_user_entity();
 	}
 	
-	$return = $hook->getValue();
+	$return = $event->getValue();
 	$return[] = \ElggMenuItem::factory([        
         "name" => "agora",
         "text" => elgg_echo("agora:usersettings:settings"),

@@ -10,7 +10,7 @@ $body = elgg_extract('body', $vars, '');
 $classified_guid = elgg_extract('classified_guid', $vars, '');
 
 echo elgg_view_field([
-	'#type' => 'text',
+	'#type' => 'plaintext',
 	'name' => 'body',
 	'value' => $body,
 	'class' => 'beinterested',
